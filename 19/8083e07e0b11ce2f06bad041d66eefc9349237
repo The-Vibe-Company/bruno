@@ -1,0 +1,20 @@
+scripts/linear-import.py
+  s_7ec6903985e0db::t_eb07334a948b9a 55-56
+  s_7ec6903985e0db::t_e03685caa00b5d 98-105,126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "198083e07e0b11ce2f06bad041d66eefc9349237",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
