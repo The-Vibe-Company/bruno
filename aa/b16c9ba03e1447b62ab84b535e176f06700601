@@ -1,0 +1,19 @@
+docs/adr/0001-stack.md
+  s_7ec6903985e0db::t_03eccd77de18d3 1-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "aab16c9ba03e1447b62ab84b535e176f06700601",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
