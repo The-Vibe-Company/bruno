@@ -47,6 +47,19 @@ comme des **décisions**, pas des oublis, le 7 septembre :
 - **`la précédente n'est pas faite` est abandonné.** Les deux occurrences se retrouvent côte
   à côte dans la liste, et ça suffit à le voir.
 
+## BRU-41 — Le détail d'une Tâche sur le web, et sa feuille de Report
+
+Les deux existent sur iOS et **aucune des deux n'existe sur le web**. Or le web est l'endroit
+où on trie et où on pilote : cliquer une carte du Board ne mène nulle part aujourd'hui.
+
+- [ ] **Le détail** : titre, `Statut · reporté N×`, puis Assigné, Aidants, Engagement, Statut,
+      Reports. Les Notes avec la **transcription brute en italique** sous un filet
+- [ ] Actions : `Terminé` en primaire, `Reporter` et `Abandonner`, `Supprimer` en secondaire
+- [ ] Panneau latéral ou modale — au choix, mais sans quitter le Board : on trie en rafale
+- [ ] **La feuille de Report** : raison obligatoire (trois choix rapides + saisie libre),
+      nouvel Engagement avec `demain` pré-sélectionné, et `Abandonner cette Tâche` en dessous.
+      Reprendre exactement la version iOS, qui est bonne
+
 ## BRU-40 — Le bandeau Affectation devient interactif
 
 C'est le dernier trou du modèle. On voit son Affectation sur quatre écrans et on peut en sortir
