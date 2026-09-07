@@ -49,3 +49,27 @@ plus tard (PRD §11).
 - [ ] Les trois Membres créés à la main
 - [ ] Les Clients de départ, dont `Interne`
 - [ ] Un jeu de données de démonstration pour développer sans écran vide
+
+## BRU-38 — Thème clair et sombre
+
+Le design existe désormais dans les deux thèmes, sur les deux plateformes
+(`Bruno Web v2` / `Bruno Web v2 - Light`, `Bruno iOS v2` / `Bruno iOS v2 - Light`).
+À traiter **avant** de construire les écrans : c'est un jeu de tokens, pas une passe de
+peinture à la fin.
+
+- [ ] **Le thème suit le réglage système.** Aucun sélecteur nulle part — les maquettes des
+      Réglages n'en montrent pas, et « thème configurable » reste hors scope. Un seul
+      comportement, zéro état à tester
+- [ ] **Un seul jeu de tokens**, deux valeurs par token. Jamais deux feuilles de style, jamais
+      une couleur écrite en dur dans un composant
+- [ ] **L'accent change entre les thèmes** — c'est le point à ne pas rater :
+      `#F27313` en sombre, **`#E4640A` en clair**. L'orange de marque doit foncer sur fond
+      clair pour rester lisible ; le reprendre tel quel casse le contraste
+- [ ] Les couleurs sémantiques suivent la même règle, ce n'est **pas** un simple inversement :
+      *En cours* passe de `oklch(.74 .13 155)` à `oklch(.58 .13 155)`, *Bloqué* de
+      `oklch(.70 .16 22)` à `oklch(.58 .16 22)`
+- [ ] Fonds et texte, pour référence : sombre `#0B0B0B` / `#161616` / `#262626` / `#EDEDED` /
+      `#B8B8B8` — clair `#F7F5F0` / `#FFFFFF` / `#D9D5CC` / `#161512` / `#6B675F`
+- [ ] **Web** : tokens CSS + `prefers-color-scheme`
+- [ ] **iOS** : Color Assets avec variantes Any/Dark, SwiftUI les résout seul
+- [ ] **Le widget et les notifications suivent aussi** — ce sont les deux surfaces qu'on oublie

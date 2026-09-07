@@ -362,6 +362,11 @@ entre un système de relance et du spam.
 - **Multi-tenant dans le schéma uniquement** : une colonne `space_id` partout, et **zéro UI**
   d'invitation, d'onboarding ou de gestion d'espace. Une demi-journée de coût, la porte reste
   ouverte, et on ne paie aucun prix produit.
+- **Thème** : clair et sombre, **suivant le réglage système**, sur les deux plateformes. Un
+  seul jeu de tokens, deux valeurs par token. L'accent change entre les thèmes — `#F27313` en
+  sombre, `#E4640A` en clair : l'orange de marque doit foncer sur fond clair pour rester
+  lisible. **Aucun sélecteur de thème nulle part** : le système décide, il n'y a pas d'état à
+  régler ni à tester.
 - **Langue** : français partout, y compris les termes du glossaire.
 
 ## 12. Hors scope V1
@@ -370,7 +375,7 @@ Sous-tâches · checklists · projets · tags libres · **Client sur une Tâche*
 pièces jointes · time tracking · cumul de jours par client · dépendances entre Tâches · vue
 calendrier · Gantt · intégrations Slack / Google Calendar / email · rôles et permissions · mode
 vacances · historique d'activité par Tâche · raccourci Siri · share sheet · connecteurs d'agents
-IA · multi-espace · invitations · export · thème configurable.
+IA · multi-espace · invitations · export · **sélecteur de thème**.
 
 **Décisions à revisiter plus tard, dans cet ordre :** les connecteurs d'agents IA (le champ
 `Membre.type` et l'API existent déjà pour ça) · le cumul de jours par Client si la facturation au

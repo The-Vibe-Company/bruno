@@ -1,6 +1,8 @@
 # E8 — Récurrence
 
-## BRU-32 — Écran Récurrences web · **bloqué par BRU-35**
+## BRU-32 — Écran Récurrences web
+
+La maquette existe désormais (BRU-35 livré) — plus de blocage.
 
 Configuration **depuis le web uniquement** *(règle 18)*.
 

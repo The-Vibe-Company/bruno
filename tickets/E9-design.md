@@ -1,37 +1,58 @@
-# E9 — Design manquant
+# E9 — Design
 
-À renvoyer à Claude Design avec [REVIEW-v2.md](../REVIEW-v2.md). **BRU-37 est sur le chemin
-critique** — c'est la maquette à obtenir en premier.
+État au **7 septembre**, après la passe light mode. Voir [REVIEW-v2.md](../REVIEW-v2.md).
 
-## BRU-37 — Le formulaire du droit d'entrée Sur le feu · **prioritaire**
+## ✅ BRU-35 — Écran Récurrences web · **livré**
 
-Manquant sur les deux plateformes, et actuellement **contourné** : la carte À trier porte un
-bouton « Sur le feu » en un tap qui ne demande rien.
+Présent dans `Bruno Web v2 - Light`. Liste des 4 règles, formulaire complet : Titre, Assigné
+marqué `obligatoire`, Fréquence, Nombre d'occurrences avec la mention `n/N automatique`, et les
+Engagements échelonnés (1/3 lundi · 2/3 mercredi · 3/3 vendredi). Conforme aux règles 18 à 21.
+**Débloque BRU-32.**
 
-- [ ] Feuille modale iOS : Assigné et Engagement, pré-remplis « moi » + « aujourd'hui »,
-      validable en un tap
-- [ ] Équivalent web, déclenché au drop dans le kanban **et** au clic sur le bouton
-- [ ] L'état d'erreur quand on annule
+## BRU-36 — Écran Réglages web · **à reprendre**
 
-## BRU-34 — Widget écran d'accueil iOS
+L'écran existe et les Créneaux sont bons. Mais il y a une **confusion de vocabulaire à
+corriger**, et elle a une conséquence réelle.
 
-- [ ] Le widget lui-même, dans ses tailles
-- [ ] L'état d'enregistrement en cours
-- [ ] La confirmation muette après envoi
+La section est intitulée **« Affectations »** et contient MONKA, AFP, Coup de Pâtes, Interne,
+Bergamote, avec *Désactiver* / *Réactiver* / *+ Ajouter une Affectation*. **Ce sont des
+Clients, pas des Affectations.** Désactiver-sans-jamais-supprimer est exactement la règle des
+Clients (BRU-26).
 
-## BRU-35 — Écran Récurrences web
+- [ ] Renommer la section en **« Clients »** — le contenu est déjà le bon
+- [ ] **Ajouter une vraie section « Affectations »** : qui est sur quel Client depuis quand,
+      en poser une (Membre + Client + date de début), en fermer une
+- [ ] Sans ça, **il n'existe toujours aucun endroit pour poser une Affectation**, alors qu'elle
+      s'affiche sur quatre écrans. **BRU-28 reste bloqué.**
 
-- [ ] Liste des règles
-- [ ] Formulaire de création : titre, Assigné, fréquence, nombre d'occurrences, échelonnement
-- [ ] Rendu d'une occurrence générée portant `la précédente n'est pas faite`
+## BRU-37 — Le formulaire du droit d'entrée Sur le feu · **toujours manquant · prioritaire**
 
-## BRU-36 — Écran Réglages web
+Absent des quatre fichiers, clair comme sombre. Le bouton « Sur le feu » d'une carte À trier
+continue de créer la Tâche en un tap, sans Assigné ni Engagement — il contourne l'invariant 2,
+le seul verrou dur de Bruno. **Bloque BRU-13, sur le chemin critique.**
 
-- [ ] Les Créneaux (même logique que l'écran iOS, qui est bon)
-- [ ] La **liste des Clients** : ajout en une ligne, désactivation, couleur
-- [ ] La **gestion des Affectations** : en poser une, la fermer, voir les siennes en cours
+- [ ] Feuille modale iOS : Assigné et Engagement, pré-remplis « moi » + « aujourd'hui »
+- [ ] Équivalent web, au drop dans le kanban **et** au clic sur le bouton
+- [ ] L'état d'annulation
 
-## Corrections mineures sur l'existant
+## BRU-34 — Widget écran d'accueil iOS · **toujours manquant**
+
+Absent en clair comme en sombre. Meilleur levier du pilier 1. **Bloque BRU-10.**
+
+- [ ] Le widget dans ses tailles, l'état d'enregistrement, la confirmation muette
+- [ ] Dans les deux thèmes (BRU-38)
+
+## BRU-39 — Régressions du Board light · **à corriger**
+
+Deux choses présentes en sombre ont disparu de `Bruno Web v2 - Light`, vérifiées ligne à ligne.
+
+- [ ] **Les rangs numérotés dans « À faire » ont sauté.** En sombre : `1 Relancer MONKA ·
+      2 Préparer le mail · 3 Cadrage atelier · 4 Post LinkedIn 2/3 · 5 Chiffrage refonte`.
+      En clair, aucun numéro. C'est la seule expression de la priorité dans Bruno (BRU-16)
+- [ ] **`la précédente n'est pas faite` a disparu** de la carte *Post LinkedIn 2/3*. C'est
+      la règle 22, et le seul signal qu'une occurrence de Récurrence s'empile
+
+## Corrections mineures, toujours ouvertes
 
 - [ ] Réglages iOS : désactiver le dernier « Retirer » quand on tomberait sous trois Créneaux
 - [ ] iOS « Aujourd'hui » : le cas de **plusieurs Affectations** simultanées

@@ -1,6 +1,6 @@
 # 1. Stack technique de Bruno
 
-**Statut** : accepté — sous réserve du plan Vercel (voir « Condition »)
+**Statut** : accepté
 **Date** : 2026-09-07
 **Ticket** : BRU-1 / THE-577
 
@@ -48,9 +48,10 @@ bruno/
 L'API n'est pas une troisième base de code : ce sont les route handlers que le web utilise
 déjà, et que l'app iOS consomme.
 
-## Condition
+## Condition — levée le 7 septembre
 
-**Cette décision suppose un plan Vercel Pro.** Les limites de Vercel Cron sont :
+**The Vibe Company est sur un plan Vercel Pro.** `*/15 * * * *` est autorisé, la précision est
+à la minute : le moteur de Relance peut tourner sur Vercel Cron. Pour mémoire, ce qui était en jeu : Les limites de Vercel Cron sont :
 
 | Plan | Intervalle minimum | Précision |
 |---|---|---|
@@ -61,7 +62,7 @@ Sur Hobby, un cron `*/15 * * * *` **fait échouer le déploiement**. Le pilier 2
 impossible, et il faudrait un ordonnanceur persistant ailleurs (petite VM, Railway,
 Cloud Scheduler) — ce qui ajouterait une troisième chose à déployer et à surveiller.
 
-**À vérifier avant la première ligne de code du moteur de Relance.**
+~~À vérifier avant la première ligne de code du moteur de Relance.~~ **Vérifié : plan Pro.**
 
 ## Alternatives écartées
 

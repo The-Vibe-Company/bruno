@@ -1,5 +1,15 @@
 # Revue du design v2 — à renvoyer à Claude Design
 
+> **Mis à jour le 7 septembre, après la passe light mode.** L'état à jour des maquettes —
+> ce qui est livré, ce qui manque, ce qui a régressé — vit désormais dans
+> [tickets/E9-design.md](./tickets/E9-design.md). Ce document garde la revue de fond du v2 ;
+> E9 est la liste opérationnelle à envoyer.
+>
+> Depuis cette revue : **Récurrences livré** (point 4 partiellement résolu) · **Réglages web
+> livré mais sa section « Affectations » gère en fait les Clients** (point 4 toujours ouvert) ·
+> **le droit d'entrée (point 1) et le widget (point 3) restent manquants** · **deux régressions
+> nouvelles sur le Board light** (rangs numérotés, `la précédente n'est pas faite`).
+
 Relecture de `Bruno iOS v2.dc.html` et `Bruno Web v2.dc.html` contre le [PRD](./PRD.md).
 `support.js` est le runtime du canvas, sans contenu produit.
 

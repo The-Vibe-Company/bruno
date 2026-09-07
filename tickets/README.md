@@ -22,7 +22,7 @@ si le planning dérape.
 
 | | Épique | Tickets | Ce que ça sert |
 |---|---|---|---|
-| **E0** | [Fondations](./E0-fondations.md) | BRU-1 → 5 | Stack, schéma, API, auth |
+| **E0** | [Fondations](./E0-fondations.md) | BRU-1 → 5, 38 | Stack, schéma, API, auth, thème |
 | **E1** | [Capture](./E1-capture.md) | BRU-6 → 10 | **Pilier 1** |
 | **E2** | [Buckets et tri](./E2-buckets-tri.md) | BRU-11 → 14 | Invariants 1, 2, 3 |
 | **E3** | [Sur le feu](./E3-sur-le-feu.md) | BRU-15 → 19 | Statuts, Rang, fins |
@@ -31,11 +31,13 @@ si le planning dérape.
 | **E6** | [Affectations et Clients](./E6-affectations.md) | BRU-26 → 29 | Invariant 6 |
 | **E7** | [Daily et Fait](./E7-daily-fait.md) | BRU-30 → 31 | Le rituel |
 | **E8** | [Récurrence](./E8-recurrence.md) | BRU-32 → 33 | Les séries |
-| **E9** | [Design manquant](./E9-design.md) | BRU-34 → 37 | À renvoyer à Claude Design |
+| **E9** | [Design](./E9-design.md) | BRU-34 → 37, 39 | État des maquettes |
 
 ## Bloqué par le design
 
-Quatre tickets de dev attendent des maquettes qui n'existent pas encore (voir
-[REVIEW-v2.md](../REVIEW-v2.md)) : **BRU-10** (widget), **BRU-13** (droit d'entrée),
-**BRU-32** (Récurrences), **BRU-28** (Réglages web). BRU-13 est sur le chemin critique —
-c'est la maquette à obtenir en premier.
+Trois tickets de dev attendent encore des maquettes (voir [E9](./E9-design.md)) :
+**BRU-13** ← BRU-37 (droit d'entrée), **BRU-10** ← BRU-34 (widget), **BRU-28** ← BRU-36
+(poser une Affectation). **BRU-13 est sur le chemin critique** — c'est la maquette à obtenir
+en premier.
+
+**BRU-32 est débloqué** : la maquette Récurrences a été livrée le 7 septembre.

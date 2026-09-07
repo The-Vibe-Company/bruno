@@ -21,7 +21,10 @@
 - [ ] L'historique est conservé — c'est lui qui répond à « hier j'étais sur MONKA »
 - [ ] Ni Engagement, ni Statut, ni Rang, ni Report sur une Affectation
 
-## BRU-28 — Affichage des Affectations · **partiellement bloqué par BRU-36**
+## BRU-28 — Affichage des Affectations · **bloqué par BRU-36**
+
+Les Réglages web existent, mais leur section « Affectations » gère en réalité les **Clients**.
+Il n'y a toujours nulle part où *poser* une Affectation.
 
 - [ ] **iOS « Aujourd'hui »** : épinglées en tête, une ligne par Client, à la couleur du Client,
       libellées `MONKA · depuis le 3 sept.`, avec le bouton « Je ne suis plus dessus ».
