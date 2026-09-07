@@ -9,19 +9,15 @@ marqué `obligatoire`, Fréquence, Nombre d'occurrences avec la mention `n/N aut
 Engagements échelonnés (1/3 lundi · 2/3 mercredi · 3/3 vendredi). Conforme aux règles 18 à 21.
 **Débloque BRU-32.**
 
-## BRU-36 — Écran Réglages web · **à compléter**
+## BRU-36 — Écran Réglages web · **livré**
 
-L'écran existe, les Créneaux sont bons, et la section **« Affectations »** garde son nom — le
-mot a été tranché le 7 septembre, `Client` était trop étroit puisque `Interne` n'en est pas un.
+Présent dans `Bruno Web v2 - Light`. Créneaux + la section **Affectations**, qui est exactement
+ce qu'elle doit être : **la liste de ce à quoi on peut travailler**, avec Désactiver / Réactiver
+et « + Ajouter une Affectation ». Rien à changer.
 
-Il manque une seconde section. La liste actuelle dit *ce à quoi on peut travailler* ; rien ne
-dit *qui est sur quoi*.
+Tranché le 7 septembre : les Réglages ne montrent **pas** qui est sur quoi — ça se voit sur le
+Daily et sur le Board, et ça se change là où ça se voit (BRU-40).
 
-- [ ] Garder la section **« Affectations »** telle quelle : la liste, avec Désactiver / Réactiver
-- [ ] Ajouter une section **« Qui est sur quoi »** : mettre un Membre sur une Affectation à
-      partir d'une date, l'en sortir, voir les périodes en cours
-- [ ] Sans elle, **il n'existe aucun endroit pour dire qu'Antoine est sur MONKA**, alors que
-      l'info s'affiche sur quatre écrans. **BRU-28 reste bloqué.**
 
 ## BRU-37 — Le formulaire du droit d'entrée Sur le feu · **toujours manquant · prioritaire**
 
@@ -51,8 +47,21 @@ comme des **décisions**, pas des oublis, le 7 septembre :
 - **`la précédente n'est pas faite` est abandonné.** Les deux occurrences se retrouvent côte
   à côte dans la liste, et ça suffit à le voir.
 
+## BRU-40 — Le bandeau Affectation devient interactif
+
+C'est le dernier trou du modèle. On voit son Affectation sur quatre écrans et on peut en sortir
+(« Je ne suis plus dessus »), mais **rien ne permet d'en prendre une**.
+
+Puisque les Réglages ne s'en occupent pas, ça se fait là où l'info s'affiche déjà.
+
+- [ ] **L'état vide** du bandeau : quand on n'est sur rien, il propose de choisir
+- [ ] **Le bandeau est cliquable** : un tap ouvre la liste des Affectations actives, on en
+      choisit une ou plusieurs. La date de début est le jour même
+- [ ] Sur **iOS « Aujourd'hui »** et sur le **bandeau du Board web**
+- [ ] Gérer le cas de **plusieurs Affectations** simultanées, que la maquette iOS ne montre pas
+- [ ] **Débloque BRU-28.**
+
 ## Corrections mineures, toujours ouvertes
 
 - [ ] Réglages iOS : désactiver le dernier « Retirer » quand on tomberait sous trois Créneaux
-- [ ] iOS « Aujourd'hui » : le cas de **plusieurs Affectations** simultanées
 - [ ] Renommer l'écran web « Terminé » en **« Fait »**

@@ -310,9 +310,10 @@ C'est tout ce que « suivi » veut dire. Pas de compteur de jours, pas de cumul 
 **4. Récurrences** — la liste des règles et leur édition. Une règle : un titre, un Assigné, une
 fréquence, un nombre d'occurrences, et les Engagements échelonnés.
 
-**5. Réglages** — les heures de Relance (minimum trois) ; la section **Affectations** (la liste :
-ajout en une ligne, désactivation, jamais de suppression) ; la section **Qui est sur quoi**
-(mettre un Membre sur une Affectation, l'en sortir) ; la déconnexion. **Rien d'autre.**
+**5. Réglages** — les heures de Relance (minimum trois) ; la section **Affectations**, qui gère
+uniquement **la liste** de ce à quoi on peut travailler (ajout en une ligne, désactivation,
+jamais de suppression) ; la déconnexion. **Rien d'autre** — et surtout pas qui est sur quoi :
+ça se voit sur le Daily et le Board, et ça se change là où ça se voit.
 
 ## 10. Les écrans — iOS
 

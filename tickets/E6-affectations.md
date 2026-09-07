@@ -28,10 +28,10 @@ Ce second mot n'apparaît **jamais** dans l'interface — elle dit simplement «
 - [ ] L'historique est conservé — c'est lui qui répond à « hier j'étais sur MONKA »
 - [ ] Ni Engagement, ni Statut, ni Rang, ni Report sur une Affectation
 
-## BRU-28 — Affichage des Affectations · **bloqué par BRU-36**
+## BRU-28 — Affichage des Affectations · **bloqué par BRU-40**
 
-Les Réglages web existent, mais leur section « Affectations » gère en réalité les **Clients**.
-Il n'y a toujours nulle part où *poser* une Affectation.
+On voit son Affectation partout et on peut en sortir, mais rien ne permet d'en prendre une.
+Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se voit.
 
 - [ ] **iOS « Aujourd'hui »** : épinglées en tête, une ligne par Client, à la couleur du Client,
       libellées `MONKA · depuis le 3 sept.`, avec le bouton « Je ne suis plus dessus ».
@@ -39,8 +39,8 @@ Il n'y a toujours nulle part où *poser* une Affectation.
 - [ ] **Board web** : bandeau une ligne, `Antoine → MONKA · Stan → AFP, Interne · Victor → Coup de Pâtes`
 - [ ] **Daily** : les Affectations du jour, et celles de la veille dans le bloc Hier
 - [ ] **Fait** : l'Affectation de la semaine au-dessus des Tâches de chacun
-- [ ] **Réglages web** : deux sections — **Affectations** (la liste) et **Qui est sur quoi**
-      (mettre un Membre sur une Affectation, l'en sortir). La seconde n'existe nulle part aujourd'hui
+- [ ] **Prendre une Affectation** se fait en cliquant le bandeau, sur iOS comme sur le web —
+      pas dans les Réglages, qui ne gèrent que la liste (BRU-40)
 
 ## BRU-29 — La relance des Affectations qui traînent
 
