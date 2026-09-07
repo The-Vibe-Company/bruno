@@ -1,80 +1,52 @@
-# E9 — Design
+# E9 — Design · **terminé**
 
-État au **7 septembre**, après la passe light mode. Voir [REVIEW-v2.md](../REVIEW-v2.md).
+État au **7 septembre**, après la v3. **Plus aucun ticket de développement n'attend une maquette.**
+Les quatre fichiers sont à parité : `Bruno Web v2`, `Bruno Web v2 - Light`, `Bruno iOS v2`,
+`Bruno iOS v2 - Light`.
 
-## ✅ BRU-35 — Écran Récurrences web · **livré**
+## ✅ BRU-37 — Le formulaire du droit d'entrée Sur le feu · **livré**
 
-Présent dans `Bruno Web v2 - Light`. Liste des 4 règles, formulaire complet : Titre, Assigné
-marqué `obligatoire`, Fréquence, Nombre d'occurrences avec la mention `n/N automatique`, et les
-Engagements échelonnés (1/3 lundi · 2/3 mercredi · 3/3 vendredi). Conforme aux règles 18 à 21.
-**Débloque BRU-32.**
+Présent sur les **quatre** fichiers. Deux champs et deux seulement : `Assigné` pré-rempli
+« A Antoine · moi », `Engagement` pré-rempli « lundi 7 septembre · aujourd'hui ». Boutons
+`Passer Sur le feu` et `Annuler`. Le web ajoute un état d'annulation explicite —
+*« Passage annulé — Refaire le pitch deck reste à trier »* avec `Réessayer`.
 
-## BRU-36 — Écran Réglages web · **livré**
+L'invariant 2 est enfin matérialisé à l'écran. **Débloque BRU-13.**
 
-Présent dans `Bruno Web v2 - Light`. Créneaux + la section **Affectations**, qui est exactement
-ce qu'elle doit être : **la liste de ce à quoi on peut travailler**, avec Désactiver / Réactiver
-et « + Ajouter une Affectation ». Rien à changer.
+## ✅ BRU-41 — Le détail d'une Tâche sur le web, et sa feuille de Report · **livré**
 
-Tranché le 7 septembre : les Réglages ne montrent **pas** qui est sur quoi — ça se voit sur le
-Daily et sur le Board, et ça se change là où ça se voit (BRU-40).
+Panneau latéral, sans quitter le Board. En-tête `Sur le feu · À faire` et `Supprimer` en
+secondaire. Titre, `À faire · reporté 3×`, puis Assigné, Aidants, Engagement, Statut, Reports.
+Les Notes avec la transcription brute en italique. Actions `Terminé` · `Reporter` · `Abandonner`.
 
+La feuille de Report web reprend fidèlement l'iOS : `Pourquoi ?` avec les trois choix rapides et
+la saisie libre, `demain` pré-sélectionné, `Abandonner cette Tâche` sous le bouton principal.
 
-## BRU-37 — Le formulaire du droit d'entrée Sur le feu · **toujours manquant · prioritaire**
+## ✅ BRU-34 — Widget d'écran d'accueil iOS · **livré**
 
-Absent des quatre fichiers, clair comme sombre. Le bouton « Sur le feu » d'une carte À trier
-continue de créer la Tâche en un tap, sans Assigné ni Engagement — il contourne l'invariant 2,
-le seul verrou dur de Bruno. **Bloque BRU-13, sur le chemin critique.**
+Deux tailles sur l'écran d'accueil — la petite `Bruno · Capturer`, la moyenne
+`Capturer une idée · 3 engagements aujourd'hui · 1 à trier`. Et les **trois états** :
+*Repos*, *Enregistrement* (appui maintenu, « J'écoute », chrono, « Relâcher pour envoyer »),
+*Envoyé* (2 s puis retour au repos). **Débloque BRU-10.**
 
-- [ ] Feuille modale iOS : Assigné et Engagement, pré-remplis « moi » + « aujourd'hui »
-- [ ] Équivalent web, au drop dans le kanban **et** au clic sur le bouton
-- [ ] L'état d'annulation
+## ✅ BRU-40 — Le bandeau Affectation devient interactif · **livré**
 
-## BRU-34 — Widget écran d'accueil iOS · **toujours manquant**
+État vide, sélecteur et cas multiple, sur les quatre fichiers. Le sélecteur dit explicitement
+**« Une ou plusieurs · à partir d'aujourd'hui »**, ce qui lève l'ambiguïté qu'on avait laissée.
+L'écran « plusieurs en même temps » montre MONKA et Interne côte à côte, chacun avec
+« Je ne suis plus dessus », plus « + Ajouter une Affectation ».
 
-Absent en clair comme en sombre. Meilleur levier du pilier 1. **Bloque BRU-10.**
+Bergamote, désactivée, n'apparaît pas dans le sélecteur : la règle de désactivation tient
+jusque dans les maquettes. **Débloque BRU-28.**
 
-- [ ] Le widget dans ses tailles, l'état d'enregistrement, la confirmation muette
-- [ ] Dans les deux thèmes (BRU-38)
+## ✅ Les trois décisions du 7 septembre sont répercutées
 
-## ✅ BRU-39 — Régressions du Board light · **annulé, c'était voulu**
+- Les **rangs numérotés** ont disparu du Board sombre.
+- **`la précédente n'est pas faite`** est absent des quatre fichiers.
+- L'écran web s'appelle désormais **« Fait »**.
 
-Les deux différences repérées entre le Board sombre et le Board clair ont été confirmées
-comme des **décisions**, pas des oublis, le 7 septembre :
+## Un détail à trancher au développement, pas au design
 
-- **Les rangs numérotés sont supprimés partout.** La priorité, c'est le haut de la pile ; un
-  chiffre en plus ne dit rien que la position ne dise déjà. Le mode clair avait raison, le
-  mode sombre est à aligner.
-- **`la précédente n'est pas faite` est abandonné.** Les deux occurrences se retrouvent côte
-  à côte dans la liste, et ça suffit à le voir.
-
-## BRU-41 — Le détail d'une Tâche sur le web, et sa feuille de Report
-
-Les deux existent sur iOS et **aucune des deux n'existe sur le web**. Or le web est l'endroit
-où on trie et où on pilote : cliquer une carte du Board ne mène nulle part aujourd'hui.
-
-- [ ] **Le détail** : titre, `Statut · reporté N×`, puis Assigné, Aidants, Engagement, Statut,
-      Reports. Les Notes avec la **transcription brute en italique** sous un filet
-- [ ] Actions : `Terminé` en primaire, `Reporter` et `Abandonner`, `Supprimer` en secondaire
-- [ ] Panneau latéral ou modale — au choix, mais sans quitter le Board : on trie en rafale
-- [ ] **La feuille de Report** : raison obligatoire (trois choix rapides + saisie libre),
-      nouvel Engagement avec `demain` pré-sélectionné, et `Abandonner cette Tâche` en dessous.
-      Reprendre exactement la version iOS, qui est bonne
-
-## BRU-40 — Le bandeau Affectation devient interactif
-
-C'est le dernier trou du modèle. On voit son Affectation sur quatre écrans et on peut en sortir
-(« Je ne suis plus dessus »), mais **rien ne permet d'en prendre une**.
-
-Puisque les Réglages ne s'en occupent pas, ça se fait là où l'info s'affiche déjà.
-
-- [ ] **L'état vide** du bandeau : quand on n'est sur rien, il propose de choisir
-- [ ] **Le bandeau est cliquable** : un tap ouvre la liste des Affectations actives, on en
-      choisit une ou plusieurs. La date de début est le jour même
-- [ ] Sur **iOS « Aujourd'hui »** et sur le **bandeau du Board web**
-- [ ] Gérer le cas de **plusieurs Affectations** simultanées, que la maquette iOS ne montre pas
-- [ ] **Débloque BRU-28.**
-
-## Corrections mineures, toujours ouvertes
-
-- [ ] Réglages iOS : désactiver le dernier « Retirer » quand on tomberait sous trois Créneaux
-- [ ] Renommer l'écran web « Terminé » en **« Fait »**
+Le libellé de l'état vide diffère entre les plateformes : le web dit **« Aucune Affectation »**,
+l'iOS dit **« Sur rien aujourd'hui »**. Choisir l'un des deux et l'appliquer partout — ça ne vaut
+pas un aller-retour avec le design.

@@ -31,13 +31,12 @@ si le planning dérape.
 | **E6** | [Affectations et Clients](./E6-affectations.md) | BRU-26 → 29 | Invariant 6 |
 | **E7** | [Daily et Fait](./E7-daily-fait.md) | BRU-30 → 31 | Le rituel |
 | **E8** | [Récurrence](./E8-recurrence.md) | BRU-32 → 33 | Les séries |
-| **E9** | [Design](./E9-design.md) | BRU-34 → 37, 39 | État des maquettes |
+| **E9** | [Design](./E9-design.md) | BRU-34 → 37, 39 → 41 | ✅ terminé |
 
 ## Bloqué par le design
 
-Trois tickets de dev attendent encore des maquettes (voir [E9](./E9-design.md)) :
-**BRU-13** ← BRU-37 (droit d'entrée), **BRU-10** ← BRU-34 (widget), **BRU-28** ← BRU-36
-(poser une Affectation). **BRU-13 est sur le chemin critique** — c'est la maquette à obtenir
-en premier.
+**Plus rien.** Les quatre maquettes attendues ont été livrées le 7 septembre (voir
+[E9](./E9-design.md)) : le droit d'entrée, le détail web et sa feuille de Report, le widget iOS,
+et le bandeau Affectation interactif. **BRU-10, BRU-13 et BRU-28 sont débloqués.**
 
-**BRU-32 est débloqué** : la maquette Récurrences a été livrée le 7 septembre.
+Le chemin est libre de bout en bout.
