@@ -52,7 +52,8 @@ def parse():
             if not m:
                 continue
             tid, rest = m.group(1), m.group(2)
-            title = rest.split(" · ")[0].strip().rstrip("*").strip()
+            title = rest.split(" · ")[0].strip()
+            title = re.sub(r"\s*\*+\(.*?\)\**\s*$", "", title).strip().strip("*").strip()
             blocked = re.findall(r"bloqu[ée] par (BRU-\d+)", head)
             tickets.append({
                 "id": tid, "title": f"{tid} — {title}", "epic": epic,
@@ -94,6 +95,14 @@ def cmd_apply(team_key, tickets):
         sys.exit(f"Équipe {team_key} introuvable. Lance `teams` pour la liste.")
     tid = team["id"]
 
+    # sans stateId explicite, une issue créée par l'API atterrit dans Triage
+    # et reste invisible dans la vue projet : on vise l'état backlog de l'équipe.
+    states = gql("""query($t:String!){ team(id:$t){ states { nodes { id type position } } } }""",
+                 {"t": tid})["team"]["states"]["nodes"]
+    backlog = sorted([s for s in states if s["type"] == "backlog"],
+                     key=lambda s: s["position"])
+    state_id = backlog[0]["id"] if backlog else None
+
     proj = gql("""mutation($n:String!,$t:[String!]!){
         projectCreate(input:{name:$n, teamIds:$t}){ project { id url } } }""",
         {"n": "Bruno V1", "t": [tid]})["projectCreate"]["project"]
@@ -114,6 +123,7 @@ def cmd_apply(team_key, tickets):
             {"i": {"teamId": tid, "projectId": proj["id"], "title": t["title"],
                    "description": f"**{t['epic']}**\n\n{t['body']}",
                    "labelIds": [labels[t["epic"]]],
+                   **({"stateId": state_id} if state_id else {}),
                    **({"priority": 1} if t["priority"] == 1 else {})}})
         iss = r["issueCreate"]["issue"]
         created[t["id"]] = iss["id"]
