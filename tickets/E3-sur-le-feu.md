@@ -10,7 +10,8 @@
 
 - [ ] La position dans la liste **est** la priorité. Aucune échelle, aucun niveau,
       **aucun drapeau « urgent »**
-- [ ] Le numéro n'est affiché **que dans la colonne À faire** de Sur le feu
+- [ ] **Aucun numéro affiché nulle part.** Ce qu'on fait en premier est en haut de la pile ;
+      un chiffre en plus ne dit rien que la position ne dise déjà
 - [ ] Rang propre à chaque liste — le rang 1 d'À faire n'a rien à voir avec celui d'À venir
 - [ ] Réordonnancement par glisser, **web uniquement**
 

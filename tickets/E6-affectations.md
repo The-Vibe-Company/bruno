@@ -1,19 +1,26 @@
-# E6 — Affectations et Clients · **Invariant 6**
+# E6 — Affectations · **Invariant 6**
 
-> Une Tâche a une fin, une Affectation a une durée. On ne la coche jamais.
+> Une Tâche a une fin, être sur une Affectation a une durée. On ne la coche jamais.
+>
+> **Vocabulaire tranché le 7 septembre** : le mot est `Affectation`, pas `Client` — `Interne`
+> n'est pas un client. Un seul mot dans l'interface ; dans le schéma, deux tables.
 
-## BRU-26 — Les Clients
+## BRU-26 — La liste des Affectations
+
+Table `affectation` : ce à quoi on peut travailler. MONKA, AFP, Coup de Pâtes, Interne, Bergamote.
 
 - [ ] Liste ouverte, ajout en une ligne depuis les Réglages web
-- [ ] `Interne` fait partie de la liste — c'est le Client des journées non facturables
-- [ ] On **désactive**, on ne supprime **jamais** : l'historique des Affectations ne doit pas
-      se trouer
-- [ ] Une couleur par Client, utilisée sur les bandeaux d'Affectation
-- [ ] **Un Client ne se pose jamais sur une Tâche.** Aucun champ Client sur `tache`
+- [ ] `Interne` en fait partie — c'est pour ça que le mot n'est pas « Client »
+- [ ] On **désactive**, on ne supprime **jamais** : l'historique ne doit pas se trouer
+- [ ] Une couleur par Affectation, utilisée sur les bandeaux
+- [ ] **Une Affectation ne se pose jamais sur une Tâche.** Aucune colonne de ce genre sur `tache`
 
-## BRU-27 — Les Affectations
+## BRU-27 — Qui est sur quoi
 
-- [ ] Un Membre + un Client + une date de début, date de fin nullable
+Table `affectation_membre` : la période pendant laquelle quelqu'un est sur une Affectation.
+Ce second mot n'apparaît **jamais** dans l'interface — elle dit simplement « Affectation : MONKA ».
+
+- [ ] Un Membre + une Affectation + une date de début, date de fin nullable
 - [ ] **Plusieurs simultanées** sont normales, sans limite
 - [ ] **Continues** : pas de jours sélectionnés, pas de demi-journées, pas de pourcentages
 - [ ] **Aucune case à cocher, jamais** *(invariant 6)*. Unique action : « je ne suis plus dessus »,
@@ -32,7 +39,8 @@ Il n'y a toujours nulle part où *poser* une Affectation.
 - [ ] **Board web** : bandeau une ligne, `Antoine → MONKA · Stan → AFP, Interne · Victor → Coup de Pâtes`
 - [ ] **Daily** : les Affectations du jour, et celles de la veille dans le bloc Hier
 - [ ] **Fait** : l'Affectation de la semaine au-dessus des Tâches de chacun
-- [ ] **Réglages web** : l'endroit où on en **pose** une. Il n'existe nulle part aujourd'hui
+- [ ] **Réglages web** : deux sections — **Affectations** (la liste) et **Qui est sur quoi**
+      (mettre un Membre sur une Affectation, l'en sortir). La seconde n'existe nulle part aujourd'hui
 
 ## BRU-29 — La relance des Affectations qui traînent
 

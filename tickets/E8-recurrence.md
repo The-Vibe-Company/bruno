@@ -20,7 +20,7 @@ Configuration **depuis le web uniquement** *(règle 18)*.
       n'ont **plus aucun lien** avec la règle : les Reporter, les Abandonner ou les éditer
       n'affecte ni la règle ni les occurrences futures *(règle 20)*
 - [ ] Génération **au premier Créneau du jour concerné**, pour apparaître dans le Point du matin
-- [ ] Si l'occurrence précédente n'est pas faite : **on génère quand même**, et la nouvelle Tâche
-      affiche `la précédente n'est pas faite` *(règle 22)*. L'empilement est une information
+- [ ] Si l'occurrence précédente n'est pas faite : **on génère quand même**, et **on ne signale
+      rien** *(règle 22)*. Les deux Tâches se retrouvent côte à côte dans la liste, ça suffit
 - [ ] Les Tâches générées entrent Sur le feu — donc la règle doit satisfaire le droit d'entrée
       à la génération, Assigné et Engagement compris

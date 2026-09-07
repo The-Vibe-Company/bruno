@@ -114,8 +114,8 @@ Idées n'a pas de Statut. Terminé n'est pas un Statut — c'est un état termin
 ### Le Rang
 
 La position dans la liste **est** la priorité. Il n'existe aucune échelle, aucun niveau, aucun
-drapeau « urgent ». Le rang s'affiche comme un **numéro visible uniquement dans la colonne
-À faire** de Sur le feu — la seule liste où « quoi ensuite » veut dire quelque chose. Partout
+drapeau « urgent », et **aucun numéro affiché** : ce qu'on fait en premier est en haut de la
+pile, et tout le monde sait lire une pile. Partout
 ailleurs, c'est un ordre sans chiffre.
 
 ### Les personnes sur une Tâche
@@ -151,20 +151,21 @@ Trois issues, toutes posées à la main :
 
 ### Les Affectations
 
-Une **Affectation** = un Membre travaille pour un **Client**, à partir d'une date, jusqu'à ce
-qu'il en sorte.
+Une **Affectation**, c'est ce à quoi un Membre travaille : un client comme MONKA, ou un sujet
+interne. Le mot est plus large que « client » — `Interne` en est une. Un Membre est **sur** une
+Affectation à partir d'une date, jusqu'à ce qu'il en sorte.
 
-> **Invariant 6 — Une Affectation n'est pas une Tâche.** Une Tâche a une fin, une Affectation a
-> une durée. **On ne la coche jamais.** Elle n'a ni Engagement, ni Statut, ni Rang, ni Report.
+> **Invariant 6 — Être sur une Affectation n'est pas une Tâche.** Une Tâche a une fin, être
+> sur une Affectation a une durée. **On ne la coche jamais.** Ni Engagement, ni Statut, ni
+> Rang, ni Report.
 
 On la pose une fois, elle tient. C'est précisément ce qui supprime le passer-en-fait-et-recréer.
 Plusieurs Affectations simultanées sont normales, sans limite. Elles sont **continues** — pas de
 jours sélectionnés, pas de demi-journées, pas de pourcentages.
 
-Un **Client** ne se pose **jamais** sur une Tâche, uniquement sur une Affectation. La liste des
-Clients est ouverte, modifiable dans les Réglages, et on ne supprime jamais un Client (on le
-désactive, pour ne pas trouer l'historique). `Interne` en fait partie : c'est le Client des
-journées non facturables.
+Une Affectation ne se pose **jamais** sur une Tâche. La liste est ouverte, modifiable dans les
+Réglages, et on ne supprime jamais une Affectation — on la **désactive**, pour ne pas trouer
+l'historique.
 
 ## 6. Les règles métier
 
@@ -224,8 +225,8 @@ journées non facturables.
     **plus aucun lien** avec la règle : les Reporter, les Abandonner ou les éditer n'affecte ni la
     règle ni les occurrences futures. C'est ce qui évite l'enfer classique de la récurrence.
 21. Une règle porte un **Assigné obligatoire** (conséquence de l'invariant 2).
-22. Si l'occurrence précédente n'est pas faite, **on génère quand même**, et la nouvelle Tâche
-    affiche un discret *« la précédente n'est pas faite »*. L'empilement est une information.
+22. Si l'occurrence précédente n'est pas faite, **on génère quand même**, sans rien signaler :
+    les deux Tâches se retrouvent dans la liste, et ça suffit à le voir.
 23. La génération a lieu **au premier Créneau du jour concerné**, pour apparaître dans le Point
     du matin.
 
@@ -286,7 +287,7 @@ Le web est le lieu du **tri, du pilotage et de la configuration**.
 **1. Board** — l'écran principal.
 Bandeau une ligne en haut : les Affectations en cours de chacun (`Antoine → MONKA, AFP`).
 En dessous, sur ~70 % de la largeur : **Sur le feu** en kanban à trois colonnes —
-**À faire** (rangs numérotés) · **En cours** · **Bloqué**. Sur les ~30 % restants, une colonne
+**À faire** · **En cours** · **Bloqué**. Sur les ~30 % restants, une colonne
 latérale contenant **À trier** (déplié, chaque carte portant sa transcription brute et ses trois
 boutons de destination), puis **À venir** et **Idées** repliés.
 Glisser entre colonnes change le Statut. Glisser depuis la latérale vers le kanban change le
@@ -309,9 +310,9 @@ C'est tout ce que « suivi » veut dire. Pas de compteur de jours, pas de cumul 
 **4. Récurrences** — la liste des règles et leur édition. Une règle : un titre, un Assigné, une
 fréquence, un nombre d'occurrences, et les Engagements échelonnés.
 
-**5. Réglages** — les heures de Relance (minimum trois), la liste des Clients (ajout en une ligne,
-désactivation, jamais de suppression), **la gestion des Affectations** (en poser une, la fermer),
-la déconnexion. **Rien d'autre.**
+**5. Réglages** — les heures de Relance (minimum trois) ; la section **Affectations** (la liste :
+ajout en une ligne, désactivation, jamais de suppression) ; la section **Qui est sur quoi**
+(mettre un Membre sur une Affectation, l'en sortir) ; la déconnexion. **Rien d'autre.**
 
 ## 10. Les écrans — iOS
 

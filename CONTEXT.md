@@ -94,8 +94,8 @@ _Avoid_: Description, commentaire, détails
 **Rang**:
 La position d'une Tâche dans sa liste, et la seule expression de sa priorité. Le rang 1
 est ce qu'on fait en premier. Il se change en remontant la Tâche, et il n'existe aucune
-échelle de priorité en dehors de lui. Il ne s'affiche comme un numéro que dans la colonne
-À faire de Sur le feu — la seule liste où « quoi ensuite » veut dire quelque chose.
+échelle de priorité en dehors de lui, et **aucun numéro affiché** : la priorité, c'est la
+position dans la pile, et tout le monde sait lire une pile.
 _Avoid_: Priorité, P0/P1, importance, poids, urgent
 
 **Statut**:
@@ -120,21 +120,21 @@ ratée, une transcription incompréhensible. Rien à voir avec Abandonné, qui e
 décision. Supprimer n'enregistre rien : la Tâche n'a jamais eu lieu.
 _Avoid_: Archiver, corbeille, effacer
 
-### Les clients
-
-**Client**:
-Une entreprise pour laquelle The Vibe Company travaille. Liste ouverte, modifiable dans
-les Réglages, jamais supprimée (seulement désactivée, pour ne pas trouer l'historique).
-`Interne` en fait partie : c'est le Client des journées non facturables. Un Client ne se
-pose jamais sur une Tâche — uniquement sur une Affectation.
-_Avoid_: Compte, projet, dossier, mission
+### Les affectations
 
 **Affectation**:
-Le fait qu'un Membre travaille pour un Client à partir d'une date, jusqu'à ce qu'il en
-sorte. Ce n'est pas une Tâche : une Tâche a une fin, une Affectation a une durée. On ne
-la termine pas chaque soir pour la recréer le lendemain — on la pose une fois et elle
-tient. Elle n'a ni Engagement, ni Statut, ni Rang, ni Report, et **on ne la coche jamais**.
-Plusieurs Affectations simultanées sont normales.
+Ce à quoi un Membre travaille : un client comme MONKA ou Coup de Pâtes, ou un sujet interne.
+Le mot est volontairement plus large que « client » — `Interne` en est une. La liste se gère
+dans les Réglages ; on **désactive** une Affectation, on ne la supprime jamais, pour ne pas
+trouer l'historique. Une Affectation ne se pose jamais sur une Tâche.
+_Avoid_: Client, compte, dossier, mission, projet
+
+**Être sur une Affectation**:
+Un Membre est sur une ou plusieurs Affectations, à partir d'une date, jusqu'à ce qu'il en
+sorte. Ce n'est pas une Tâche : une Tâche a une fin, être sur une Affectation a une durée.
+On ne la termine pas chaque soir pour la recréer le lendemain, et **on ne la coche jamais** :
+l'unique action est « je ne suis plus dessus ». L'interface n'a jamais besoin d'un second
+mot — elle dit simplement « Affectation : MONKA ».
 _Avoid_: Focus, mission, allocation, timesheet, tâche récurrente
 
 ### Le temps et la relance

@@ -9,21 +9,19 @@ marqué `obligatoire`, Fréquence, Nombre d'occurrences avec la mention `n/N aut
 Engagements échelonnés (1/3 lundi · 2/3 mercredi · 3/3 vendredi). Conforme aux règles 18 à 21.
 **Débloque BRU-32.**
 
-## BRU-36 — Écran Réglages web · **à reprendre**
+## BRU-36 — Écran Réglages web · **à compléter**
 
-L'écran existe et les Créneaux sont bons. Mais il y a une **confusion de vocabulaire à
-corriger**, et elle a une conséquence réelle.
+L'écran existe, les Créneaux sont bons, et la section **« Affectations »** garde son nom — le
+mot a été tranché le 7 septembre, `Client` était trop étroit puisque `Interne` n'en est pas un.
 
-La section est intitulée **« Affectations »** et contient MONKA, AFP, Coup de Pâtes, Interne,
-Bergamote, avec *Désactiver* / *Réactiver* / *+ Ajouter une Affectation*. **Ce sont des
-Clients, pas des Affectations.** Désactiver-sans-jamais-supprimer est exactement la règle des
-Clients (BRU-26).
+Il manque une seconde section. La liste actuelle dit *ce à quoi on peut travailler* ; rien ne
+dit *qui est sur quoi*.
 
-- [ ] Renommer la section en **« Clients »** — le contenu est déjà le bon
-- [ ] **Ajouter une vraie section « Affectations »** : qui est sur quel Client depuis quand,
-      en poser une (Membre + Client + date de début), en fermer une
-- [ ] Sans ça, **il n'existe toujours aucun endroit pour poser une Affectation**, alors qu'elle
-      s'affiche sur quatre écrans. **BRU-28 reste bloqué.**
+- [ ] Garder la section **« Affectations »** telle quelle : la liste, avec Désactiver / Réactiver
+- [ ] Ajouter une section **« Qui est sur quoi »** : mettre un Membre sur une Affectation à
+      partir d'une date, l'en sortir, voir les périodes en cours
+- [ ] Sans elle, **il n'existe aucun endroit pour dire qu'Antoine est sur MONKA**, alors que
+      l'info s'affiche sur quatre écrans. **BRU-28 reste bloqué.**
 
 ## BRU-37 — Le formulaire du droit d'entrée Sur le feu · **toujours manquant · prioritaire**
 
@@ -42,15 +40,16 @@ Absent en clair comme en sombre. Meilleur levier du pilier 1. **Bloque BRU-10.**
 - [ ] Le widget dans ses tailles, l'état d'enregistrement, la confirmation muette
 - [ ] Dans les deux thèmes (BRU-38)
 
-## BRU-39 — Régressions du Board light · **à corriger**
+## ✅ BRU-39 — Régressions du Board light · **annulé, c'était voulu**
 
-Deux choses présentes en sombre ont disparu de `Bruno Web v2 - Light`, vérifiées ligne à ligne.
+Les deux différences repérées entre le Board sombre et le Board clair ont été confirmées
+comme des **décisions**, pas des oublis, le 7 septembre :
 
-- [ ] **Les rangs numérotés dans « À faire » ont sauté.** En sombre : `1 Relancer MONKA ·
-      2 Préparer le mail · 3 Cadrage atelier · 4 Post LinkedIn 2/3 · 5 Chiffrage refonte`.
-      En clair, aucun numéro. C'est la seule expression de la priorité dans Bruno (BRU-16)
-- [ ] **`la précédente n'est pas faite` a disparu** de la carte *Post LinkedIn 2/3*. C'est
-      la règle 22, et le seul signal qu'une occurrence de Récurrence s'empile
+- **Les rangs numérotés sont supprimés partout.** La priorité, c'est le haut de la pile ; un
+  chiffre en plus ne dit rien que la position ne dise déjà. Le mode clair avait raison, le
+  mode sombre est à aligner.
+- **`la précédente n'est pas faite` est abandonné.** Les deux occurrences se retrouvent côte
+  à côte dans la liste, et ça suffit à le voir.
 
 ## Corrections mineures, toujours ouvertes
 
