@@ -1,0 +1,47 @@
+CONTEXT.md
+  s_7ec6903985e0db::t_f192c5f7ab0436 1-200
+PRD.md
+  s_7ec6903985e0db::t_7d785e3e19680f 1-391
+REVIEW-DESIGN.md
+  s_7ec6903985e0db::t_5d2af27b1d1267 1-65
+REVIEW-v2.md
+  s_7ec6903985e0db::t_0a071acc0a2cd4 1-75
+tickets/E0-fondations.md
+  s_7ec6903985e0db::t_6fa95b226ed99f 1-51
+tickets/E1-capture.md
+  s_7ec6903985e0db::t_0c09d2c5187ecd 1-54
+tickets/E2-buckets-tri.md
+  s_7ec6903985e0db::t_f5423a50598526 1-44
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_4c4af22387ae0f 1-45
+tickets/E4-engagement-report.md
+  s_7ec6903985e0db::t_eeefd6aa3c90a4 1-31
+tickets/E5-relances.md
+  s_7ec6903985e0db::t_40b303873b82f4 1-44
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_5a2884a0b1566f 1-38
+tickets/E7-daily-fait.md
+  s_7ec6903985e0db::t_aa68f8b7de210f 1-28
+tickets/E8-recurrence.md
+  s_7ec6903985e0db::t_62cdb13f1e0093 1-24
+tickets/E9-design.md
+  s_7ec6903985e0db::t_679c725218307b 1-38
+tickets/README.md
+  s_7ec6903985e0db::t_237dad61cc0c81 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "f378da0a2725269948930cc664f20b33c4a9482d",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
