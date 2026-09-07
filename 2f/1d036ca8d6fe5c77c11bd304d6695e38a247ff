@@ -1,0 +1,23 @@
+tickets/E9-design.md
+  s_7ec6903985e0db::t_aab84c9b9172fe 12,14-16,18-19,50-63
+PRD.md
+  s_7ec6903985e0db::t_aab84c9b9172fe 313-316
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_aab84c9b9172fe 31,33-34,42-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "2f1d036ca8d6fe5c77c11bd304d6695e38a247ff",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
