@@ -1,0 +1,37 @@
+web/src/app/fait/page.tsx
+  s_7ec6903985e0db::t_bf0259e57f4d21 1-54
+web/src/fait/Semaine.tsx
+  s_7ec6903985e0db::t_bf0259e57f4d21 1-56
+web/src/lib/dates.ts
+  s_7ec6903985e0db::t_bf0259e57f4d21 51-61
+tickets/E7-daily-fait.md
+  s_7ec6903985e0db::t_49caec5f83deaa 22-25,27
+web/src/api/affectations.test.ts
+  s_7ec6903985e0db::t_bf0259e57f4d21 6,36-40
+  s_7ec6903985e0db::t_aa709dfcec8c48 41
+web/src/api/affectations.ts
+  s_7ec6903985e0db::t_bf0259e57f4d21 67-72
+web/src/app/Coquille.tsx
+  s_7ec6903985e0db::t_bf0259e57f4d21 5,9
+web/src/lib/dates.test.ts
+  s_7ec6903985e0db::t_bf0259e57f4d21 2,45-53
+  s_7ec6903985e0db::t_e126e5e31413a5 54-55
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_49caec5f83deaa 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "53690359a5574c7667ab1fb3e477f64079cf73de",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
