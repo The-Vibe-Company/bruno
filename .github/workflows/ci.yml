@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifier:
+    name: Vérifications
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+
+    # Un vrai Postgres : les invariants de Bruno vivent dans la base (ADR 0002),
+    # les vérifier sans base ne prouverait rien.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: bruno
+          POSTGRES_PASSWORD: bruno
+          POSTGRES_DB: bruno
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U bruno -d bruno"
+          --health-interval 2s --health-timeout 3s --health-retries 15
+
+    env:
+      DATABASE_URL: postgres://bruno:bruno@localhost:5432/bruno
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Types
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Migrations
+        run: pnpm db:migrate
+
+      # Le cœur de la CI : chaque règle du PRD doit être refusée par Postgres,
+      # pas seulement par l'interface. Le script échoue si une seule ne mord plus.
+      - name: Invariants
+        run: pnpm check:invariants
+
+      - name: Construction
+        run: pnpm exec next build
