@@ -1,0 +1,33 @@
+web/src/board/Affectations.tsx
+  s_7ec6903985e0db::t_aadaa19a9078bd 7
+  s_7ec6903985e0db::t_687743e4b0e500 6,92-94
+web/src/relances/composer.ts
+  s_7ec6903985e0db::t_aadaa19a9078bd 11,16-17,29-30,33
+  s_7ec6903985e0db::t_96813bd1a08092 45,53,62,68
+web/src/relances/regles.ts
+  s_7ec6903985e0db::t_aadaa19a9078bd 1-11
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_db7e71ec45c91b 50,52-57
+web/src/lib/dates.ts
+  s_7ec6903985e0db::t_90b5ecef90d815 9-12,14
+web/src/relances/composer.test.ts
+  s_7ec6903985e0db::t_b23163bdb66e4f 19,24,29-36
+web/src/relances/moteur.ts
+  s_7ec6903985e0db::t_1484898792cd30 10,28,34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "0a945d13e54de764fee25f55b0db92c092d98c79",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
