@@ -3,7 +3,7 @@
  * La liste est ouverte ; on désactive, on ne supprime jamais : l'historique ne doit pas se
  * trouer. Une Affectation ne se pose jamais sur une Tâche.
  */
-import { and, asc, desc, eq, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNull, lte, or, type SQL } from "drizzle-orm";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, membre } from "@/db/schema";
 import { instant } from "@/relances/temps";
@@ -48,18 +48,25 @@ const colonnes = {
   depuis: affectationMembre.debut, jusqu: affectationMembre.fin,
 };
 
-export async function enCours(ctx: Ctx): Promise<AffectationsMembre[]> {
+async function parMembre(ctx: Ctx, quand: SQL | undefined): Promise<AffectationsMembre[]> {
   const membres = await db.select({ id: membre.id, nom: membre.nom }).from(membre)
     .where(and(eq(membre.spaceId, ctx.spaceId), eq(membre.actif, true))).orderBy(asc(membre.createdAt));
   const lignes = await db.select({ ...colonnes, membreId: affectationMembre.membreId }).from(affectationMembre)
     .innerJoin(affectation, eq(affectation.id, affectationMembre.affectationId))
-    .where(and(eq(affectationMembre.spaceId, ctx.spaceId), isNull(affectationMembre.fin)))
+    .where(and(eq(affectationMembre.spaceId, ctx.spaceId), quand))
     .orderBy(asc(affectationMembre.debut));
   return membres.map((m) => ({
     membreId: m.id, nom: m.nom,
     affectations: lignes.filter((l) => l.membreId === m.id).map(({ id, affectationId, nom, couleur, depuis, jusqu }) => ({ id, affectationId, nom, couleur, depuis, jusqu })),
   }));
 }
+
+/** Qui est sur quoi, maintenant. */
+export const enCours = (ctx: Ctx) => parMembre(ctx, isNull(affectationMembre.fin));
+
+/** Qui était sur quoi un jour donné — la veille, pour le Daily ; une semaine, pour Fait. */
+export const auJour = (ctx: Ctx, jour: string) =>
+  parMembre(ctx, and(lte(affectationMembre.debut, jour), or(isNull(affectationMembre.fin), gte(affectationMembre.fin, jour))));
 
 /** Tout, fini compris, du plus récent au plus ancien. C'est lui qui répond à « hier j'étais sur MONKA ». */
 export async function historique(ctx: Ctx, membreId: string): Promise<Sur[]> {

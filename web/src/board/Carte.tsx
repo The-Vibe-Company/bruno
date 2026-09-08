@@ -10,7 +10,7 @@ export type TacheCarte = {
   aidants: { nom: string }[]; notes: string | null; transcriptionBrute: string | null;
 };
 
-const TEINTE: Record<Statut, string> = {
+export const TEINTE: Record<Statut, string> = {
   a_faire: "bg-a-faire-voile border-accent/35",
   en_cours: "bg-en-cours-voile border-en-cours/35",
   bloque: "bg-bloque-voile border-bloque/35",

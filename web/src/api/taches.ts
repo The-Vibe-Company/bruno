@@ -2,7 +2,8 @@
  * Les opérations sur les Tâches. Toute la logique métier vit ici ; les routes ne font que
  * valider l'entrée, appeler ces fonctions et sérialiser la sortie.
  */
-import { and, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
+import { FUSEAU } from "@/relances/temps";
 import { z } from "zod";
 import { db } from "@/db/client";
 import { membre, tache, tacheAidant, report } from "@/db/schema";
@@ -255,6 +256,17 @@ export async function reports(ctx: Ctx, id: string) {
 }
 
 /** Le seuil à partir duquel un Report devient un signal : trois, « reportée 3 fois ou plus ». */
+/**
+ * Les Tâches finies — Terminées et Abandonnées — dont la fin tombe entre `du` et `au`, en jours
+ * de Bruno (fuseau de l'équipe, pas UTC). Le Daily et Fait lisent ici ; rien de neuf n'est écrit.
+ */
+export async function terminees(ctx: { spaceId: string }, du: string, au: string = du) {
+  const jourFin = sql<string>`(${tache.termineLe} at time zone ${FUSEAU})::date::text`;
+  return db.select({ ...getTableColumns(tache), jourFin }).from(tache)
+    .where(and(eq(tache.spaceId, ctx.spaceId), isNotNull(tache.etatTerminal), sql`${jourFin} between ${du} and ${au}`))
+    .orderBy(desc(tache.termineLe));
+}
+
 export const SEUIL_SIGNAL = 3;
 
 /**
