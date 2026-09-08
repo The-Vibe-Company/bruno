@@ -13,9 +13,10 @@ const STATUT: Record<Statut, string> = { a_faire: "À faire", en_cours: "En cour
  * Les trois fins vivent ici : Terminé en primaire, Abandonner à côté, Supprimer à l'écart
  * et derrière une confirmation, parce qu'il efface pour de bon.
  */
-export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer }: {
+export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter }: {
   tache: TacheCarte | null; onFermer: () => void;
   onTerminer: (id: string) => Promise<void>; onAbandonner: (id: string) => Promise<void>; onSupprimer: (id: string) => Promise<void>;
+  onReporter: (t: TacheCarte) => void;
 }) {
   const [occupe, setOccupe] = useState(false);
   const agir = (fn: (id: string) => Promise<void>) => async () => {
@@ -97,7 +98,7 @@ export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer 
               <footer className="flex flex-col gap-2 border-t border-bord-faible px-6 pt-4 pb-6">
                 <button onClick={agir(onTerminer)} disabled={occupe} className="h-[46px] rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Terminé</button>
                 <div className="flex gap-2">
-                  <button disabled title="La feuille de Report arrive avec BRU-21" className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] opacity-50">Reporter</button>
+                  <button onClick={() => onReporter(tache)} disabled={occupe || !tache.engagement} title={tache.engagement ? undefined : "Rien à reporter : cette Tâche n’a pas d’Engagement"} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-50">Reporter</button>
                   <button onClick={agir(onAbandonner)} disabled={occupe} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-60">Abandonner</button>
                 </div>
               </footer>

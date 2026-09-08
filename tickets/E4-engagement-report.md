@@ -19,17 +19,22 @@
       Sur le feu sans Report. Désormais refusé (`422 · seulement par un Report`) ; ailleurs
       qu'Sur le feu, on planifie librement. Testé
 
-## BRU-21 — La feuille de Report
+## BRU-21 — La feuille de Report · **web livré, iOS à venir**
 
-Maquette : `Bruno iOS v2` → écran « Feuille de Report ». Elle est conforme, la suivre telle quelle.
+Maquette : la feuille iOS, reprise telle quelle sur le web (v3). Ouverte depuis « Reporter »
+dans le détail d'une Tâche.
 
-- [ ] **Raison obligatoire** : trois choix rapides (*pas eu le temps* / *bloqué par quelqu'un* /
-      *plus prioritaire*) ou saisie libre. Sans raison, on ne peut pas valider
-- [ ] Nouvel Engagement : `demain` pré-sélectionné, `lundi prochain`, `autre date`
-- [ ] Bouton primaire `Reporter à demain`, et **`Abandonner cette Tâche` juste en dessous**
-- [ ] En-tête rappelant `déjà reporté N×`
-- [ ] L'Engagement ne change **que** par ce chemin *(invariant 4)* — aucune autre écriture
-      sur le champ, API comprise
+- [x] **Raison obligatoire** : trois choix rapides (*pas eu le temps* / *bloqué par quelqu'un* /
+      *plus prioritaire*) qui pré-remplissent la saisie libre. **Le bouton reste inactif sans
+      raison**, vérifié dans le navigateur — et l'API refuse de toute façon (BRU-3)
+- [x] Nouvel Engagement : `demain` pré-sélectionné, `lundi`, `autre date`
+- [x] Bouton primaire `Reporter à demain` (le libellé suit la date choisie : *à lundi*, *au 20
+      sept.*), et **`Abandonner cette Tâche` juste en dessous**
+- [x] En-tête rappelant `déjà reporté N×`
+- [x] L'Engagement ne change **que** par ce chemin *(invariant 4)* — `PATCH` le refuse Sur le
+      feu (BRU-20), et le Report écrit sa trace : raison, ancien → nouvel Engagement, auteur.
+      Vérifié en base
+- [ ] ⏳ La feuille iOS — avec BRU-19
 
 ## BRU-22 — Le compteur de Reports
 

@@ -2,11 +2,12 @@
 import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { abandonner, appliquer, deplacerBucket, supprimer, terminer } from "./api";
+import { abandonner, appliquer, deplacerBucket, reporter, supprimer, terminer } from "./api";
 import { Detail } from "./Detail";
 import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
 import { EnAttente, type TacheAttente } from "./EnAttente";
 import { PourQuand, type DemandeAVenir } from "./PourQuand";
+import { Report, type DemandeReport } from "./Report";
 import { Carte, type TacheCarte } from "./Carte";
 import { Colonne } from "./Colonne";
 import { colonneDe, colonneVisee, deplacer, type Colonnes, type Statut } from "./deplacement";
@@ -41,6 +42,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   const [ouverteId, setOuverteId] = useState<string | null>(null);
   const [demande, setDemande] = useState<Demande>(null);
   const [demandeAVenir, setDemandeAVenir] = useState<DemandeAVenir>(null);
+  const [demandeReport, setDemandeReport] = useState<DemandeReport>(null);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const [erreur, setErreur] = useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -83,6 +85,12 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
     if (b === "a_venir") { setDemandeAVenir({ id: t.id, titre: t.titre }); return; }
     setErreur(null);
     try { await deplacerBucket(t.id, { bucket: "idees" }); } catch (e) { setErreur((e as Error).message); }
+    rafraichir();
+  }
+  async function reporterTache(id: string, corps: { raison: string; nouvelEngagement: string }) {
+    setErreur(null);
+    try { await reporter(id, corps); setDemandeReport(null); setOuverteId(null); }
+    catch (e) { setErreur((e as Error).message); }
     rafraichir();
   }
   async function passerAVenir(id: string, engagement: string | null) {
@@ -134,7 +142,11 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         onTerminer={action(terminer)}
         onAbandonner={action(abandonner)}
         onSupprimer={action(supprimer)}
+        onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })}
       />
+      <Report demande={demandeReport} onReporter={reporterTache}
+        onAbandonner={async (id) => { await action(abandonner)(id); setDemandeReport(null); setOuverteId(null); }}
+        onAnnuler={() => setDemandeReport(null)} />
     </DndContext>
   );
 }
