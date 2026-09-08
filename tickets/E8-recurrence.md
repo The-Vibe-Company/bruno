@@ -14,13 +14,13 @@ Configuration **depuis le web uniquement** *(règle 18)*.
 
 ## BRU-33 — Le moteur de génération
 
-- [ ] Une règle peut fabriquer **plusieurs Tâches d'un coup, avec des Engagements échelonnés**
-- [ ] Numérotation `n/N` automatique : on écrit « Post LinkedIn », Bruno suffixe `1/3`, `2/3`, `3/3`
-- [ ] Les Tâches fabriquées sont des **Tâches parfaitement ordinaires**. Une fois nées, elles
+- [x] Une règle peut fabriquer **plusieurs Tâches d'un coup, avec des Engagements échelonnés**
+- [x] Numérotation `n/N` automatique : on écrit « Post LinkedIn », Bruno suffixe `1/3`, `2/3`, `3/3`
+- [x] Les Tâches fabriquées sont des **Tâches parfaitement ordinaires**. Une fois nées, elles
       n'ont **plus aucun lien** avec la règle : les Reporter, les Abandonner ou les éditer
       n'affecte ni la règle ni les occurrences futures *(règle 20)*
-- [ ] Génération **au premier Créneau du jour concerné**, pour apparaître dans le Point du matin
-- [ ] Si l'occurrence précédente n'est pas faite : **on génère quand même**, et **on ne signale
+- [x] Génération **au premier Créneau du jour concerné**, pour apparaître dans le Point du matin
+- [x] Si l'occurrence précédente n'est pas faite : **on génère quand même**, et **on ne signale
       rien** *(règle 22)*. Les deux Tâches se retrouvent côte à côte dans la liste, ça suffit
-- [ ] Les Tâches générées entrent Sur le feu — donc la règle doit satisfaire le droit d'entrée
+- [x] Les Tâches générées entrent Sur le feu — donc la règle doit satisfaire le droit d'entrée
       à la génération, Assigné et Engagement compris

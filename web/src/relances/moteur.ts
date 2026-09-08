@@ -6,6 +6,7 @@ import { and, asc, eq, isNull, lte, sql } from "drizzle-orm";
 import { natures } from "@/api/creneaux";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, creneau, membre, relanceEnvoyee, tache } from "@/db/schema";
+import { generer } from "@/recurrences/moteur";
 import { composer, type Message, type Nature, type Situation } from "./composer";
 import { joursEntre } from "@/lib/dates";
 import { estJourOuvre, instant, type Instant } from "./temps";
@@ -54,8 +55,12 @@ export async function relancesDues(i: Instant = instant(), spaceId?: string): Pr
   return resultats;
 }
 
-/** Livre ce qui est dû, une fois et une seule : la trace en base fait barrage à tout doublon. */
-export async function relancer(livreur: Livreur = livreurJournal, i: Instant = instant(), spaceId?: string): Promise<{ dues: number; envoyees: number; dejaEnvoyees: number }> {
+/**
+ * Livre ce qui est dû, une fois et une seule : la trace en base fait barrage à tout doublon.
+ * Les Récurrences du jour sont fabriquées d'abord, pour que le Point du matin les voie (BRU-33).
+ */
+export async function relancer(livreur: Livreur = livreurJournal, i: Instant = instant(), spaceId?: string): Promise<{ dues: number; envoyees: number; dejaEnvoyees: number; generees: number }> {
+  const { taches: generees } = await generer(i, spaceId);
   const dues = await relancesDues(i, spaceId);
   let envoyees = 0, dejaEnvoyees = 0;
   for (const r of dues) {
@@ -66,7 +71,7 @@ export async function relancer(livreur: Livreur = livreurJournal, i: Instant = i
     await livreur.livrer(r);
     envoyees++;
   }
-  return { dues: dues.length, envoyees, dejaEnvoyees };
+  return { dues: dues.length, envoyees, dejaEnvoyees, generees };
 }
 
 /** Pour le Daily et le dépannage : ce qui est parti aujourd'hui. */

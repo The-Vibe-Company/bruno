@@ -47,7 +47,7 @@ describe("le moteur de Relance", () => {
     const a = await relancer(livreur, mardi, spaceId);
     const b = await relancer(livreur, mardi, spaceId);
     expect(livrees).toEqual(["Antoine 09:15"]);
-    expect(a).toEqual({ dues: 1, envoyees: 1, dejaEnvoyees: 0 });
-    expect(b).toEqual({ dues: 1, envoyees: 0, dejaEnvoyees: 1 });
+    expect(a).toEqual({ dues: 1, envoyees: 1, dejaEnvoyees: 0, generees: 0 });
+    expect(b).toEqual({ dues: 1, envoyees: 0, dejaEnvoyees: 1, generees: 0 });
   });
 });

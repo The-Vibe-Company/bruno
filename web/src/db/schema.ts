@@ -240,6 +240,8 @@ export const recurrence = pgTable("recurrence", {
   /** Décalage en jours de chaque occurrence, ex. {0,2,4}. Même longueur qu'`occurrences`. */
   decalages: smallint("decalages").array().notNull(),
   actif: boolean("actif").notNull().default(true),
+  /** Le dernier jour où la règle a fabriqué ses Tâches : c'est ce qui garantit une seule fois par jour. */
+  derniereGeneration: date("derniere_generation"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   check("recurrence_frequence_coherente", sql`

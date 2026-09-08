@@ -42,8 +42,12 @@ async function lire(ctx: Ctx, id: string) {
 }
 
 /** Le rang le plus bas place en tête ; on ajoute donc à la fin par défaut. */
-async function rangFinal(ctx: Ctx, bucket: string) {
-  const [r] = await db
+/** `db`, ou la transaction en cours. */
+export type Executeur = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/** Le Rang qui vient après tous les autres du Bucket. */
+export async function rangFinal(ctx: { spaceId: string }, bucket: string, ex: Executeur = db) {
+  const [r] = await ex
     .select({ max: sql<string | null>`max(${tache.rang})` })
     .from(tache)
     .where(and(eq(tache.spaceId, ctx.spaceId), eq(tache.bucket, bucket as never)));
@@ -89,6 +93,21 @@ export async function creer(ctx: Ctx, entree: z.infer<typeof C.CreerTache>) {
       .returning();
     return (await avecAidants([cree]))[0];
   });
+}
+
+/**
+ * Les Tâches qu'une Récurrence fabrique (BRU-33) — l'autre chemin de création, et il passe par
+ * ici : personne d'autre n'écrit une Tâche (invariant 1). Ordinaires dès la naissance : Sur le
+ * feu, À faire, Assigné et Engagement posés — le droit d'entrée est satisfait par construction.
+ */
+export async function fabriquer(tx: Executeur, regle: { id: string; spaceId: string; assigneId: string }, occurrences: { titre: string; engagement: string }[]) {
+  const rang = await rangFinal({ spaceId: regle.spaceId }, "sur_le_feu", tx);
+  await tx.insert(tache).values(occurrences.map((o, k) => ({
+    spaceId: regle.spaceId, titre: o.titre, bucket: "sur_le_feu" as const, statut: "a_faire" as const,
+    assigneId: regle.assigneId, engagement: o.engagement, recurrenceId: regle.id,
+    rang: sql`${rang} + ${k}` as never,
+  })));
+  return occurrences.length;
 }
 
 export async function modifier(ctx: Ctx, id: string, patch: z.infer<typeof C.ModifierTache>) {
