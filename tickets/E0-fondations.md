@@ -15,17 +15,50 @@ push iOS actionnable, widget écran d'accueil, distribution TestFlight, hors lig
 Toutes les tables du modèle. **Une colonne `space_id` sur chaque table** — multi-tenant dans
 le schéma uniquement, zéro UI (PRD §11).
 
-- [ ] `membre` avec `type` (`humain` | `agent`) — seuls les humains sont créés en V1
-- [ ] `tache` : titre, bucket, rang, notes, transcription_brute, assigne_id, engagement,
+- [x] `membre` avec `type` (`humain` | `agent`) — seuls les humains sont créés en V1
+- [x] `tache` : titre, bucket, rang, notes, transcription_brute, assigne_id, engagement,
       statut, reports_count, etat_terminal, created_at
-- [ ] `tache_aidant` (plusieurs Aidants par Tâche)
-- [ ] `report` : tache_id, raison, ancien_engagement, nouvel_engagement, auteur, date
-- [ ] `client` avec `actif` (on désactive, on ne supprime jamais)
-- [ ] `affectation` : membre_id, client_id, date_debut, date_fin nullable
-- [ ] `creneau` : membre_id, heure
-- [ ] `recurrence` : la règle
-- [ ] Contrainte en base : bucket `sur_le_feu` ⇒ `assigne_id` et `engagement` non nuls
+- [x] `tache_aidant` (plusieurs Aidants par Tâche)
+- [x] `report` : tache_id, raison, ancien_engagement, nouvel_engagement, auteur, date
+- [x] `affectation` avec `actif` (on désactive, on ne supprime jamais)
+- [x] `affectation_membre` : membre_id, affectation_id, debut, fin nullable
+- [x] `creneau` : membre_id, heure
+- [x] `recurrence` : la règle, avec ses décalages
+- [x] Contrainte en base : bucket `sur_le_feu` ⇒ `assigne_id` et `engagement` non nuls
       **(invariant 2, à faire respecter par la base, pas seulement par l'UI)**
+- [x] Dix autres règles du PRD passées en `CHECK` : Statut réservé à Sur le feu, raison de
+      Report obligatoire, Créneaux au quart d'heure, cohérence d'une Récurrence, période
+      d'Affectation bien ordonnée
+- [x] `pnpm check:invariants` rejoue les 19 cas contre une vraie base — voir [ADR 0002](../docs/adr/0002-drizzle.md)
+
+## BRU-42 — La base de production et le déploiement
+
+Le schéma existe et tourne en local (BRU-2). **Rien n'est déployé, et la base de production
+n'existe pas.** Ce ticket la crée et branche le pipeline — à faire tôt, pour ne pas découvrir
+les problèmes d'intégration à la fin.
+
+- [x] Créer la base **Neon** via le Marketplace Vercel, sur l'équipe The Vibe Company
+- [x] Lier `The-Vibe-Company/bruno` au projet Vercel, dossier racine `web/`
+- [x] `DATABASE_URL` en Production **et** en Preview — Neon pose aussi `POSTGRES_URL` et
+      `POSTGRES_URL_NON_POOLING` ; `src/db/url.ts` choisit la bonne selon l'usage
+- [x] **Preview et Production partagent la même base Neon — décidé, pas subi.** Tranché le
+      8 septembre : à trois personnes sur un outil interne, une base par preview est un
+      confort qui ne vaut pas sa complexité. Conséquence assumée : un build de preview migre
+      la production, et une PR peut toucher les vraies données. À revoir le jour où perdre
+      le contenu de Bruno serait pénible
+- [x] **Décider comment les migrations s'appliquent au déploiement, et l'écrire dans un ADR.**
+      → [ADR 0003](../docs/adr/0003-migrations.md) : au build, avant `next build`, par la
+      connexion directe. Contrepartie : toute migration doit rester compatible avec la version
+      en ligne, et un changement destructeur se fait en deux déploiements.
+      Les trois options ont chacune un vrai défaut :
+      au *build* (`drizzle-kit migrate` dans la commande de build) c'est simple, mais un build
+      interrompu laisse la base à moitié migrée et deux déploiements simultanés se marchent
+      dessus ; en *étape manuelle* c'est sûr, mais on oublie ; via une *route protégée*
+      déclenchée après déploiement, c'est correct mais il faut la protéger sérieusement
+- [x] Vérifier au déploiement qu'un cron `*/15 * * * *` est accepté. **Fait, et enregistré
+      actif** sur `/api/cron/relances` : la condition ouverte de l'ADR 0001 est un fait
+- [x] Un premier déploiement en production réussi — `bruno-the-vibe-company.vercel.app`,
+      derrière Deployment Protection, ce qui est le bon réglage pour un outil interne
 
 ## BRU-3 — API Tâches
 
