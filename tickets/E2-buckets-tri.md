@@ -1,12 +1,15 @@
 # E2 — Buckets et tri · **Invariants 1, 2, 3**
 
-## BRU-11 — Les quatre Buckets
+## BRU-11 — Les quatre Buckets · **livré**
 
-- [ ] `À trier` · `Sur le feu` · `À venir` · `Idées`. Une Tâche est dans **un et un seul** Bucket
-- [ ] Le Bucket est **toujours posé par un humain**, jamais déduit d'une date ni d'un assigné
-      *(invariant 1)* — aucune tâche planifiée, aucun job qui déplace quoi que ce soit
-- [ ] Toute Capture atterrit dans `À trier` et y reste jusqu'à décision humaine *(invariant 3)*
-- [ ] Sortir de `Sur le feu` **conserve** Assigné et Engagement, sans rien demander *(règle 7)*
+- [x] `À trier` · `Sur le feu` · `À venir` · `Idées`. Une Tâche est dans **un et un seul** Bucket
+      — l'énumération Postgres et la colonne `tache.bucket` (BRU-2)
+- [x] Le Bucket est **toujours posé par un humain** *(invariant 1)* — un test parcourt le code
+      et refuse toute écriture de Bucket hors de `deplacer()` ; un autre vérifie que le cron des
+      Relances ne touche à aucune Tâche
+- [x] Toute Capture atterrit dans `À trier` *(invariant 3)* — le contrat `CreerTache` exclut
+      `sur_le_feu` même si on le demande, testé
+- [x] Sortir de `Sur le feu` **conserve** Assigné et Engagement *(règle 7)* — testé dans BRU-3
 
 ## BRU-12 — Écran « En attente » iOS
 
