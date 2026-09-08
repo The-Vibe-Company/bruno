@@ -1,0 +1,51 @@
+web/src/app/api/auth/ios/route.ts
+  s_7ec6903985e0db::t_24eaf7484318a3 1-24
+web/src/auth/config.ts
+  s_7ec6903985e0db::t_72aa399edac6af 1-23
+web/src/auth/google.ts
+  s_7ec6903985e0db::t_72aa399edac6af 1-48
+web/src/app/api/auth/callback/route.ts
+  s_7ec6903985e0db::t_24eaf7484318a3 1-41
+web/src/app/api/auth/deconnexion/route.ts
+  s_7ec6903985e0db::t_24eaf7484318a3 1-5
+web/src/auth/auth.test.ts
+  s_7ec6903985e0db::t_a4253ae5257aba 28
+  s_7ec6903985e0db::t_a8983f0b91f8dd 1-27,29-165
+web/.env.example
+  s_7ec6903985e0db::t_a4253ae5257aba 2,4-20
+web/src/app/api/auth/moi/route.ts
+  s_7ec6903985e0db::t_24eaf7484318a3 1-10
+web/src/api/membre-courant.ts
+  s_7ec6903985e0db::t_24eaf7484318a3 2-3,6,14-24
+web/src/app/api/auth/google/route.ts
+  s_7ec6903985e0db::t_24eaf7484318a3 1-7
+web/src/auth/oauth.ts
+  s_7ec6903985e0db::t_24eaf7484318a3 1-54
+web/src/auth/session.ts
+  s_7ec6903985e0db::t_72aa399edac6af 1-56
+web/src/auth/membre.ts
+  s_7ec6903985e0db::t_a4253ae5257aba 14-30,32
+  s_7ec6903985e0db::t_72aa399edac6af 1-13,31,33-49
+web/package.json
+  s_7ec6903985e0db::t_9be66a1b087549 19
+tickets/E0-fondations.md
+  s_7ec6903985e0db::t_870e90121ecd29 78,82-95
+web/pnpm-lock.yaml
+  s_7ec6903985e0db::t_863830c99b7a2e 14-16,2150-2152,4847-4848
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "6848ea8036112f0276031249e9fc5983720e03aa",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
