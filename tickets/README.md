@@ -22,7 +22,7 @@ si le planning dérape.
 
 | | Épique | Tickets | Ce que ça sert |
 |---|---|---|---|
-| **E0** | [Fondations](./E0-fondations.md) | BRU-1 → 5, 38 | Stack, schéma, API, auth, thème |
+| **E0** | [Fondations](./E0-fondations.md) | BRU-1, 2, **42**, 3 → 5, 38 | Stack, schéma, **prod**, API, auth, thème |
 | **E1** | [Capture](./E1-capture.md) | BRU-6 → 10 | **Pilier 1** |
 | **E2** | [Buckets et tri](./E2-buckets-tri.md) | BRU-11 → 14 | Invariants 1, 2, 3 |
 | **E3** | [Sur le feu](./E3-sur-le-feu.md) | BRU-15 → 19 | Statuts, Rang, fins |

@@ -31,6 +31,27 @@ le schéma uniquement, zéro UI (PRD §11).
       d'Affectation bien ordonnée
 - [x] `pnpm check:invariants` rejoue les 19 cas contre une vraie base — voir [ADR 0002](../docs/adr/0002-drizzle.md)
 
+## BRU-42 — La base de production et le déploiement
+
+Le schéma existe et tourne en local (BRU-2). **Rien n'est déployé, et la base de production
+n'existe pas.** Ce ticket la crée et branche le pipeline — à faire tôt, pour ne pas découvrir
+les problèmes d'intégration à la fin.
+
+- [ ] Créer la base **Neon** via le Marketplace Vercel, sur l'équipe The Vibe Company
+- [ ] Lier `The-Vibe-Company/bruno` au projet Vercel, dossier racine `web/`
+- [ ] `DATABASE_URL` en Production **et** en Preview
+- [ ] Une base de **Preview distincte de la Production** — sinon une PR peut abîmer les vraies
+      données, et à trois personnes personne ne s'en rendra compte tout de suite
+- [ ] **Décider comment les migrations s'appliquent au déploiement, et l'écrire dans un ADR.**
+      Les trois options ont chacune un vrai défaut :
+      au *build* (`drizzle-kit migrate` dans la commande de build) c'est simple, mais un build
+      interrompu laisse la base à moitié migrée et deux déploiements simultanés se marchent
+      dessus ; en *étape manuelle* c'est sûr, mais on oublie ; via une *route protégée*
+      déclenchée après déploiement, c'est correct mais il faut la protéger sérieusement
+- [ ] Vérifier au déploiement qu'un cron `*/15 * * * *` est accepté. Le plan est Pro donc ça
+      devrait passer — c'est le test qui transforme la condition de l'ADR 0001 en fait
+- [ ] Un premier déploiement en production réussi
+
 ## BRU-3 — API Tâches
 
 L'app iOS en a besoin de toute façon, et c'est ce qui rendra les connecteurs d'agents triviaux
