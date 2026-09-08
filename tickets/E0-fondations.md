@@ -37,20 +37,27 @@ Le schéma existe et tourne en local (BRU-2). **Rien n'est déployé, et la base
 n'existe pas.** Ce ticket la crée et branche le pipeline — à faire tôt, pour ne pas découvrir
 les problèmes d'intégration à la fin.
 
-- [ ] Créer la base **Neon** via le Marketplace Vercel, sur l'équipe The Vibe Company
-- [ ] Lier `The-Vibe-Company/bruno` au projet Vercel, dossier racine `web/`
-- [ ] `DATABASE_URL` en Production **et** en Preview
-- [ ] Une base de **Preview distincte de la Production** — sinon une PR peut abîmer les vraies
-      données, et à trois personnes personne ne s'en rendra compte tout de suite
-- [ ] **Décider comment les migrations s'appliquent au déploiement, et l'écrire dans un ADR.**
+- [x] Créer la base **Neon** via le Marketplace Vercel, sur l'équipe The Vibe Company
+- [x] Lier `The-Vibe-Company/bruno` au projet Vercel, dossier racine `web/`
+- [x] `DATABASE_URL` en Production **et** en Preview — Neon pose aussi `POSTGRES_URL` et
+      `POSTGRES_URL_NON_POOLING` ; `src/db/url.ts` choisit la bonne selon l'usage
+- [ ] ⚠️ **Une base de Preview distincte de la Production.** Vérifié : les deux pointent
+      aujourd'hui sur **le même endpoint Neon**. Il faut activer les branches de preview dans
+      l'intégration Neon. Tant que ce n'est pas fait, un build de preview migre la production —
+      sans conséquence sur une base vide, inacceptable dès qu'il y aura des données
+- [x] **Décider comment les migrations s'appliquent au déploiement, et l'écrire dans un ADR.**
+      → [ADR 0003](../docs/adr/0003-migrations.md) : au build, avant `next build`, par la
+      connexion directe. Contrepartie : toute migration doit rester compatible avec la version
+      en ligne, et un changement destructeur se fait en deux déploiements.
       Les trois options ont chacune un vrai défaut :
       au *build* (`drizzle-kit migrate` dans la commande de build) c'est simple, mais un build
       interrompu laisse la base à moitié migrée et deux déploiements simultanés se marchent
       dessus ; en *étape manuelle* c'est sûr, mais on oublie ; via une *route protégée*
       déclenchée après déploiement, c'est correct mais il faut la protéger sérieusement
-- [ ] Vérifier au déploiement qu'un cron `*/15 * * * *` est accepté. Le plan est Pro donc ça
-      devrait passer — c'est le test qui transforme la condition de l'ADR 0001 en fait
-- [ ] Un premier déploiement en production réussi
+- [x] Vérifier au déploiement qu'un cron `*/15 * * * *` est accepté. **Fait, et enregistré
+      actif** sur `/api/cron/relances` : la condition ouverte de l'ADR 0001 est un fait
+- [x] Un premier déploiement en production réussi — `bruno-the-vibe-company.vercel.app`,
+      derrière Deployment Protection, ce qui est le bon réglage pour un outil interne
 
 ## BRU-3 — API Tâches
 
