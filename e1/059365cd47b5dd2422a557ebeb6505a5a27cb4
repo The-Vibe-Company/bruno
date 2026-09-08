@@ -1,0 +1,40 @@
+web/src/db/schema.ts
+  s_7ec6903985e0db::t_8f5389a561777c 243-244
+web/src/relances/moteur.test.ts
+  s_7ec6903985e0db::t_8f5389a561777c 50-51
+web/src/api/taches.ts
+  s_7ec6903985e0db::t_fc0b3f5f9f7660 45-47,49-50,98-110
+  s_7ec6903985e0db::t_8f5389a561777c 48
+  s_7ec6903985e0db::t_e32afe9a170dbe 111-112
+web/src/recurrences/moteur.test.ts
+  s_7ec6903985e0db::t_8f5389a561777c 1-56
+web/src/recurrences/moteur.ts
+  s_7ec6903985e0db::t_fc0b3f5f9f7660 12,14,43
+  s_7ec6903985e0db::t_8f5389a561777c 1-11,13,15-42,44-48
+tickets/E8-recurrence.md
+  s_7ec6903985e0db::t_fc0b3f5f9f7660 17-19,22-23,25
+web/drizzle/0002_wonderful_adam_warlock.sql
+  s_7ec6903985e0db::t_8f5389a561777c 1
+web/src/relances/moteur.ts
+  s_7ec6903985e0db::t_8f5389a561777c 9,58-63,74
+web/drizzle/meta/0002_snapshot.json
+  s_7ec6903985e0db::t_a6a433e385a771 1-1140
+web/drizzle/meta/_journal.json
+  s_7ec6903985e0db::t_0d7bd02f023527 18-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "e1059365cd47b5dd2422a557ebeb6505a5a27cb4",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
