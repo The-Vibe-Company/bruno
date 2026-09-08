@@ -1,0 +1,31 @@
+web/src/db/seed.test.ts
+  s_7ec6903985e0db::t_ee4482a6fdc511 1-38
+web/scripts/seed.ts
+  s_7ec6903985e0db::t_ee4482a6fdc511 1-7,9-21
+  s_7ec6903985e0db::t_99093f900fb691 8,22-27
+web/src/db/seed.ts
+  s_7ec6903985e0db::t_ee4482a6fdc511 1-121,124,129-130
+  s_7ec6903985e0db::t_348ded9eff6afc 122-123
+  s_7ec6903985e0db::t_8162c4eeecfac6 125-128
+web/package.json
+  s_7ec6903985e0db::t_ee4482a6fdc511 15
+  s_7ec6903985e0db::t_26aed531f37441 16-17
+tickets/E0-fondations.md
+  s_7ec6903985e0db::t_0f9e384ecf6806 103-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b82a7c52bc5c10e49f9c318006207180f850c910",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
