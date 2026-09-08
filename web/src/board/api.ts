@@ -24,6 +24,8 @@ export type Destination =
 /** Changer de Bucket. Vers Sur le feu, le droit d'entrée est exigé — par le contrat, puis par la base. */
 export const deplacerBucket = (id: string, destination: Destination) => poster(`/api/taches/${id}/bucket`, destination);
 export const abandonner = (id: string) => poster(`/api/taches/${id}/abandonner`);
+/** Le seul chemin qui déplace un Engagement Sur le feu — et il exige une raison (invariant 4). */
+export const reporter = (id: string, corps: { raison: string; nouvelEngagement: string }) => poster(`/api/taches/${id}/reporter`, corps);
 export async function supprimer(id: string) {
   const r = await fetch(`/api/taches/${id}`, { method: "DELETE" });
   if (!r.ok) throw new Error(`Erreur ${r.status}`);

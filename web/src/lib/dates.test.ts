@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { demain, libelleJour, libelleLong, lundiProchain } from "./dates";
+import { demain, libelleJour, libelleLong, libelleReport, lundiProchain } from "./dates";
 
 describe("le nom d'un jour", () => {
   const ref = "2026-09-08";
@@ -23,5 +23,13 @@ describe("les raccourcis de date", () => {
     expect(lundiProchain("2026-09-08")).toBe("2026-09-14"); // mardi → lundi suivant
     expect(lundiProchain("2026-09-07")).toBe("2026-09-14"); // un lundi → celui d'après
     expect(lundiProchain("2026-09-13")).toBe("2026-09-14"); // dimanche → demain
+  });
+});
+
+describe("le bouton qui reporte", () => {
+  it("dit à quand", () => {
+    expect(libelleReport("2026-09-09", "2026-09-08")).toBe("Reporter à demain");
+    expect(libelleReport("2026-09-14", "2026-09-08")).toBe("Reporter à lundi");
+    expect(libelleReport("2026-09-20", "2026-09-08")).toBe("Reporter au 20 sept.");
   });
 });

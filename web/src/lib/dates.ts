@@ -30,3 +30,11 @@ export const lundiProchain = (ref: string = aujourdhui()): string => {
   const jour = new Date(ref + "T12:00:00Z").getUTCDay(); // 0 = dimanche
   return decale(((8 - jour) % 7) || 7, ref);
 };
+
+/** « Reporter à demain », « à lundi », « au 20 sept. » — le libellé du bouton qui engage. */
+export function libelleReport(jour: string, ref: string = aujourdhui()): string {
+  const l = libelleJour(jour, ref);
+  if (l === "demain") return "Reporter à demain";
+  if (jour === lundiProchain(ref)) return "Reporter à lundi";
+  return `Reporter au ${l}`;
+}
