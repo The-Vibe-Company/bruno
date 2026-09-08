@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { lister } from "@/api/taches";
-import { enCours } from "@/api/affectations";
+import { enCours, lister as listerAffectations } from "@/api/affectations";
 import { Affectations } from "@/board/Affectations";
 import { Filtres } from "@/board/Filtres";
 import type { TacheAttente } from "@/board/EnAttente";
@@ -21,13 +21,14 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
   if (!session) redirect("/api/auth/google");
   const { q, assigne } = await searchParams;
 
-  const [taches, aTrier, aVenir, idees, membres, affectations] = await Promise.all([
+  const [taches, aTrier, aVenir, idees, membres, affectations, choix] = await Promise.all([
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false, q: q?.trim() || undefined, assigneId: assigne || undefined }),
     lister(session, { bucket: "a_trier", inclureTerminees: false }),
     lister(session, { bucket: "a_venir", inclureTerminees: false }),
     lister(session, { bucket: "idees", inclureTerminees: false }),
     db.select({ id: membre.id, nom: membre.nom }).from(membre).where(eq(membre.spaceId, session.spaceId)),
     enCours(session),
+    listerAffectations(session),
   ]);
   const nomDe = new Map(membres.map((m) => [m.id, m.nom]));
   const cartes: TacheCarte[] = taches.map((t) => ({
@@ -50,7 +51,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         <div className="flex-1" />
         <Filtres membres={membres} />
       </header>
-      <Affectations membres={affectations} />
+      <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} />
       <main className="flex min-h-0 flex-1 flex-col">
         <Kanban taches={cartes} enAttente={enAttente} membres={membres} moiId={session.membreId} />
       </main>
