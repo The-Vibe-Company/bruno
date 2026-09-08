@@ -1,0 +1,35 @@
+web/src/enrichissement/anthropic.ts
+  s_7ec6903985e0db::t_5a0cebe83bb447 1-16
+web/package.json
+  s_7ec6903985e0db::t_5a0cebe83bb447 20
+web/src/enrichissement/analyser.ts
+  s_7ec6903985e0db::t_5a0cebe83bb447 1-46
+web/src/enrichissement/enrichir.test.ts
+  s_7ec6903985e0db::t_5a0cebe83bb447 1-58
+web/src/enrichissement/enrichir.ts
+  s_7ec6903985e0db::t_5a0cebe83bb447 1-41
+web/.env.example
+  s_7ec6903985e0db::t_5a0cebe83bb447 25-29
+web/src/app/api/taches/route.ts
+  s_7ec6903985e0db::t_5a0cebe83bb447 1,5,8-13
+tickets/E1-capture.md
+  s_7ec6903985e0db::t_033d733296a8f0 39-40,42-44,46-50
+web/pnpm-lock.yaml
+  s_7ec6903985e0db::t_e34a0cc5a37ba5 11-13,94-102,158-161,1341-1343,2192-2194,2491-2494,3034-3036,3119-3121,3344-3350,3428-3429,4264-4265,5225-5226,5521-5525,6077-6081,6174-6175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "e495198f387f438e2db7716715a21201699523c5",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
