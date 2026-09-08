@@ -28,7 +28,7 @@ Ce second mot n'apparaît **jamais** dans l'interface — elle dit simplement «
 - [x] L'historique est conservé — c'est lui qui répond à « hier j'étais sur MONKA »
 - [x] Ni Engagement, ni Statut, ni Rang, ni Report sur une Affectation
 
-## BRU-28 — Affichage des Affectations · **bloqué par BRU-40**
+## BRU-28 — Affichage des Affectations · **web livré, iOS en attente de l'app**
 
 On voit son Affectation partout et on peut en sortir, mais rien ne permet d'en prendre une.
 Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se voit.
@@ -36,11 +36,14 @@ Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se
 - [ ] **iOS « Aujourd'hui »** : épinglées en tête, une ligne par Client, à la couleur du Client,
       libellées `MONKA · depuis le 3 sept.`, avec le bouton « Je ne suis plus dessus ».
       **Gérer le cas de plusieurs Affectations** — la maquette n'en montre qu'une
-- [ ] **Board web** : bandeau une ligne, `Antoine → MONKA · Stan → AFP, Interne · Victor → Coup de Pâtes`
-- [ ] **Daily** : les Affectations du jour, et celles de la veille dans le bloc Hier
-- [ ] **Fait** : l'Affectation de la semaine au-dessus des Tâches de chacun
-- [ ] **Prendre une Affectation** se fait en cliquant le bandeau, sur iOS comme sur le web —
-      pas dans les Réglages, qui ne gèrent que la liste (BRU-40)
+- [x] **Board web** : bandeau une ligne, `Antoine → MONKA · Stan → AFP, Interne · Victor → Coup de Pâtes`
+- [ ] **Daily** : les Affectations du jour, et celles de la veille dans le bloc Hier *(avec BRU-30)*
+- [ ] **Fait** : l'Affectation de la semaine au-dessus des Tâches de chacun *(avec BRU-31)*
+- [x] **Prendre une Affectation** se fait en cliquant le bandeau, sur iOS comme sur le web —
+      pas dans les Réglages, qui ne gèrent que la liste (BRU-40). *Web : fait. Ma case s'ouvre sur
+      « Sur quoi es-tu aujourd'hui ? », une ou plusieurs, à partir d'aujourd'hui ; décocher, c'est
+      « je ne suis plus dessus ». Les autres cases se lisent, ne se cliquent pas.*
+- [x] L'état vide s'appelle **« Aucune Affectation »** partout — tranché ici, pas au design
 
 ## BRU-29 — La relance des Affectations qui traînent
 

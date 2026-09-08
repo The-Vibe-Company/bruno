@@ -47,6 +47,5 @@ jusque dans les maquettes. **Débloque BRU-28.**
 
 ## Un détail à trancher au développement, pas au design
 
-Le libellé de l'état vide diffère entre les plateformes : le web dit **« Aucune Affectation »**,
-l'iOS dit **« Sur rien aujourd'hui »**. Choisir l'un des deux et l'appliquer partout — ça ne vaut
-pas un aller-retour avec le design.
+Le libellé de l'état vide différait entre les plateformes : le web disait **« Aucune Affectation »**,
+l'iOS **« Sur rien aujourd'hui »**. **Tranché avec BRU-28 : « Aucune Affectation » partout.**
