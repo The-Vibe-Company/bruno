@@ -16,3 +16,8 @@ export const appliquer = (m: Mutation) =>
     : poster(`/api/taches/${m.id}/rang`, { avantId: m.avantId, apresId: m.apresId });
 
 export const terminer = (id: string) => poster(`/api/taches/${id}/terminer`);
+export const abandonner = (id: string) => poster(`/api/taches/${id}/abandonner`);
+export async function supprimer(id: string) {
+  const r = await fetch(`/api/taches/${id}`, { method: "DELETE" });
+  if (!r.ok) throw new Error(`Erreur ${r.status}`);
+}

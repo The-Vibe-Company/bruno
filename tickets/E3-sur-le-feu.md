@@ -21,14 +21,25 @@
       le serveur calcule le Rang en `numeric` : une carte glissée entre 6 et 7 vaut 6.5, vérifié
       en base
 
-## BRU-17 — Les trois fins
+## BRU-17 — Les trois fins · **livré**
 
-- [x] **Terminé** — action principale, la Tâche quitte le board immédiatement (le cercle de
-      la carte, livré avec BRU-15)
-- [ ] **Abandonné** — visible à côté de Terminé, la Tâche reste consultable dans Fait
-- [ ] **Supprimé** — dans un menu secondaire, avec confirmation, sans aucune trace
-- [ ] **N'importe quel Membre peut terminer n'importe quelle Tâche** — aucun verrou d'édition
-- [ ] Aucun état terminal n'est jamais déduit *(invariant 5)*
+Le détail d'une Tâche s'ouvre en panneau latéral au clic sur une carte (maquette web v3),
+sans quitter le Board. Les trois fins y vivent, chacune à sa place.
+
+- [x] **Terminé** — action principale (le cercle de la carte, et le bouton primaire du panneau),
+      la Tâche quitte le board immédiatement
+- [x] **Abandonné** — visible à côté de Terminé dans le panneau, la Tâche reste consultable
+      dans Fait (BRU-31)
+- [x] **Supprimé** — dans l'en-tête du panneau, discret, derrière une **confirmation** qui
+      rappelle la différence avec Abandonner. Vérifié : plus aucune ligne en base
+- [x] **N'importe quel Membre peut terminer n'importe quelle Tâche** — testé dans BRU-3 (un
+      Aidant termine)
+- [x] Aucun état terminal n'est jamais déduit *(invariant 5)* — contrainte Postgres, et une
+      seconde fin est refusée (`409 déjà une fin`), vérifié dans le navigateur
+- [ ] ⚠️ **À décider (produit)** : Terminé se fait d'un clic sur le cercle, **sans confirmation
+      ni annulation**. En testant, des clics parasites ont terminé deux Tâches. Deux pistes
+      compatibles avec le PRD : une bannière « Terminé · Annuler » quelques secondes, ou ne
+      terminer que depuis le panneau. Pas tranché ici — ce n'est pas au code de le décider
 
 ## BRU-18 — Écran « Aujourd'hui » iOS
 

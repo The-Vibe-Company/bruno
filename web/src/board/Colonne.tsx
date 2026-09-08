@@ -7,7 +7,7 @@ import type { Statut } from "./deplacement";
 const LIBELLE: Record<Statut, string> = { a_faire: "À faire", en_cours: "En cours", bloque: "Bloqué" };
 const COULEUR: Record<Statut, string> = { a_faire: "bg-accent border-accent", en_cours: "bg-en-cours border-en-cours", bloque: "bg-bloque border-bloque" };
 
-export function Colonne({ statut, taches, onTerminer }: { statut: Statut; taches: TacheCarte[]; onTerminer: (id: string) => void }) {
+export function Colonne({ statut, taches, onTerminer, onOuvrir }: { statut: Statut; taches: TacheCarte[]; onTerminer: (id: string) => void; onOuvrir: (id: string) => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: statut });
   const [point, filet] = COULEUR[statut].split(" ");
   return (
@@ -21,7 +21,7 @@ export function Colonne({ statut, taches, onTerminer }: { statut: Statut; taches
       </header>
       <SortableContext id={statut} items={taches.map((t) => t.id)} strategy={verticalListSortingStrategy}>
         <div ref={setNodeRef} className={`flex min-h-24 flex-1 flex-col gap-2.5 pt-2.5 rounded-b-lg transition-colors ${isOver ? "bg-surface-2" : ""}`}>
-          {taches.map((t) => <Carte key={t.id} tache={t} onTerminer={onTerminer} />)}
+          {taches.map((t) => <Carte key={t.id} tache={t} onTerminer={onTerminer} onOuvrir={onOuvrir} />)}
         </div>
       </SortableContext>
     </section>
