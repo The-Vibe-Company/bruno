@@ -1,54 +1,40 @@
-/**
- * Page provisoire : la palette, dans le thème du système. Elle sert à vérifier les tokens à
- * l'œil et disparaîtra avec le Board (BRU-14). Aucune couleur en dur ici — que des tokens.
- */
-const GROUPES: { titre: string; tokens: string[] }[] = [
-  { titre: "Fonds", tokens: ["fond-page", "fond", "surface", "surface-2", "surface-3"] },
-  { titre: "Bords", tokens: ["bord", "bord-2", "bord-faible", "bord-fort"] },
-  { titre: "Texte", tokens: ["texte", "texte-2", "texte-sourd", "texte-faible", "texte-tres-faible"] },
-  { titre: "Accent", tokens: ["accent", "accent-survol", "sur-accent", "accent-voile", "accent-lueur"] },
-  { titre: "Statuts", tokens: ["a-faire", "a-faire-voile", "en-cours", "en-cours-voile", "bloque", "bloque-voile"] },
-];
+import { redirect } from "next/navigation";
+import { lister } from "@/api/taches";
+import { sessionCourante } from "@/auth/serveur";
+import { db } from "@/db/client";
+import { membre } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { libelleLong } from "@/lib/dates";
+import { Kanban } from "@/board/Kanban";
+import type { TacheCarte } from "@/board/Carte";
+import { Coquille } from "./Coquille";
 
-export default function Accueil() {
+export const dynamic = "force-dynamic";
+
+/** Le Board : Sur le feu en kanban. La colonne latérale (À trier, À venir, Idées) arrive avec BRU-14. */
+export default async function Board() {
+  const session = await sessionCourante();
+  if (!session) redirect("/api/auth/google");
+
+  const [taches, membres] = await Promise.all([
+    lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
+    db.select({ id: membre.id, nom: membre.nom }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+  ]);
+  const nomDe = new Map(membres.map((m) => [m.id, m.nom]));
+  const cartes: TacheCarte[] = taches.map((t) => ({
+    id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
+    reportsCount: t.reportsCount, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
+  }));
+
   return (
-    <main className="mx-auto w-full max-w-4xl p-10 flex flex-col gap-10">
-      <header className="flex items-baseline gap-4 border-b border-accent pb-4">
-        <span className="text-4xl font-semibold tracking-tight">
-          Bruno<span className="text-accent">.</span>
-        </span>
-        <span className="text-texte-sourd">Les tokens, dans le thème de ton système</span>
+    <Coquille initiale={session.nom.charAt(0).toUpperCase()}>
+      <header className="flex items-baseline justify-between px-8 pt-7 pb-4">
+        <h1 className="text-[28px] font-semibold tracking-tight">Sur le feu</h1>
+        <span className="text-sm text-texte-sourd">{libelleLong()}</span>
       </header>
-
-      {GROUPES.map((g) => (
-        <section key={g.titre} className="flex flex-col gap-3">
-          <h2 className="text-sm font-medium text-texte-sourd">{g.titre}</h2>
-          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
-            {g.tokens.map((t) => (
-              <li key={t} className="rounded-xl border border-bord bg-surface p-3 flex flex-col gap-2">
-                <span
-                  className="h-10 rounded-lg border border-bord-2"
-                  style={{ background: `var(--${t})` }}
-                />
-                <code className="text-xs text-texte-sourd">{t}</code>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-
-      <section className="rounded-xl border border-bord bg-surface p-4 flex flex-col gap-3">
-        <h2 className="text-sm font-medium text-texte-sourd">Ce que ça donne</h2>
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-sur-accent">Sur le feu</span>
-          <span className="rounded-lg border border-bord-fort px-3 py-1.5 text-sm">À venir</span>
-          <span className="rounded-lg border border-en-cours bg-en-cours-voile px-3 py-1.5 text-sm">En cours</span>
-          <span className="rounded-lg border border-bloque bg-bloque-voile px-3 py-1.5 text-sm">Bloqué</span>
-          <span className="text-sm text-texte-sourd">
-            aujourd&apos;hui · <span className="text-accent">reporté 3×</span>
-          </span>
-        </div>
-      </section>
-    </main>
+      <main className="flex min-h-0 flex-1 flex-col px-8 pb-8">
+        <Kanban taches={cartes} />
+      </main>
+    </Coquille>
   );
 }

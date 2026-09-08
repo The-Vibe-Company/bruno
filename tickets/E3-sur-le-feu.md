@@ -1,23 +1,30 @@
 # E3 — Sur le feu
 
-## BRU-15 — Kanban à trois Statuts
+## BRU-15 — Kanban à trois Statuts · **livré**
 
-- [ ] `À faire` · `En cours` · `Bloqué`. Le Statut **n'existe que dans Sur le feu**
-- [ ] Glisser entre colonnes change le Statut
-- [ ] `Terminé` **n'est pas une quatrième colonne** — c'est une action, et la Tâche quitte le board
+- [x] `À faire` · `En cours` · `Bloqué`. Le Statut **n'existe que dans Sur le feu** — contrainte
+      Postgres (BRU-2), et le kanban est la page d'accueil du web
+- [x] Glisser entre colonnes change le Statut — dnd-kit, la décision est une fonction pure
+      (`board/deplacement.ts`) couverte par 6 tests, puis `POST /statut` ; vérifié dans le
+      navigateur et en base
+- [x] `Terminé` **n'est pas une quatrième colonne** — le cercle de la carte termine, la Tâche
+      quitte le board au rafraîchissement
 
-## BRU-16 — Le Rang
+## BRU-16 — Le Rang · **livré avec BRU-15** (même geste de glisser)
 
-- [ ] La position dans la liste **est** la priorité. Aucune échelle, aucun niveau,
+- [x] La position dans la liste **est** la priorité. Aucune échelle, aucun niveau,
       **aucun drapeau « urgent »**
-- [ ] **Aucun numéro affiché nulle part.** Ce qu'on fait en premier est en haut de la pile ;
+- [x] **Aucun numéro affiché nulle part.** Ce qu'on fait en premier est en haut de la pile ;
       un chiffre en plus ne dit rien que la position ne dise déjà
-- [ ] Rang propre à chaque liste — le rang 1 d'À faire n'a rien à voir avec celui d'À venir
-- [ ] Réordonnancement par glisser, **web uniquement**
+- [x] Rang propre à chaque liste — le rang 1 d'À faire n'a rien à voir avec celui d'À venir
+- [x] Réordonnancement par glisser, **web uniquement** — se placer entre deux voisines,
+      le serveur calcule le Rang en `numeric` : une carte glissée entre 6 et 7 vaut 6.5, vérifié
+      en base
 
 ## BRU-17 — Les trois fins
 
-- [ ] **Terminé** — action principale, la Tâche quitte le board immédiatement
+- [x] **Terminé** — action principale, la Tâche quitte le board immédiatement (le cercle de
+      la carte, livré avec BRU-15)
 - [ ] **Abandonné** — visible à côté de Terminé, la Tâche reste consultable dans Fait
 - [ ] **Supprimé** — dans un menu secondaire, avec confirmation, sans aucune trace
 - [ ] **N'importe quel Membre peut terminer n'importe quelle Tâche** — aucun verrou d'édition
