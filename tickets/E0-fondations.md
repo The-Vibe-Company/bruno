@@ -15,17 +15,21 @@ push iOS actionnable, widget écran d'accueil, distribution TestFlight, hors lig
 Toutes les tables du modèle. **Une colonne `space_id` sur chaque table** — multi-tenant dans
 le schéma uniquement, zéro UI (PRD §11).
 
-- [ ] `membre` avec `type` (`humain` | `agent`) — seuls les humains sont créés en V1
-- [ ] `tache` : titre, bucket, rang, notes, transcription_brute, assigne_id, engagement,
+- [x] `membre` avec `type` (`humain` | `agent`) — seuls les humains sont créés en V1
+- [x] `tache` : titre, bucket, rang, notes, transcription_brute, assigne_id, engagement,
       statut, reports_count, etat_terminal, created_at
-- [ ] `tache_aidant` (plusieurs Aidants par Tâche)
-- [ ] `report` : tache_id, raison, ancien_engagement, nouvel_engagement, auteur, date
-- [ ] `client` avec `actif` (on désactive, on ne supprime jamais)
-- [ ] `affectation` : membre_id, client_id, date_debut, date_fin nullable
-- [ ] `creneau` : membre_id, heure
-- [ ] `recurrence` : la règle
-- [ ] Contrainte en base : bucket `sur_le_feu` ⇒ `assigne_id` et `engagement` non nuls
+- [x] `tache_aidant` (plusieurs Aidants par Tâche)
+- [x] `report` : tache_id, raison, ancien_engagement, nouvel_engagement, auteur, date
+- [x] `affectation` avec `actif` (on désactive, on ne supprime jamais)
+- [x] `affectation_membre` : membre_id, affectation_id, debut, fin nullable
+- [x] `creneau` : membre_id, heure
+- [x] `recurrence` : la règle, avec ses décalages
+- [x] Contrainte en base : bucket `sur_le_feu` ⇒ `assigne_id` et `engagement` non nuls
       **(invariant 2, à faire respecter par la base, pas seulement par l'UI)**
+- [x] Dix autres règles du PRD passées en `CHECK` : Statut réservé à Sur le feu, raison de
+      Report obligatoire, Créneaux au quart d'heure, cohérence d'une Récurrence, période
+      d'Affectation bien ordonnée
+- [x] `pnpm check:invariants` rejoue les 19 cas contre une vraie base — voir [ADR 0002](../docs/adr/0002-drizzle.md)
 
 ## BRU-3 — API Tâches
 

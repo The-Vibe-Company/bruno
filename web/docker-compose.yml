@@ -1,0 +1,18 @@
+# Postgres local pour le développement et pour vérifier les migrations.
+# La production tourne sur Neon (ADR 0001) ; le protocole est le même.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bruno
+      POSTGRES_PASSWORD: bruno
+      POSTGRES_DB: bruno
+    ports: ["5433:5432"]
+    volumes: ["bruno_pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bruno -d bruno"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+volumes:
+  bruno_pgdata:
