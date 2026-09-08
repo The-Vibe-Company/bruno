@@ -1,0 +1,40 @@
+web/src/lib/vocabulaire.test.ts
+  s_7ec6903985e0db::t_cd565397016762 1-23
+web/src/lib/dates.test.ts
+  s_7ec6903985e0db::t_fafe92ae4489d6 2,19-25
+  s_7ec6903985e0db::t_1f551325f8acdc 26-27
+web/src/db/schema.ts
+  s_7ec6903985e0db::t_cd565397016762 113
+web/src/api/erreurs.ts
+  s_7ec6903985e0db::t_cd565397016762 14
+web/src/api/taches.test.ts
+  s_7ec6903985e0db::t_cd565397016762 131-147
+web/src/board/PourQuand.tsx
+  s_7ec6903985e0db::t_fafe92ae4489d6 1-3,5-34,37-50,60-66
+  s_7ec6903985e0db::t_0633f98b5f92a1 4,35-36,51-59
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_fafe92ae4489d6 9,43,83,85-90,129
+web/src/api/taches.ts
+  s_7ec6903985e0db::t_cd565397016762 104-110
+web/src/lib/dates.ts
+  s_7ec6903985e0db::t_fafe92ae4489d6 23-32
+  s_7ec6903985e0db::t_cd565397016762 2-3
+tickets/E4-engagement-report.md
+  s_7ec6903985e0db::t_9c6bf9a9095dec 3,5-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "e1fffd9999777bba73aafd0a0a4a2c68d7aa2fa7",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
