@@ -15,6 +15,13 @@
       "when": 1788892102513,
       "tag": "0001_high_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788895162244,
+      "tag": "0002_wonderful_adam_warlock",
+      "breakpoints": true
     }
   ]
 }

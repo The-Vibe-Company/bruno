@@ -1,0 +1,1 @@
+ALTER TABLE "recurrence" ADD COLUMN "derniere_generation" date;
