@@ -12,6 +12,7 @@ export type CodeErreur =
   | "statut_hors_sur_le_feu"
   | "raison_obligatoire"
   | "engagement_par_report"
+  | "minimum_creneaux"
   | "deja_terminee"
   | "non_authentifie";
 
@@ -53,6 +54,8 @@ export function depuisPostgres(e: unknown): ErreurApi | null {
     case "tache_statut_sur_le_feu":
       return new ErreurApi("statut_hors_sur_le_feu", 422,
         "Le Statut n'existe que dans Sur le feu, et y est obligatoire.");
+    case "creneau_quart_heure":
+      return new ErreurApi("requete_invalide", 422, "Un Créneau tombe sur un quart d'heure : 09:00, 09:15, 09:30 ou 09:45.");
     case "report_raison_obligatoire":
       return new ErreurApi("raison_obligatoire", 422,
         "Un Report est toujours motivé : la raison ne peut pas être vide.");

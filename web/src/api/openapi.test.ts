@@ -27,9 +27,10 @@ describe("le contrat OpenAPI", () => {
     expect(Object.keys(doc.components.schemas)).toContain("Tache");
   });
 
-  it("décrit toutes les routes de Tâches servies", () => {
+  it("décrit toutes les routes métier servies", () => {
+    // Tout ce qui est sous /api, sauf la plomberie : l'auth, le cron, le contrat lui-même.
     const surDisque = routesSurDisque(path.resolve(__dirname, "../app/api"))
-      .filter((r) => r.startsWith("/api/taches"))
+      .filter((r) => !/^\/api\/(auth|cron|openapi\.json)/.test(r))
       .sort();
     expect(Object.keys(doc.paths).sort()).toEqual(surDisque);
   });

@@ -5,17 +5,22 @@
 C'est l'épique qui décide si le produit vit ou meurt. Le critère de succès n°3 du PRD est
 « les Relances ne sont pas désactivées au bout d'un mois ».
 
-## BRU-23 — Les Créneaux
+## BRU-23 — Les Créneaux · **livré (web)**
 
-Maquette : `Bruno iOS v2` → écran « Réglages ».
+Maquette : les Réglages web v3 (identiques à l'écran iOS). Page `/reglages`, dans le rail.
 
-- [ ] Chaque Membre pose ses propres heures, **au quart d'heure près**, minimum **trois**
-- [ ] La nature découle de la position dans la journée : la première est le **Point du matin**,
-      la dernière le **Bilan**, celles du milieu des **Rappels**. Rien d'autre à configurer
-- [ ] Point du matin et Bilan **non retirables**. Les Rappels sont retirables — mais on ne peut
-      pas descendre sous trois Créneaux au total : le dernier « Retirer » est désactivé
-- [ ] Déplacer une heure recalcule les natures automatiquement
-- [ ] « + Ajouter un Créneau »
+- [x] Chaque Membre pose ses propres heures, **au quart d'heure près** (contrainte Postgres,
+      traduite en refus lisible), minimum **trois** (tenu par l'API — invariant de table, hors
+      de portée d'un `CHECK`, cf. ADR 0002)
+- [x] La nature découle de la position dans la journée : première = **Point du matin**, dernière
+      = **Bilan**, milieu = **Rappels**. Fonction pure `natures()`, testée. Rien d'autre à configurer
+- [x] Point du matin et Bilan **non retirables** ; les Rappels le sont, et **« Retirer » se
+      désactive à trois** — vérifié dans le navigateur (ajout, retrait, retour à trois)
+- [x] Déplacer une heure (chevrons ±15 min) recalcule les natures — testé : un Rappel poussé
+      devant devient le Point du matin
+- [x] « + Ajouter un Créneau » — à midi, ou au premier quart d'heure libre après
+- [x] La page porte aussi le **Compte** (nom, adresse, se déconnecter) ; la section Affectations
+      arrive avec BRU-26
 
 ## BRU-24 — Le moteur de Relance
 
