@@ -1,0 +1,61 @@
+web/src/db/seed.test.ts
+  s_7ec6903985e0db::t_2a4b5015c70109 2,6,9-10,15-18,24,28,34-37
+web/package.json
+  s_7ec6903985e0db::t_fc86893826576d 20-22
+web/src/api/buckets.test.ts
+  s_7ec6903985e0db::t_9b1074c6119664 31-33,36
+web/src/db/seed.ts
+  s_7ec6903985e0db::t_0bd6f6165a7d67 69,121
+  s_7ec6903985e0db::t_2a4b5015c70109 42-43,46,50,56,60,77-79,81-82,110,113-116,125-128
+web/src/app/api/auth/dev/route.ts
+  s_7ec6903985e0db::t_17feeaf55368f3 1-24
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_b939770ed9422a 1-10,12-17,19-27,29-38
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_0bd6f6165a7d67 56-58
+  s_7ec6903985e0db::t_9b1074c6119664 1-55,59-78
+web/src/board/deplacement.ts
+  s_7ec6903985e0db::t_9b1074c6119664 1-47
+package-lock.json
+  s_7ec6903985e0db::t_b5260cfdc1dbad 1-6
+web/.env.example
+  s_7ec6903985e0db::t_6978410f35f285 21-24
+web/pnpm-lock.yaml
+  s_7ec6903985e0db::t_762e8351a22030 11-19,149-170,3092-3116
+web/src/app/Coquille.tsx
+  s_7ec6903985e0db::t_a0a4c2eb78cffd 1-20
+web/src/app/api/auth/dev/route.test.ts
+  s_7ec6903985e0db::t_5ce95e19d44715 1-17
+web/src/auth/serveur.ts
+  s_7ec6903985e0db::t_277b7ca3156507 1-17
+web/src/board/Carte.tsx
+  s_7ec6903985e0db::t_9bdb6ad3386647 1-61
+web/src/board/Colonne.tsx
+  s_7ec6903985e0db::t_d7ef4001fe2aea 1-29
+web/src/board/api.ts
+  s_7ec6903985e0db::t_b25b02025d1a9f 1-18
+web/src/board/deplacement.test.ts
+  s_7ec6903985e0db::t_1a91a6ccd4cccb 1-46
+web/src/lib/dates.test.ts
+  s_7ec6903985e0db::t_85d9c9b367926a 1-18
+web/src/lib/dates.ts
+  s_7ec6903985e0db::t_380eed384c5a53 1-22
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_225f6ba6879895 3,5-11,13,15,17,19-22,26-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "3a3a3301a8ea9d7b08509050862819fa6dff5f75",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
