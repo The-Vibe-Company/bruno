@@ -1,0 +1,37 @@
+web/src/api/contrat.ts
+  s_7ec6903985e0db::t_89347fb839a2c2 114-119
+web/src/app/api/affectations/en-cours/route.ts
+  s_7ec6903985e0db::t_89347fb839a2c2 1-8
+web/src/app/api/affectations/historique/route.ts
+  s_7ec6903985e0db::t_89347fb839a2c2 1-6
+web/src/api/erreurs.ts
+  s_7ec6903985e0db::t_89347fb839a2c2 17
+web/src/api/affectations.test.ts
+  s_7ec6903985e0db::t_89347fb839a2c2 6,8,30-63
+  s_7ec6903985e0db::t_f9e0174cc8414e 64-65
+web/src/app/api/affectations/en-cours/[id]/fin/route.ts
+  s_7ec6903985e0db::t_89347fb839a2c2 1-5
+web/src/api/openapi.ts
+  s_7ec6903985e0db::t_89347fb839a2c2 17,131-145
+web/src/api/affectations.ts
+  s_7ec6903985e0db::t_5340a6759e2610 47-48,54,60,66
+  s_7ec6903985e0db::t_89347fb839a2c2 6,9,39-44,46,49,51,63-65,67-96
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_f0895dec4741a8 23-26,28-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "c71469894d092eed9af40f7370f6c90c1b619f62",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
