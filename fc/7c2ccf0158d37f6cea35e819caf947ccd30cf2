@@ -1,0 +1,79 @@
+web/public/globe.svg
+  s_7ec6903985e0db::t_e905cff548cfa5 1
+web/src/db/schema.ts
+  s_7ec6903985e0db::t_92ac28ce00db04 1-234
+web/CLAUDE.md
+  s_7ec6903985e0db::t_e905cff548cfa5 1
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_e905cff548cfa5 1-69
+web/public/file.svg
+  s_7ec6903985e0db::t_e905cff548cfa5 1
+web/scripts/check-invariants.ts
+  s_7ec6903985e0db::t_f80089e3257a1b 1-116
+web/AGENTS.md
+  s_7ec6903985e0db::t_e905cff548cfa5 1-9
+web/public/next.svg
+  s_7ec6903985e0db::t_e905cff548cfa5 1
+web/tsconfig.json
+  s_7ec6903985e0db::t_e905cff548cfa5 1-34
+web/docker-compose.yml
+  s_7ec6903985e0db::t_8cf36454855c83 1-4,6-18
+  s_7ec6903985e0db::t_51c5b958502a74 5
+web/drizzle.config.ts
+  s_7ec6903985e0db::t_8cf36454855c83 1-9
+web/README.md
+  s_7ec6903985e0db::t_e905cff548cfa5 1-36
+web/src/app/layout.tsx
+  s_7ec6903985e0db::t_e905cff548cfa5 1-15,18-22,24-29
+  s_7ec6903985e0db::t_5533167816b4c2 16-17,23
+web/eslint.config.mjs
+  s_7ec6903985e0db::t_e905cff548cfa5 1-18
+web/drizzle/0000_married_hemingway.sql
+  s_7ec6903985e0db::t_51c5b958502a74 1-137
+web/package.json
+  s_7ec6903985e0db::t_f80089e3257a1b 9-12
+  s_7ec6903985e0db::t_5533167816b4c2 2,13-14
+  s_7ec6903985e0db::t_b69ace94e3210a 17,19,28,32
+  s_7ec6903985e0db::t_e905cff548cfa5 1,3-8,15-16,18,20-27,29-31,33-36
+web/.gitignore
+  s_7ec6903985e0db::t_e905cff548cfa5 1-41
+  s_7ec6903985e0db::t_8cf36454855c83 42-43
+web/next.config.ts
+  s_7ec6903985e0db::t_e905cff548cfa5 1-7
+web/src/app/globals.css
+  s_7ec6903985e0db::t_e905cff548cfa5 1-26
+web/postcss.config.mjs
+  s_7ec6903985e0db::t_e905cff548cfa5 1-7
+web/pnpm-workspace.yaml
+  s_7ec6903985e0db::t_e905cff548cfa5 1-3
+web/public/window.svg
+  s_7ec6903985e0db::t_e905cff548cfa5 1
+web/public/vercel.svg
+  s_7ec6903985e0db::t_e905cff548cfa5 1
+docs/adr/0002-drizzle.md
+  s_7ec6903985e0db::t_150bca3bafbdde 1-60
+tickets/E0-fondations.md
+  s_7ec6903985e0db::t_12dc81a422530a 18-19,21-27,29-32
+web/drizzle/meta/0000_snapshot.json
+  s_7ec6903985e0db::t_d6babe7160ea5a 1-1028
+web/drizzle/meta/_journal.json
+  s_7ec6903985e0db::t_2d7b12ad66e0c2 1-13
+web/pnpm-lock.yaml
+  s_7ec6903985e0db::t_8afd6233c04526 1-5134
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "fc7c2ccf0158d37f6cea35e819caf947ccd30cf2",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
