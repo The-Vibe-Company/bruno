@@ -12,6 +12,7 @@ const composants = {
   Tache: C.Tache, CreerTache: C.CreerTache, ModifierTache: C.ModifierTache,
   DeplacerTache: C.DeplacerTache, ChangerStatut: C.ChangerStatut,
   Reordonner: C.Reordonner, Reporter: C.Reporter,
+  Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -109,6 +110,16 @@ export function documentOpenApi() {
           requestBody: corps("Reporter"),
           responses: { 200: tache, 422: { description: "Raison manquante" } },
         },
+      },
+      "/api/creneaux": {
+        get: { summary: "Mes Créneaux", description: "Dans l'ordre de la journée, avec leur nature — déduite de la position, jamais choisie.",
+          responses: { 200: { description: "Les Créneaux", content: { "application/json": { schema: { type: "array", items: ref("Creneau") } } } } } },
+        post: { summary: "Ajouter un Créneau", requestBody: corps("PoserCreneau"), responses: { 200: { description: "Les Créneaux" }, 422: { description: "Pas au quart d'heure, ou déjà pris" } } },
+      },
+      "/api/creneaux/{id}": {
+        parameters: [idTache],
+        patch: { summary: "Déplacer un Créneau", description: "Les natures sont recalculées.", requestBody: corps("PoserCreneau"), responses: { 200: { description: "Les Créneaux" } } },
+        delete: { summary: "Retirer un Créneau", description: "Refusé sous trois : le Point du matin, au moins un Rappel, le Bilan.", responses: { 200: { description: "Les Créneaux" }, 422: { description: "Minimum de trois" } } },
       },
       "/api/taches/{id}/reports": {
         parameters: [idTache],

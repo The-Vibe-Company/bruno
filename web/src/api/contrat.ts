@@ -91,3 +91,14 @@ export const FiltresTaches = z.object({
   /** Par défaut on ne renvoie que les Tâches vivantes : le board ne montre pas les fins. */
   inclureTerminees: z.coerce.boolean().default(false),
 });
+
+/* ------------------------------------------------------------------ les Créneaux */
+
+/** Une heure au quart d'heure : « 09:15 ». Il n'y a rien d'autre à régler. */
+export const Heure = z.string().regex(/^([01]\d|2[0-3]):(00|15|30|45)$/, "Une heure au quart d'heure, comme 09:15");
+export const Creneau = z.object({
+  id: uuid, heure: Heure,
+  /** Déduite de la position dans la journée, jamais choisie. */
+  nature: z.enum(["point_du_matin", "rappel", "bilan"]),
+});
+export const PoserCreneau = z.object({ heure: Heure });
