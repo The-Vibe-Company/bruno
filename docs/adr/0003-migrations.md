@@ -58,7 +58,9 @@ peut pas mettre une version cassée en ligne.
 **Coûteuses.** La discipline « toujours compatible » repose sur les gens, pas sur l'outil.
 Elle est écrite ici et rappelée dans la description de BRU-42, et c'est tout ce qui la protège.
 
-**Surveillé.** Tant que **Preview et Production partagent la même base Neon**, un build de
-preview migre la production. C'est sans conséquence aujourd'hui — les migrations sont additives
-et la base est vide — mais ça doit être réglé avant qu'il y ait des données réelles.
-Voir la case correspondante dans BRU-42.
+**Assumé.** **Preview et Production partagent la même base Neon**, donc un build de preview
+migre la production et une PR peut écrire dans les vraies données. C'est un choix, pris le
+8 septembre : à trois personnes sur un outil interne, une base par preview coûte plus de
+complexité qu'elle n'évite d'ennuis. Ce n'est pas un oubli, et ça n'a pas besoin d'être
+« corrigé » — mais le jour où perdre le contenu de Bruno deviendrait pénible, c'est la
+première chose à changer.

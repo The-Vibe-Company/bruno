@@ -41,10 +41,11 @@ les problèmes d'intégration à la fin.
 - [x] Lier `The-Vibe-Company/bruno` au projet Vercel, dossier racine `web/`
 - [x] `DATABASE_URL` en Production **et** en Preview — Neon pose aussi `POSTGRES_URL` et
       `POSTGRES_URL_NON_POOLING` ; `src/db/url.ts` choisit la bonne selon l'usage
-- [ ] ⚠️ **Une base de Preview distincte de la Production.** Vérifié : les deux pointent
-      aujourd'hui sur **le même endpoint Neon**. Il faut activer les branches de preview dans
-      l'intégration Neon. Tant que ce n'est pas fait, un build de preview migre la production —
-      sans conséquence sur une base vide, inacceptable dès qu'il y aura des données
+- [x] **Preview et Production partagent la même base Neon — décidé, pas subi.** Tranché le
+      8 septembre : à trois personnes sur un outil interne, une base par preview est un
+      confort qui ne vaut pas sa complexité. Conséquence assumée : un build de preview migre
+      la production, et une PR peut toucher les vraies données. À revoir le jour où perdre
+      le contenu de Bruno serait pénible
 - [x] **Décider comment les migrations s'appliquent au déploiement, et l'écrire dans un ADR.**
       → [ADR 0003](../docs/adr/0003-migrations.md) : au build, avant `next build`, par la
       connexion directe. Contrepartie : toute migration doit rester compatible avec la version
