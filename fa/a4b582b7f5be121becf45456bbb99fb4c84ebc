@@ -1,0 +1,30 @@
+web/src/board/Affectations.tsx
+  s_7ec6903985e0db::t_0f0bc3af3cbfcc 96
+  s_7ec6903985e0db::t_4e22ef56d3912e 1-5,8-15,21,27-95,97-128
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_7b1899169dea48 31,39-46
+tickets/E9-design.md
+  s_7ec6903985e0db::t_a0e962d38db516 50-51
+web/package.json
+  s_7ec6903985e0db::t_f7d87591e09286 25
+web/pnpm-lock.yaml
+  s_7ec6903985e0db::t_1fae7a0f39bfde 26-28,691-705,1004-1016,1092-1117,1202-1222,3743-3759,3973-3981,4054-4094,4158-4173
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_c02f0d31ae1213 3,24,31,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "faa4b582b7f5be121becf45456bbb99fb4c84ebc",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
