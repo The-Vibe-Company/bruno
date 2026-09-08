@@ -7,6 +7,7 @@ import { natures } from "@/api/creneaux";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, creneau, membre, relanceEnvoyee, tache } from "@/db/schema";
 import { composer, type Message, type Nature, type Situation } from "./composer";
+import { joursEntre } from "@/lib/dates";
 import { estJourOuvre, instant, type Instant } from "./temps";
 
 export type RelanceDue = { spaceId: string; membreId: string; nom: string; heure: string; nature: Nature; message: Message };
@@ -18,21 +19,19 @@ export const livreurJournal: Livreur = {
   async livrer(r) { console.info(`[relance] ${r.nom} · ${r.heure} · ${r.message.titre} — ${r.message.corps.replace(/\n/g, " / ")}`); },
 };
 
-const joursEntre = (a: string, b: string) => Math.round((Date.UTC(+b.slice(0, 4), +b.slice(5, 7) - 1, +b.slice(8, 10)) - Date.UTC(+a.slice(0, 4), +a.slice(5, 7) - 1, +a.slice(8, 10))) / 86_400_000);
-
 /** L'état d'un Membre, tel que la Relance le regarde. */
 export async function situation(spaceId: string, membreId: string, jour: string): Promise<Situation> {
   const vivantesAMoi = and(eq(tache.spaceId, spaceId), eq(tache.assigneId, membreId), isNull(tache.etatTerminal));
   const [engagees, aVenir, affs] = await Promise.all([
     db.select().from(tache).where(and(vivantesAMoi, eq(tache.bucket, "sur_le_feu"), lte(tache.engagement, jour))).orderBy(asc(tache.rang)),
     db.select().from(tache).where(and(vivantesAMoi, eq(tache.bucket, "a_venir"), lte(tache.engagement, jour))).orderBy(asc(tache.engagement)),
-    db.select({ nom: affectation.nom, debut: affectationMembre.debut }).from(affectationMembre)
+    db.select({ id: affectationMembre.id, nom: affectation.nom, debut: affectationMembre.debut }).from(affectationMembre)
       .innerJoin(affectation, eq(affectation.id, affectationMembre.affectationId))
       .where(and(eq(affectationMembre.membreId, membreId), isNull(affectationMembre.fin))),
   ]);
   return {
     jour,
-    affectations: affs.map((a) => ({ nom: a.nom, depuis: a.debut, joursOuverts: joursEntre(a.debut, jour) })),
+    affectations: affs.map((a) => ({ id: a.id, nom: a.nom, depuis: a.debut, joursOuverts: joursEntre(a.debut, jour) })),
     engagees: engagees.map((t) => ({ id: t.id, titre: t.titre, statut: t.statut!, engagement: t.engagement!, reportsCount: t.reportsCount })),
     aVenirArrivees: aVenir.map((t) => ({ id: t.id, titre: t.titre, engagement: t.engagement! })),
   };

@@ -8,11 +8,13 @@
  * Tout est pur ici : on donne l'état, on obtient le message. Les tests en profitent.
  */
 import { SEUIL_SIGNAL } from "@/api/taches";
+import { traine } from "./regles";
 
 export type Nature = "point_du_matin" | "rappel" | "bilan";
 export type TacheDue = { id: string; titre: string; statut: "a_faire" | "en_cours" | "bloque"; engagement: string; reportsCount: number };
 export type AVenirArrivee = { id: string; titre: string; engagement: string };
-export type AffectationDuJour = { nom: string; depuis: string; joursOuverts: number };
+/** `id` désigne la période — c'est elle qu'on ferme d'un bouton quand elle traîne. */
+export type AffectationDuJour = { id: string; nom: string; depuis: string; joursOuverts: number };
 
 export type Situation = {
   jour: string;
@@ -24,10 +26,11 @@ export type Situation = {
   /** Sans Assigné mais Sur le feu ? Impossible (invariant 2). Rien à faire ici. */
 };
 
-export type Message = { nature: Nature; titre: string; corps: string; tacheIds: string[] };
+/** `aFermer` : les Affectations qui traînent, pour que le client offre « je ne suis plus dessus » d'un bouton (règle 25). */
+export type Message = { nature: Nature; titre: string; corps: string; tacheIds: string[]; aFermer: { id: string; nom: string }[] };
 
 const pluriel = (n: number, un: string, des: string) => `${n} ${n > 1 ? des : un}`;
-const JOURS_AFFECTATION_QUI_TRAINE = 14;
+
 
 export function composer(nature: Nature, s: Situation): Message | null {
   const ouvertes = s.engagees.filter((t) => t.statut !== "bloque");
@@ -39,7 +42,7 @@ export function composer(nature: Nature, s: Situation): Message | null {
     if (ouvertes.length) lignes.push(`${pluriel(ouvertes.length, "Tâche engagée", "Tâches engagées")} aujourd'hui${ouvertes.length <= 3 ? " — " + ouvertes.map((t) => t.titre).join(" · ") : ""}.`);
     if (s.aVenirArrivees.length) lignes.push(`${pluriel(s.aVenirArrivees.length, "Tâche À venir arrive", "Tâches À venir arrivent")} : ${s.aVenirArrivees.map((t) => t.titre).join(" · ")} — les passer Sur le feu ?`);
     if (bloquees.length) lignes.push(`Toujours ${bloquees.length > 1 ? "bloquées" : "bloquée"} : ${bloquees.map((t) => t.titre).join(" · ")}.`);
-    const trainent = s.affectations.filter((a) => a.joursOuverts > JOURS_AFFECTATION_QUI_TRAINE);
+    const trainent = s.affectations.filter(traine);
     for (const a of trainent) lignes.push(`Toujours sur ${a.nom} ? (depuis ${a.joursOuverts} jours)`);
     const signalees = ouvertes.filter((t) => t.reportsCount >= SEUIL_SIGNAL);
     if (signalees.length) lignes.push(`${pluriel(signalees.length, "Tâche reportée", "Tâches reportées")} ${SEUIL_SIGNAL} fois ou plus.`);
@@ -47,6 +50,7 @@ export function composer(nature: Nature, s: Situation): Message | null {
     return {
       nature, titre: "Point du matin", corps: lignes.join("\n"),
       tacheIds: [...ouvertes, ...bloquees].map((t) => t.id).concat(s.aVenirArrivees.map((t) => t.id)),
+      aFermer: trainent.map((a) => ({ id: a.id, nom: a.nom })),
     };
   }
 
@@ -55,11 +59,11 @@ export function composer(nature: Nature, s: Situation): Message | null {
   if (ouvertes.length === 0) return null;
 
   if (nature === "rappel") {
-    return { nature, titre: "Rappel", corps: `${pluriel(ouvertes.length, "encore ouverte", "encore ouvertes")} aujourd'hui.`, tacheIds: ouvertes.map((t) => t.id) };
+    return { nature, titre: "Rappel", corps: `${pluriel(ouvertes.length, "encore ouverte", "encore ouvertes")} aujourd'hui.`, tacheIds: ouvertes.map((t) => t.id), aFermer: [] };
   }
 
   // Bilan : direct, il nomme la Tâche — la première par Rang, c'est celle qu'on devait faire.
   const [premiere, ...autres] = ouvertes;
   const suite = autres.length ? ` ${pluriel(autres.length, "autre engagement encore ouvert", "autres engagements encore ouverts")}.` : "";
-  return { nature, titre: "Bilan", corps: `Tu devais finir ${premiere.titre}.${suite}`, tacheIds: ouvertes.map((t) => t.id) };
+  return { nature, titre: "Bilan", corps: `Tu devais finir ${premiere.titre}.${suite}`, tacheIds: ouvertes.map((t) => t.id), aFermer: [] };
 }

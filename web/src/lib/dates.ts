@@ -6,10 +6,12 @@ const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août"
 
 export const aujourdhui = (): string => new Date().toISOString().slice(0, 10);
 
+const utc = (jour: string) => Date.UTC(+jour.slice(0, 4), +jour.slice(5, 7) - 1, +jour.slice(8, 10));
+/** De `a` à `b`, en jours entiers — négatif si `b` précède `a`. */
+export const joursEntre = (a: string, b: string): number => Math.round((utc(b) - utc(a)) / 86_400_000);
+
 export function libelleJour(jour: string, ref: string = aujourdhui()): string {
-  const d = Date.UTC(+jour.slice(0, 4), +jour.slice(5, 7) - 1, +jour.slice(8, 10));
-  const r = Date.UTC(+ref.slice(0, 4), +ref.slice(5, 7) - 1, +ref.slice(8, 10));
-  const delta = Math.round((d - r) / 86_400_000);
+  const delta = joursEntre(ref, jour);
   if (delta === 0) return "aujourd'hui";
   if (delta === 1) return "demain";
   if (delta === -1) return "hier";

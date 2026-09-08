@@ -3,6 +3,8 @@ import * as Popover from "@radix-ui/react-popover";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { AffectationsMembre, Sur } from "@/api/affectations";
+import { aujourdhui, joursEntre, libelleJour } from "@/lib/dates";
+import { traine } from "@/relances/regles";
 import { Initiale } from "./Carte";
 
 export type Choix = { id: string; nom: string; couleur: string };
@@ -87,6 +89,9 @@ function Mienne({ sur, choix }: { sur: Sur[]; choix: Choix[] }) {
             <span key={a.id} className="flex items-center gap-2.5">
               <span className="h-[18px] w-1" style={{ background: a.couleur }} />
               <span className="text-lg font-medium leading-none tracking-tight">{a.nom}</span>
+              {traine({ joursOuverts: joursEntre(a.depuis, aujourdhui()) }) && (
+                <span className="ml-1.5 text-[13px] text-texte-sourd">toujours dessus ? · depuis le {libelleJour(a.depuis)}</span>
+              )}
             </span>
           ))}
         </button>
