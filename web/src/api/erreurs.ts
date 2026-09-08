@@ -14,6 +14,7 @@ export type CodeErreur =
   | "engagement_par_report"
   | "minimum_creneaux"
   | "deja_terminee"
+  | "affectation_desactivee"
   | "non_authentifie";
 
 export class ErreurApi extends Error {

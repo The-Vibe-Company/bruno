@@ -20,13 +20,13 @@ Table `affectation` : ce à quoi on peut travailler. MONKA, AFP, Coup de Pâtes,
 Table `affectation_membre` : la période pendant laquelle quelqu'un est sur une Affectation.
 Ce second mot n'apparaît **jamais** dans l'interface — elle dit simplement « Affectation : MONKA ».
 
-- [ ] Un Membre + une Affectation + une date de début, date de fin nullable
-- [ ] **Plusieurs simultanées** sont normales, sans limite
-- [ ] **Continues** : pas de jours sélectionnés, pas de demi-journées, pas de pourcentages
-- [ ] **Aucune case à cocher, jamais** *(invariant 6)*. Unique action : « je ne suis plus dessus »,
+- [x] Un Membre + une Affectation + une date de début, date de fin nullable
+- [x] **Plusieurs simultanées** sont normales, sans limite
+- [x] **Continues** : pas de jours sélectionnés, pas de demi-journées, pas de pourcentages
+- [x] **Aucune case à cocher, jamais** *(invariant 6)*. Unique action : « je ne suis plus dessus »,
       qui pose la date de fin au jour même
-- [ ] L'historique est conservé — c'est lui qui répond à « hier j'étais sur MONKA »
-- [ ] Ni Engagement, ni Statut, ni Rang, ni Report sur une Affectation
+- [x] L'historique est conservé — c'est lui qui répond à « hier j'étais sur MONKA »
+- [x] Ni Engagement, ni Statut, ni Rang, ni Report sur une Affectation
 
 ## BRU-28 — Affichage des Affectations · **bloqué par BRU-40**
 

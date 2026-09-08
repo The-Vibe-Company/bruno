@@ -111,3 +111,9 @@ export const AjouterAffectation = z.object({
   couleur: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Une couleur, comme #F27313"),
 });
 export const ActiverAffectation = z.object({ actif: z.boolean() });
+
+export const Sur = z.object({ id: uuid, affectationId: uuid, nom: z.string(), couleur: z.string(), depuis: jour, jusqu: jour.nullable() });
+export const AffectationsMembre = z.object({ membreId: uuid, nom: z.string(), affectations: z.array(Sur) });
+/** « Aujourd'hui je suis sur MONKA. » Sans `membreId`, c'est moi. Sans `debut`, c'est aujourd'hui. */
+export const PoserAffectation = z.object({ affectationId: uuid, membreId: uuid.optional(), debut: jour.optional() });
+export const FiltreHistorique = z.object({ membreId: uuid.optional() });
