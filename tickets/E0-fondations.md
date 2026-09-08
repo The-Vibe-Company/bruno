@@ -91,8 +91,12 @@ plus tard (PRD §11).
 - [x] Un Membre désactivé perd l'accès **immédiatement**, sans attendre l'expiration de sa session
 - [x] 18 tests d'authentification, signés avec une paire de clés locale : le refus hors domaine
       est prouvé sans dépendre de Google
-- [ ] ⏳ **Identifiants Google à créer** — voir `.env.example`. Le code est prêt, il manque
-      `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` et `SESSION_SECRET`
+- [x] Identifiants Google créés et posés sur Vercel (Production + Preview) et en local
+- [x] **Parcours vérifié de bout en bout dans Chrome**, avec le vrai écran de consentement
+      Google : retour sur `/` sans erreur, `/api/auth/moi` reconnaît le Membre. Au passage, un
+      vrai piège corrigé : le cookie d'état OAuth en `SameSite=Lax` ne revenait pas après le
+      POST de consentement de Google → `SameSite=None; Secure`, validité 15 min, et un
+      diagnostic serveur si ça se reproduit
 
 ## BRU-5 — Données de départ
 

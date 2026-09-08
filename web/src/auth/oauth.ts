@@ -6,6 +6,17 @@ import { GOOGLE, reglage } from "./config";
 
 const COOKIE_ETAT = "bruno_oauth_etat";
 
+/**
+ * Le cookie d'état doit revenir avec la redirection de Google, qui arrive après un POST
+ * (le bouton « Continuer ») et parfois plusieurs minutes plus tard. `SameSite=Lax` se montre
+ * capricieux dans ce cas précis ; `SameSite=None; Secure` est ce qu'utilisent les
+ * bibliothèques OAuth pour cette raison. Le cookie est aléatoire, court et HttpOnly :
+ * l'envoyer en cross-site ne révèle rien. Chrome et Firefox acceptent `Secure` sur
+ * http://localhost ; Safari non — en dev, tester la connexion dans Chrome.
+ */
+const ATTRIBUTS_ETAT = "Path=/; HttpOnly; SameSite=None; Secure";
+const VALIDITE_ETAT_S = 15 * 60;
+
 export const urlRetour = (request: Request) =>
   new URL("/api/auth/callback", new URL(request.url).origin).toString();
 
@@ -19,20 +30,28 @@ export function debutAutorisation(request: Request) {
   url.searchParams.set("state", etat);
   // Ne proposer que les comptes du domaine : le refus survient avant même l'écran de choix.
   url.searchParams.set("hd", process.env.BRUNO_DOMAINE ?? "thevibecompany.co");
-  const cookie = `${COOKIE_ETAT}=${etat}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600${
-    process.env.NODE_ENV === "production" ? "; Secure" : ""
-  }`;
+  const cookie = `${COOKIE_ETAT}=${etat}; ${ATTRIBUTS_ETAT}; Max-Age=${VALIDITE_ETAT_S}`;
   return { url: url.toString(), cookie };
 }
 
-export function etatValide(request: Request, recu: string | null): boolean {
+export type DiagnosticEtat = { valide: boolean; cookiePresent: boolean; etatPresent: boolean };
+
+/** Dit si l'état est valide, et sinon *pourquoi* — sans révéler les valeurs. */
+export function diagnostiquerEtat(request: Request, recu: string | null): DiagnosticEtat {
   const attendu = (request.headers.get("cookie") ?? "").match(
     new RegExp(`(?:^|;\\s*)${COOKIE_ETAT}=([^;]+)`),
   )?.[1];
-  return Boolean(recu && attendu && recu === attendu);
+  return {
+    valide: Boolean(recu && attendu && recu === attendu),
+    cookiePresent: Boolean(attendu),
+    etatPresent: Boolean(recu),
+  };
 }
 
-export const etatEfface = `${COOKIE_ETAT}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+export const etatValide = (request: Request, recu: string | null) =>
+  diagnostiquerEtat(request, recu).valide;
+
+export const etatEfface = `${COOKIE_ETAT}=; ${ATTRIBUTS_ETAT}; Max-Age=0`;
 
 /** Échange le code contre les jetons. Seul le `id_token` nous intéresse. */
 export async function echangerCode(request: Request, code: string): Promise<string> {
@@ -47,7 +66,14 @@ export async function echangerCode(request: Request, code: string): Promise<stri
       grant_type: "authorization_code",
     }),
   });
-  if (!reponse.ok) throw new Error(`Google a refusé l'échange du code (${reponse.status}).`);
+  if (!reponse.ok) {
+    // Google dit toujours pourquoi (invalid_grant, redirect_uri_mismatch, invalid_client…) :
+    // on le garde dans le message, sinon on cherche à l'aveugle.
+    const corps = (await reponse.json().catch(() => ({}))) as { error?: string; error_description?: string };
+    throw new Error(
+      `Google a refusé l'échange du code (${reponse.status}) : ${corps.error ?? "?"} — ${corps.error_description ?? "sans détail"}.`,
+    );
+  }
   const { id_token } = (await reponse.json()) as { id_token?: string };
   if (!id_token) throw new Error("Google n'a pas renvoyé de jeton d'identité.");
   return id_token;
