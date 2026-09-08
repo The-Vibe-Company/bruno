@@ -47,6 +47,11 @@ Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se
 
 ## BRU-29 — La relance des Affectations qui traînent
 
-- [ ] Une Affectation ouverte depuis **plus de 14 jours** ajoute une ligne discrète au Point
+- [x] Une Affectation ouverte depuis **plus de 14 jours** ajoute une ligne discrète au Point
       du matin : « toujours sur MONKA ? », avec un bouton pour la fermer *(règle 25)*
-- [ ] C'est la seule protection contre une donnée qui devient fausse au bout d'un trimestre
+- [x] C'est la seule protection contre une donnée qui devient fausse au bout d'un trimestre
+
+*Fait : le Point du matin porte `aFermer` — les périodes qui traînent, avec leur nom — pour que
+le client mette un bouton « je ne suis plus dessus » (`POST /api/affectations/en-cours/{id}/fin`).
+Le bouton lui-même vit dans la notification iOS, qui attend l'app (BRU-25). En attendant, le
+Board montre la même ligne discrète sur ma case : `MONKA · toujours dessus ? · depuis le 20 août`.*

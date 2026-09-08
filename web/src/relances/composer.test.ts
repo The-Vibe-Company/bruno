@@ -16,16 +16,24 @@ describe("ce que dit une Relance", () => {
   it("le Point du matin groupe tout : Affectation, engagées, À venir arrivées, Bloqué, Affectations qui traînent", () => {
     const m = composer("point_du_matin", {
       jour,
-      affectations: [{ nom: "MONKA", depuis: "2026-08-20", joursOuverts: 19 }],
+      affectations: [{ id: "p-monka", nom: "MONKA", depuis: "2026-08-20", joursOuverts: 19 }, { id: "p-afp", nom: "AFP", depuis: "2026-09-01", joursOuverts: 7 }],
       engagees: [t("Relancer MONKA"), t("Maquettes", "en_cours"), t("Contrat AFP", "bloque")],
       aVenirArrivees: [{ id: "x", titre: "Comité de septembre", engagement: jour }],
     })!;
     expect(m.titre).toBe("Point du matin");
-    expect(m.corps).toContain("Aujourd'hui : MONKA.");
+    expect(m.corps).toContain("Aujourd'hui : MONKA, AFP.");
     expect(m.corps).toContain("2 Tâches engagées aujourd'hui — Relancer MONKA · Maquettes.");
     expect(m.corps).toContain("Comité de septembre — les passer Sur le feu ?");
     expect(m.corps).toContain("Toujours bloquée : Contrat AFP.");
     expect(m.corps).toContain("Toujours sur MONKA ? (depuis 19 jours)");
+    expect(m.corps).not.toContain("Toujours sur AFP");
+  });
+
+  it("une Affectation qui traîne depuis plus de 14 jours vient avec de quoi la fermer d'un bouton (règle 25)", () => {
+    const affectations = [{ id: "p-monka", nom: "MONKA", depuis: "2026-08-20", joursOuverts: 19 }, { id: "p-afp", nom: "AFP", depuis: "2026-08-25", joursOuverts: 14 }];
+    const m = composer("point_du_matin", { ...vide, affectations })!;
+    expect(m.aFermer).toEqual([{ id: "p-monka", nom: "MONKA" }]);
+    expect(composer("rappel", { ...vide, affectations, engagees: [t("Relancer MONKA")] })!.aFermer).toEqual([]);
   });
 
   it("un Rappel est factuel et exclut les Bloqué", () => {
