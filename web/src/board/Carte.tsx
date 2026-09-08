@@ -7,6 +7,7 @@ import type { Statut } from "./deplacement";
 export type TacheCarte = {
   id: string; titre: string; statut: Statut; engagement: string | null;
   reportsCount: number; assigne: { nom: string } | null;
+  aidants: { nom: string }[]; notes: string | null; transcriptionBrute: string | null;
 };
 
 const TEINTE: Record<Statut, string> = {
@@ -23,7 +24,7 @@ export function Initiale({ nom }: { nom: string }) {
   );
 }
 
-export function Carte({ tache, onTerminer, fantome }: { tache: TacheCarte; onTerminer?: (id: string) => void; fantome?: boolean }) {
+export function Carte({ tache, onTerminer, onOuvrir, fantome }: { tache: TacheCarte; onTerminer?: (id: string) => void; onOuvrir?: (id: string) => void; fantome?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tache.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
   return (
@@ -32,6 +33,7 @@ export function Carte({ tache, onTerminer, fantome }: { tache: TacheCarte; onTer
       style={style}
       {...attributes}
       {...listeners}
+      onClick={() => onOuvrir?.(tache.id)}
       className={`rounded-xl border p-3.5 pb-3 cursor-grab active:cursor-grabbing select-none transition-shadow
         ${TEINTE[tache.statut]} ${isDragging && !fantome ? "opacity-30" : ""} ${fantome ? "shadow-2xl" : ""}`}
     >

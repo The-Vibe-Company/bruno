@@ -24,6 +24,8 @@ export default async function Board() {
   const cartes: TacheCarte[] = taches.map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
     reportsCount: t.reportsCount, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
+    aidants: t.aidantIds.map((id) => ({ nom: nomDe.get(id) ?? "?" })),
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute,
   }));
 
   return (

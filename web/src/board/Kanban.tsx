@@ -2,10 +2,11 @@
 import { DndContext, DragOverlay, PointerSensor, closestCorners, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { appliquer, terminer } from "./api";
+import { abandonner, appliquer, supprimer, terminer } from "./api";
+import { Detail } from "./Detail";
 import { Carte, type TacheCarte } from "./Carte";
 import { Colonne } from "./Colonne";
-import { deplacer, type Colonnes, type Statut } from "./deplacement";
+import { colonneDe, deplacer, type Colonnes, type Statut } from "./deplacement";
 
 const STATUTS: Statut[] = ["a_faire", "en_cours", "bloque"];
 
@@ -24,6 +25,7 @@ export function Kanban({ taches }: { taches: TacheCarte[] }) {
   const [base, setBase] = useState(initiales);
   if (base !== initiales) { setBase(initiales); setColonnes(initiales); }
   const [actif, setActif] = useState<TacheCarte | null>(null);
+  const [ouverteId, setOuverteId] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -44,10 +46,12 @@ export function Kanban({ taches }: { taches: TacheCarte[] }) {
     rafraichir();
   }
 
-  async function onTerminer(id: string) {
-    try { await terminer(id); } catch (e) { setErreur((e as Error).message); }
+  const action = (fn: (id: string) => Promise<void>) => async (id: string) => {
+    setErreur(null);
+    try { await fn(id); } catch (e) { setErreur((e as Error).message); }
     rafraichir();
-  }
+  };
+  const onTerminer = action(terminer);
 
   const carte = (id: string, statut: Statut): TacheCarte => ({ ...parId.get(id)!, statut });
 
@@ -69,10 +73,17 @@ export function Kanban({ taches }: { taches: TacheCarte[] }) {
       )}
       <div className="grid min-h-0 flex-1 grid-cols-3 gap-6">
         {STATUTS.map((s) => (
-          <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} onTerminer={onTerminer} />
+          <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} onTerminer={onTerminer} onOuvrir={setOuverteId} />
         ))}
       </div>
       <DragOverlay>{actif ? <Carte tache={actif} fantome /> : null}</DragOverlay>
+      <Detail
+        tache={ouverteId ? (() => { const t = parId.get(ouverteId); return t ? carte(ouverteId, colonneDe(colonnes, ouverteId) ?? t.statut) : null; })() : null}
+        onFermer={() => setOuverteId(null)}
+        onTerminer={action(terminer)}
+        onAbandonner={action(abandonner)}
+        onSupprimer={action(supprimer)}
+      />
     </DndContext>
   );
 }
