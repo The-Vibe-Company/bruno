@@ -39,25 +39,25 @@ function membresDeclares(): { nom: string; email: string }[] {
   return [...base, ...autres];
 }
 
-export async function poserBase(membres = membresDeclares()) {
-  await db.insert(space).values({ id: SPACE_ID, nom: "The Vibe Company" }).onConflictDoNothing();
+export async function poserBase(membres = membresDeclares(), spaceId = SPACE_ID) {
+  await db.insert(space).values({ id: spaceId, nom: "The Vibe Company" }).onConflictDoNothing();
 
   for (const m of membres) {
-    await db.insert(membre).values({ spaceId: SPACE_ID, nom: m.nom, email: m.email })
+    await db.insert(membre).values({ spaceId, nom: m.nom, email: m.email })
       .onConflictDoUpdate({ target: [membre.spaceId, membre.email], set: { nom: m.nom } });
   }
   for (const a of AFFECTATIONS) {
-    await db.insert(affectation).values({ spaceId: SPACE_ID, ...a })
+    await db.insert(affectation).values({ spaceId, ...a })
       .onConflictDoUpdate({ target: [affectation.spaceId, affectation.nom], set: { couleur: a.couleur, actif: a.actif } });
   }
 
   // Des Créneaux par défaut seulement pour qui n'en a aucun : on ne remet pas ceux qu'un
   // Membre a choisi de retirer.
-  const tous = await db.select().from(membre).where(eq(membre.spaceId, SPACE_ID));
+  const tous = await db.select().from(membre).where(eq(membre.spaceId, spaceId));
   for (const m of tous) {
     const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(creneau).where(eq(creneau.membreId, m.id));
     if (n === 0) {
-      await db.insert(creneau).values(CRENEAUX_PAR_DEFAUT.map((heure) => ({ spaceId: SPACE_ID, membreId: m.id, heure })));
+      await db.insert(creneau).values(CRENEAUX_PAR_DEFAUT.map((heure) => ({ spaceId, membreId: m.id, heure })));
     }
   }
   return { membres: tous.length, affectations: AFFECTATIONS.length };
@@ -66,7 +66,7 @@ export async function poserBase(membres = membresDeclares()) {
 const estLocal = (url: string) => /@(localhost|127\.0\.0\.1)[:/]/.test(url);
 
 /** Les Tâches des maquettes. Remplace tout : c'est de la démo, et ça ne tourne qu'en local. */
-export async function poserDemo() {
+export async function poserDemo(spaceId = SPACE_ID) {
   if (!estLocal(dbUrl("migration"))) {
     throw new Error("La démo ne se pose que sur une base locale (localhost / 127.0.0.1).");
   }
@@ -74,12 +74,12 @@ export async function poserDemo() {
     { nom: "Antoine", email: `antoine@${DOMAINE}` },
     { nom: "Stan", email: `stan@${DOMAINE}` },
     { nom: "Victor", email: `victor@${DOMAINE}` },
-  ]);
-  const id = Object.fromEntries((await db.select().from(membre).where(eq(membre.spaceId, SPACE_ID))).map((m) => [m.nom, m.id]));
-  const aff = Object.fromEntries((await db.select().from(affectation).where(eq(affectation.spaceId, SPACE_ID))).map((a) => [a.nom, a.id]));
+  ], spaceId);
+  const id = Object.fromEntries((await db.select().from(membre).where(eq(membre.spaceId, spaceId))).map((m) => [m.nom, m.id]));
+  const aff = Object.fromEntries((await db.select().from(affectation).where(eq(affectation.spaceId, spaceId))).map((a) => [a.nom, a.id]));
 
-  await db.delete(tache).where(eq(tache.spaceId, SPACE_ID));
-  await db.delete(affectationMembre).where(eq(affectationMembre.spaceId, SPACE_ID));
+  await db.delete(tache).where(eq(tache.spaceId, spaceId));
+  await db.delete(affectationMembre).where(eq(affectationMembre.spaceId, spaceId));
 
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const jour = (delta: number) => { const d = new Date(); d.setDate(d.getDate() + delta); return d.toISOString().slice(0, 10); };
@@ -107,24 +107,24 @@ export async function poserDemo() {
     { bucket: "idees" as const, titre: "Un template de proposition commerciale" },
     { bucket: "idees" as const, titre: "Tester un outil de facturation" },
   ];
-  await db.insert(tache).values(lignes.map((l, i) => ({ spaceId: SPACE_ID, rang: String(i + 1), ...l })));
+  await db.insert(tache).values(lignes.map((l, i) => ({ spaceId: spaceId, rang: String(i + 1), ...l })));
 
   await db.insert(affectationMembre).values([
-    { spaceId: SPACE_ID, membreId: id.Antoine, affectationId: aff.MONKA, debut: jour(-5) },
-    { spaceId: SPACE_ID, membreId: id.Stan, affectationId: aff.AFP, debut: jour(-12) },
-    { spaceId: SPACE_ID, membreId: id.Stan, affectationId: aff.Interne, debut: jour(-2) },
-    { spaceId: SPACE_ID, membreId: id.Victor, affectationId: aff["Coup de Pâtes"], debut: jour(-20) },
+    { spaceId: spaceId, membreId: id.Antoine, affectationId: aff.MONKA, debut: jour(-5) },
+    { spaceId: spaceId, membreId: id.Stan, affectationId: aff.AFP, debut: jour(-12) },
+    { spaceId: spaceId, membreId: id.Stan, affectationId: aff.Interne, debut: jour(-2) },
+    { spaceId: spaceId, membreId: id.Victor, affectationId: aff["Coup de Pâtes"], debut: jour(-20) },
   ]);
   return { taches: lignes.length };
 }
 
-export async function compter() {
+export async function compter(spaceId = SPACE_ID) {
   const n = (r: { n: number }[]) => r[0].n;
   const total = sql<number>`count(*)::int`;
   return {
-    membres: n(await db.select({ n: total }).from(membre).where(eq(membre.spaceId, SPACE_ID))),
-    affectations: n(await db.select({ n: total }).from(affectation).where(eq(affectation.spaceId, SPACE_ID))),
-    taches: n(await db.select({ n: total }).from(tache).where(eq(tache.spaceId, SPACE_ID))),
-    creneaux: n(await db.select({ n: total }).from(creneau).where(eq(creneau.spaceId, SPACE_ID))),
+    membres: n(await db.select({ n: total }).from(membre).where(eq(membre.spaceId, spaceId))),
+    affectations: n(await db.select({ n: total }).from(affectation).where(eq(affectation.spaceId, spaceId))),
+    taches: n(await db.select({ n: total }).from(tache).where(eq(tache.spaceId, spaceId))),
+    creneaux: n(await db.select({ n: total }).from(creneau).where(eq(creneau.spaceId, spaceId))),
   };
 }

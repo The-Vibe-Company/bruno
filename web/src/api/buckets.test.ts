@@ -28,10 +28,12 @@ describe("les quatre Buckets", () => {
     expect(CreerTache.parse({ titre: "x", bucket: "idees" }).bucket).toBe("idees");
   });
 
-  it("invariant 1 — seul taches.ts écrit un Bucket ; aucun job, aucun cron, aucune route", () => {
+  it("invariant 1 — seuls taches.ts et les données de départ écrivent une Tâche ; aucun job, aucun cron, aucune route", () => {
+    // Lire un Bucket (un filtre) est libre ; l'écrire ne l'est pas. On cherche les écritures
+    // sur la table : update(tache) / insert(tache) / delete(tache).
     const ecrivent = fichiers(src)
       .filter((f) => !f.endsWith(path.join("api", "taches.ts")) && !f.includes(path.join("db", "seed.ts")))
-      .filter((f) => /\bbucket\s*:\s*(cible\.bucket|["'](sur_le_feu|a_venir|idees|a_trier)["'])/.test(readFileSync(f, "utf8")));
+      .filter((f) => /\b(update|insert|delete)\(\s*tache\s*\)/.test(readFileSync(f, "utf8")));
     expect(ecrivent.map((f) => path.relative(src, f))).toEqual([]);
   });
 
