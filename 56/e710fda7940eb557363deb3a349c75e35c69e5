@@ -1,0 +1,27 @@
+web/src/app/globals.css
+  s_7ec6903985e0db::t_7c1c3a7fe71a2d 3-14,16-20,22-44,49-77,81-114,116-120
+web/src/app/layout.tsx
+  s_7ec6903985e0db::t_2e00ed9dcac25e 2,5-7,9,19
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_62582829e4c8d0 1-11,13,15-49,51-52
+web/src/app/theme.test.ts
+  s_7ec6903985e0db::t_5df33a4e55b714 1-50
+tickets/E0-fondations.md
+  s_7ec6903985e0db::t_39dce84e4b1e00 122,125,127,130,133,135-139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "56e710fda7940eb557363deb3a349c75e35c69e5",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
