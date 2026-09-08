@@ -14,6 +14,7 @@ const composants = {
   Reordonner: C.Reordonner, Reporter: C.Reporter,
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
+  Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -126,6 +127,21 @@ export function documentOpenApi() {
         get: { summary: "Les Affectations", description: "Ce à quoi on peut travailler, désactivées comprises.",
           responses: { 200: { description: "La liste", content: { "application/json": { schema: { type: "array", items: ref("Affectation") } } } } } },
         post: { summary: "Ajouter une Affectation", requestBody: corps("AjouterAffectation"), responses: { 200: { description: "La liste" }, 422: { description: "Nom déjà pris" } } },
+      },
+      "/api/affectations/en-cours": {
+        get: { summary: "Qui est sur quoi", description: "Chaque Membre actif avec ses Affectations du moment.",
+          responses: { 200: { description: "Par Membre", content: { "application/json": { schema: { type: "array", items: ref("AffectationsMembre") } } } } } },
+        post: { summary: "« Aujourd'hui je suis sur MONKA »", description: "Continue, plusieurs à la fois sans limite. Sans membreId c'est moi, sans debut c'est aujourd'hui. Déjà dessus : rien ne double.",
+          requestBody: corps("PoserAffectation"), responses: { 200: { description: "Qui est sur quoi, à jour" }, 422: { description: "Affectation désactivée" } } },
+      },
+      "/api/affectations/en-cours/{id}/fin": {
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string", format: "uuid" } }],
+        post: { summary: "« Je ne suis plus dessus »", description: "L'unique action : la fin se pose au jour même. L'historique reste.", responses: { 200: { description: "Qui est sur quoi, à jour" } } },
+      },
+      "/api/affectations/historique": {
+        get: { summary: "« Hier j'étais sur MONKA »", description: "Tout, fini compris, du plus récent au plus ancien.",
+          parameters: [{ name: "membreId", in: "query", schema: { type: "string", format: "uuid" } }],
+          responses: { 200: { description: "L'historique", content: { "application/json": { schema: { type: "array", items: ref("Sur") } } } } } },
       },
       "/api/affectations/{id}": {
         parameters: [idTache],
