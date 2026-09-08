@@ -100,9 +100,17 @@ plus tard (PRD §11).
 
 ## BRU-5 — Données de départ
 
-- [ ] Les trois Membres créés à la main
-- [ ] Les Clients de départ, dont `Interne`
-- [ ] Un jeu de données de démonstration pour développer sans écran vide
+- [x] L'Espace (identifiant fixe) et les Membres — `pnpm db:seed`, idempotent, **posé en
+      production**. Seul Antoine est pré-créé : on ne connaît pas les adresses des deux autres,
+      et la connexion Google crée un Membre à la première venue de quiconque du domaine — une
+      adresse devinée ferait un doublon. Pour les pré-créer : `SEED_MEMBRES="Stan:…,Victor:…"`
+- [x] Les Affectations de départ : MONKA, AFP, Coup de Pâtes, Interne, et Bergamote désactivée
+- [x] Des Créneaux par défaut (09:15 · 14:00 · 17:30) pour tout Membre qui n'en a aucun —
+      sans jamais remettre ceux qu'un Membre a retirés
+- [x] Un jeu de démonstration (les 19 Tâches des maquettes, 4 Affectations en cours) —
+      `pnpm db:seed:demo`, **refusé hors de localhost**, et prouvé refusé sur Neon
+- [x] 3 tests : relancer ne change rien, les Créneaux retirés le restent, la démo se relance
+      sans doublon
 
 ## BRU-38 — Thème clair et sombre
 
