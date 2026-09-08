@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deplacer, type Colonnes } from "./deplacement";
+import { colonneVisee, deplacer, type Colonnes } from "./deplacement";
 
 const base = (): Colonnes => ({ a_faire: ["a", "b", "c"], en_cours: ["d"], bloque: [] });
 
@@ -42,5 +42,14 @@ describe("ce qu'un glisser veut dire", () => {
       { type: "statut", id: "d", statut: "bloque" },
       { type: "rang", id: "d", avantId: null, apresId: null },
     ]);
+  });
+});
+
+describe("une carte venue du panneau", () => {
+  it("vise la colonne sur laquelle elle est lâchée, ou la colonne de la carte survolée", () => {
+    expect(colonneVisee(base(), "bloque")).toBe("bloque");
+    expect(colonneVisee(base(), "d")).toBe("en_cours");
+    expect(colonneVisee(base(), "inconnu")).toBeNull();
+    expect(colonneVisee(base(), null)).toBeNull();
   });
 });

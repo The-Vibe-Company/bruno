@@ -1,0 +1,70 @@
+"use client";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useState } from "react";
+import { aujourdhui, libelleJour, libelleLong } from "@/lib/dates";
+import { Initiale } from "./Carte";
+import type { Statut } from "./deplacement";
+
+export type Membre = { id: string; nom: string };
+export type Demande = { id: string; titre: string; statut: Statut } | null;
+
+/**
+ * Le droit d'entrée Sur le feu — invariant 2, le seul verrou dur de Bruno.
+ * Deux champs et deux seulement, pré-remplis « moi » et « aujourd'hui », validables en un
+ * tap. Ni blocage sec, ni valeur par défaut silencieuse : on voit toujours à quoi on s'engage.
+ */
+export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }: {
+  demande: Demande; membres: Membre[]; moiId: string;
+  onConfirmer: (d: { id: string; assigneId: string; engagement: string; statut: Statut }) => Promise<void>;
+  onAnnuler: () => void;
+}) {
+  const [assigneId, setAssigneId] = useState(moiId);
+  const [engagement, setEngagement] = useState(aujourdhui());
+  const [occupe, setOccupe] = useState(false);
+  const ouvert = demande !== null;
+
+  async function confirmer() {
+    if (!demande) return;
+    setOccupe(true);
+    try { await onConfirmer({ id: demande.id, assigneId, engagement, statut: demande.statut }); }
+    finally { setOccupe(false); setAssigneId(moiId); setEngagement(aujourdhui()); }
+  }
+
+  return (
+    <Dialog.Root open={ouvert} onOpenChange={(o) => !o && onAnnuler()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-fond-page/70" />
+        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-1/2 flex w-[440px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-2xl border border-bord-fort bg-surface p-6 shadow-2xl outline-none">
+          <div>
+            <p className="text-[13px] text-accent">Passer Sur le feu</p>
+            <Dialog.Title className="mt-1.5 text-[21px] font-medium leading-tight tracking-tight">{demande?.titre}</Dialog.Title>
+          </div>
+          <div className="flex flex-col gap-3.5">
+            <label className="flex flex-col gap-1.5 text-[13px] text-texte-sourd">
+              Assigné
+              <span className="relative flex h-11 items-center rounded-lg border border-bord-fort bg-fond px-3 text-[15.5px] text-texte">
+                <Initiale nom={membres.find((m) => m.id === assigneId)?.nom ?? "?"} />
+                <select value={assigneId} onChange={(e) => setAssigneId(e.target.value)} className="ml-2 flex-1 appearance-none bg-transparent outline-none">
+                  {membres.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}
+                </select>
+                {assigneId === moiId && <span className="text-[13px] text-texte-faible">moi</span>}
+              </span>
+            </label>
+            <label className="flex flex-col gap-1.5 text-[13px] text-texte-sourd">
+              Engagement
+              <span className="flex h-11 items-center justify-between rounded-lg border border-bord-fort bg-fond px-3 text-[15.5px] text-texte">
+                <span className="flex-1">{libelleLong(engagement)}</span>
+                <input type="date" value={engagement} min={aujourdhui()} onChange={(e) => e.target.value && setEngagement(e.target.value)} className="w-8 bg-transparent text-transparent outline-none [color-scheme:dark]" aria-label="Choisir une date" />
+                <span className="text-[13px] text-texte-faible">{libelleJour(engagement)}</span>
+              </span>
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={confirmer} disabled={occupe} className="h-11 flex-1 rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Passer Sur le feu</button>
+            <Dialog.Close asChild><button className="h-11 px-3 text-sm text-texte-sourd">Annuler</button></Dialog.Close>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}

@@ -1,16 +1,28 @@
 "use client";
-import { DndContext, DragOverlay, PointerSensor, closestCorners, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { abandonner, appliquer, supprimer, terminer } from "./api";
+import { abandonner, appliquer, deplacerBucket, supprimer, terminer } from "./api";
 import { Detail } from "./Detail";
+import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
+import { EnAttente, type TacheAttente } from "./EnAttente";
 import { Carte, type TacheCarte } from "./Carte";
 import { Colonne } from "./Colonne";
-import { colonneDe, deplacer, type Colonnes, type Statut } from "./deplacement";
+import { colonneDe, colonneVisee, deplacer, type Colonnes, type Statut } from "./deplacement";
 
 const STATUTS: Statut[] = ["a_faire", "en_cours", "bloque"];
 
-export function Kanban({ taches }: { taches: TacheCarte[] }) {
+/**
+ * Où lâche-t-on ? D'abord la zone qui contient le pointeur — c'est ce que l'œil attend.
+ * `closestCorners` seul élit parfois une carte d'une colonne voisine plus haute, parce que
+ * ses coins sont « plus proches » que ceux d'une colonne courte : on ne le garde qu'en repli.
+ */
+const collision: CollisionDetection = (args) => {
+  const sous = pointerWithin(args);
+  return sous.length > 0 ? sous : closestCorners(args);
+};
+
+export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCarte[]; enAttente: TacheAttente[]; membres: Membre[]; moiId: string }) {
   const router = useRouter();
   const [, demarrer] = useTransition();
   const parId = useMemo(() => new Map(taches.map((t) => [t.id, t])), [taches]);
@@ -26,6 +38,8 @@ export function Kanban({ taches }: { taches: TacheCarte[] }) {
   if (base !== initiales) { setBase(initiales); setColonnes(initiales); }
   const [actif, setActif] = useState<TacheCarte | null>(null);
   const [ouverteId, setOuverteId] = useState<string | null>(null);
+  const [demande, setDemande] = useState<Demande>(null);
+  const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const [erreur, setErreur] = useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -33,6 +47,13 @@ export function Kanban({ taches }: { taches: TacheCarte[] }) {
 
   async function finDeGlisser({ active, over }: DragEndEvent) {
     setActif(null);
+    const venue = attenteParId.get(String(active.id));
+    if (venue) {
+      // Une carte du panneau lâchée sur le kanban : c'est le droit d'entrée qui décide.
+      const statut = colonneVisee(colonnes, over ? String(over.id) : null);
+      if (statut) setDemande({ id: venue.id, titre: venue.titre, statut });
+      return;
+    }
     if (!over || active.id === over.id) return;
     const { mutations, colonnes: suivantes } = deplacer(colonnes, String(active.id), String(over.id));
     if (mutations.length === 0) return;
@@ -55,27 +76,48 @@ export function Kanban({ taches }: { taches: TacheCarte[] }) {
 
   const carte = (id: string, statut: Statut): TacheCarte => ({ ...parId.get(id)!, statut });
 
+  async function destination(t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") {
+    if (b === "sur_le_feu") { setDemande({ id: t.id, titre: t.titre, statut: "a_faire" }); return; }
+    setErreur(null);
+    try { await deplacerBucket(t.id, b === "a_venir" ? { bucket: "a_venir", engagement: t.engagement } : { bucket: "idees" }); }
+    catch (e) { setErreur((e as Error).message); }
+    rafraichir();
+  }
+  async function entrerSurLeFeu(d: { id: string; assigneId: string; engagement: string; statut: Statut }) {
+    setErreur(null);
+    try { await deplacerBucket(d.id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut }); setDemande(null); }
+    catch (e) { setErreur((e as Error).message); }
+    rafraichir();
+  }
+
   return (
     <DndContext
       // Un id stable : sans lui, dnd-kit numérote ses attributs d'accessibilité différemment
       // côté serveur et côté client, et React signale un décalage d'hydratation.
       id="dnd-board"
       sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={({ active }: DragStartEvent) => setActif(parId.get(String(active.id)) ?? null)}
+      collisionDetection={collision}
+      onDragStart={({ active }: DragStartEvent) => {
+        const id = String(active.id); const a = attenteParId.get(id);
+        setActif(parId.get(id) ?? (a ? { id: a.id, titre: a.titre, statut: "a_faire", engagement: a.engagement, reportsCount: 0, assigne: a.assigne, aidants: [], notes: null, transcriptionBrute: a.transcriptionBrute } : null));
+      }}
       onDragEnd={finDeGlisser}
       onDragCancel={() => setActif(null)}
     >
       {erreur && (
-        <p role="alert" className="mb-3 rounded-lg border border-bloque/40 bg-bloque-voile px-3 py-2 text-sm">
+        <p role="alert" className="mx-8 mt-3 rounded-lg border border-bloque/40 bg-bloque-voile px-3 py-2 text-sm">
           {erreur} <button className="ml-2 underline" onClick={() => setErreur(null)}>ok</button>
         </p>
       )}
-      <div className="grid min-h-0 flex-1 grid-cols-3 gap-6">
-        {STATUTS.map((s) => (
-          <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} onTerminer={onTerminer} onOuvrir={setOuverteId} />
-        ))}
+      <div className="flex min-h-0 flex-1">
+        <div className="grid min-h-0 flex-1 grid-cols-3 gap-6 px-8 pb-8 pt-6">
+          {STATUTS.map((s) => (
+            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} onTerminer={onTerminer} onOuvrir={setOuverteId} />
+          ))}
+        </div>
+        <EnAttente taches={enAttente} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} />
       </div>
+      <DroitEntree demande={demande} membres={membres} moiId={moiId} onConfirmer={entrerSurLeFeu} onAnnuler={() => setDemande(null)} />
       <DragOverlay>{actif ? <Carte tache={actif} fantome /> : null}</DragOverlay>
       <Detail
         tache={ouverteId ? (() => { const t = parId.get(ouverteId); return t ? carte(ouverteId, colonneDe(colonnes, ouverteId) ?? t.statut) : null; })() : null}
