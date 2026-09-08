@@ -252,3 +252,18 @@ describe("les erreurs", () => {
       .rejects.toBeInstanceOf(ErreurApi);
   });
 });
+
+describe("les Tâches finies, par jour de Bruno", () => {
+  it("range chaque fin dans son jour, en heure de Paris — pas en UTC", async () => {
+    const [a, b, c] = await db.insert(tache).values([
+      { spaceId, titre: "Finie hier midi", bucket: "a_venir", etatTerminal: "termine", termineLe: new Date("2026-09-07T12:00:00Z"), rang: "900" },
+      { spaceId, titre: "Finie hier tard, déjà aujourd'hui à Paris", bucket: "a_venir", etatTerminal: "abandonne", termineLe: new Date("2026-09-07T23:30:00Z"), rang: "901" },
+      { spaceId, titre: "Finie avant-hier", bucket: "a_venir", etatTerminal: "termine", termineLe: new Date("2026-09-06T12:00:00Z"), rang: "902" },
+    ]).returning({ id: tache.id });
+    const hier = await T.terminees(ctx, "2026-09-07");
+    expect(hier.map((t) => t.id)).toEqual([a.id]);
+    expect(hier[0].jourFin).toBe("2026-09-07");
+    expect((await T.terminees(ctx, "2026-09-08")).map((t) => t.id)).toEqual([b.id]);
+    expect((await T.terminees(ctx, "2026-09-06", "2026-09-08")).map((t) => t.id)).toEqual([b.id, a.id, c.id]);
+  });
+});

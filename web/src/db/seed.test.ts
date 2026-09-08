@@ -35,7 +35,7 @@ describe("les données de départ", () => {
     const a = await compter(SPACE_ID);
     await poserDemo(SPACE_ID);
     expect(await compter(SPACE_ID)).toEqual(a);
-    expect(a.taches).toBe(19);
+    expect(a.taches).toBe(27);
     expect(a.membres).toBe(3);
   });
 });

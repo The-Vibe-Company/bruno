@@ -14,6 +14,7 @@
  */
 import { eq, sql } from "drizzle-orm";
 import { db } from "./client";
+import { jourOuvrePrecedent } from "@/lib/dates";
 import { affectation, affectationMembre, creneau, membre, space, tache } from "./schema";
 import { dbUrl } from "./url";
 
@@ -85,6 +86,9 @@ export async function poserDemo(spaceId = SPACE_ID) {
   const jour = (delta: number) => { const d = new Date(); d.setDate(d.getDate() + delta); return d.toISOString().slice(0, 10); };
   const feu = (titre: string, statut: "a_faire" | "en_cours" | "bloque", assigne: string, engagement = aujourdhui, extra = {}) =>
     ({ bucket: "sur_le_feu" as const, statut, assigneId: id[assigne], engagement, titre, ...extra });
+  const hier = jourOuvrePrecedent(aujourdhui);
+  const fini = (titre: string, assigne: string, etatTerminal: "termine" | "abandonne", jourFin: string) =>
+    ({ ...feu(titre, "a_faire" as const, assigne, jourFin), etatTerminal, termineLe: new Date(`${jourFin}T14:00:00Z`) });
 
   const lignes = [
     feu("Relancer MONKA sur le devis", "a_faire", "Antoine"),
@@ -106,6 +110,14 @@ export async function poserDemo(spaceId = SPACE_ID) {
     { bucket: "idees" as const, titre: "Une newsletter mensuelle" },
     { bucket: "idees" as const, titre: "Un template de proposition commerciale" },
     { bucket: "idees" as const, titre: "Tester un outil de facturation" },
+    fini("Brief créa MONKA", "Antoine", "termine", hier),
+    fini("Facture août", "Antoine", "termine", hier),
+    fini("Compte rendu comité AFP", "Stan", "termine", hier),
+    fini("Post LinkedIn 1/3", "Victor", "termine", hier),
+    fini("Refonte du logo", "Antoine", "abandonne", hier),
+    fini("Onboarding Bergamote", "Stan", "termine", jour(-8)),
+    fini("Webinaire septembre", "Stan", "abandonne", jour(-9)),
+    fini("Audit SEO Coup de Pâtes", "Victor", "termine", jour(-10)),
   ];
   await db.insert(tache).values(lignes.map((l, i) => ({ spaceId: spaceId, rang: String(i + 1), ...l })));
 
@@ -114,6 +126,7 @@ export async function poserDemo(spaceId = SPACE_ID) {
     { spaceId: spaceId, membreId: id.Stan, affectationId: aff.AFP, debut: jour(-12) },
     { spaceId: spaceId, membreId: id.Stan, affectationId: aff.Interne, debut: jour(-2) },
     { spaceId: spaceId, membreId: id.Victor, affectationId: aff["Coup de Pâtes"], debut: jour(-20) },
+    { spaceId: spaceId, membreId: id.Antoine, affectationId: aff.Interne, debut: jour(-8), fin: hier },
   ]);
   return { taches: lignes.length };
 }

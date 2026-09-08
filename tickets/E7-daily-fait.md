@@ -5,14 +5,14 @@
 Maquette : `Bruno Web v2` → écran « Daily ». C'est l'interface de la réunion du matin :
 lecture seule, projetable, une seule page.
 
-- [ ] Bandeau d'alerte en tête : nombre de Tâches dans **À trier** et nombre de Tâches
+- [x] Bandeau d'alerte en tête : nombre de Tâches dans **À trier** et nombre de Tâches
       **reportées 3 fois ou plus**. Ce sont les deux seuls signaux de santé de Bruno
-- [ ] Filtre `Tous` + une pastille par Membre, pour dérouler la réunion personne par personne
-- [ ] Les **Affectations du jour** de chacun
-- [ ] Bloc **Hier** : Tâches Terminées et Abandonnées, plus les Affectations de la veille
-- [ ] Les Tâches **Sur le feu aujourd'hui** groupées par Statut, avatar de l'Assigné sur
+- [x] Filtre `Tous` + une pastille par Membre, pour dérouler la réunion personne par personne
+- [x] Les **Affectations du jour** de chacun
+- [x] Bloc **Hier** : Tâches Terminées et Abandonnées, plus les Affectations de la veille
+- [x] Les Tâches **Sur le feu aujourd'hui** groupées par Statut, avatar de l'Assigné sur
       chaque ligne
-- [ ] **Aucune donnée nouvelle** : le Daily n'agrège que ce qui existe déjà
+- [x] **Aucune donnée nouvelle** : le Daily n'agrège que ce qui existe déjà
 
 ## BRU-31 — Écran Fait
 

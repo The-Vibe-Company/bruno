@@ -40,3 +40,11 @@ export function libelleReport(jour: string, ref: string = aujourdhui()): string 
   if (jour === lundiProchain(ref)) return "Reporter à lundi";
   return `Reporter au ${l}`;
 }
+
+export const veille = (ref: string = aujourdhui()): string => decale(-1, ref);
+/** Le jour ouvré d'avant — le vendredi quand on est lundi. C'est lui que le Daily appelle « hier ». */
+export function jourOuvrePrecedent(ref: string = aujourdhui()): string {
+  let j = decale(-1, ref);
+  while ([0, 6].includes(new Date(j + "T12:00:00Z").getUTCDay())) j = decale(-1, j);
+  return j;
+}

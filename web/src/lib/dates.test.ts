@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { demain, libelleJour, libelleLong, libelleReport, lundiProchain } from "./dates";
+import { demain, jourOuvrePrecedent, libelleJour, libelleLong, libelleReport, lundiProchain, veille } from "./dates";
 
 describe("le nom d'un jour", () => {
   const ref = "2026-09-08";
@@ -31,5 +31,14 @@ describe("le bouton qui reporte", () => {
     expect(libelleReport("2026-09-09", "2026-09-08")).toBe("Reporter à demain");
     expect(libelleReport("2026-09-14", "2026-09-08")).toBe("Reporter à lundi");
     expect(libelleReport("2026-09-20", "2026-09-08")).toBe("Reporter au 20 sept.");
+  });
+});
+
+describe("hier, pour le Daily", () => {
+  it("la veille, sauf le lundi où c'est vendredi", () => {
+    expect(veille("2026-09-08")).toBe("2026-09-07");
+    expect(jourOuvrePrecedent("2026-09-08")).toBe("2026-09-07");
+    expect(jourOuvrePrecedent("2026-09-07")).toBe("2026-09-04");
+    expect(jourOuvrePrecedent("2026-09-06")).toBe("2026-09-04");
   });
 });

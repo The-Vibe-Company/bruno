@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, membre, space } from "@/db/schema";
-import { activer, ajouter, enCours, fermer, historique, lister, poser } from "./affectations";
+import { activer, ajouter, auJour, enCours, fermer, historique, lister, poser } from "./affectations";
 import { tache } from "@/db/schema";
 import { instant } from "@/relances/temps";
 
@@ -24,6 +24,14 @@ describe("qui est sur quoi", () => {
   it("liste chaque Membre avec ses Affectations en cours, sans celles qui sont finies", async () => {
     const r = await enCours({ spaceId });
     expect(r.map((m) => [m.nom, m.affectations.map((x) => x.nom)])).toEqual([["Antoine", ["MONKA"]], ["Stan", ["AFP"]]]);
+  });
+});
+
+describe("hier, qui était sur quoi", () => {
+  it("compte une période finie ce jour-là, et pas celle qui a commencé après", async () => {
+    const r = await auJour({ spaceId }, "2026-09-05");
+    expect(r.map((m) => [m.nom, m.affectations.map((x) => x.nom)])).toEqual([["Antoine", ["MONKA"]], ["Stan", ["AFP", "MONKA"]]]);
+    expect((await auJour({ spaceId }, "2026-08-25")).map((m) => m.affectations.map((x) => x.nom))).toEqual([[], ["AFP"]]);
   });
 });
 
