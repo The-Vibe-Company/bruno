@@ -36,14 +36,18 @@ morte et le pilier 1 avec.
 
 ## BRU-9 — Enrichissement LLM asynchrone
 
-- [ ] Tourne **après** la création de la Tâche, jamais avant — il ne bloque rien
-- [ ] Produit un titre propre, et remplit Assigné et Engagement **uniquement s'ils sont énoncés
+- [x] Tourne **après** la création de la Tâche, jamais avant — il ne bloque rien
+- [x] Produit un titre propre, et remplit Assigné et Engagement **uniquement s'ils sont énoncés
       explicitement** *(règle 4 : il ne devine jamais)*
-- [ ] Ne pose **jamais** le Bucket `Sur le feu` *(règle 2)*
-- [ ] Si l'utilisateur dit « urgent », la Tâche remonte en tête d'À trier — rien de plus
-- [ ] Si le LLM échoue ou n'est pas joignable, la Tâche reste avec son titre brut, et c'est un
+- [x] Ne pose **jamais** le Bucket `Sur le feu` *(règle 2)*
+- [x] Si l'utilisateur dit « urgent », la Tâche remonte en tête d'À trier — rien de plus
+- [x] Si le LLM échoue ou n'est pas joignable, la Tâche reste avec son titre brut, et c'est un
       état parfaitement acceptable
-- [ ] La transcription brute reste visible sous le titre nettoyé, dans les Notes
+- [x] La transcription brute reste visible sous le titre nettoyé, dans les Notes
+
+*Fait côté serveur : `POST /api/taches` répond, puis enrichit après coup (`after()`), seulement
+pour une Capture (À trier). Sans `ANTHROPIC_API_KEY`, rien ne se passe et rien ne casse. À poser
+dans Vercel pour l'activer en prod.*
 
 ## BRU-10 — Widget écran d'accueil · **bloqué par BRU-34**
 
