@@ -1,0 +1,29 @@
+web/src/api/taches.test.ts
+  s_7ec6903985e0db::t_9775c11d452ce6 148-174
+web/src/board/Carte.tsx
+  s_7ec6903985e0db::t_9775c11d452ce6 19-25,64
+web/src/board/Detail.tsx
+  s_7ec6903985e0db::t_1d871def8db0bd 22,24-25,27,29-30,33
+  s_7ec6903985e0db::t_9775c11d452ce6 4,6,23,26,28,31-32,77,96-108
+  s_7ec6903985e0db::t_7a86da0200105d 109
+web/src/api/taches.ts
+  s_7ec6903985e0db::t_9775c11d452ce6 8,246,249-270
+tickets/E4-engagement-report.md
+  s_7ec6903985e0db::t_5fe68589282d73 39,41-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "025684f0bec0ffd259e8dce951c578b4415b07a2",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
