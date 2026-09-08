@@ -9,11 +9,11 @@
 
 Table `affectation` : ce à quoi on peut travailler. MONKA, AFP, Coup de Pâtes, Interne, Bergamote.
 
-- [ ] Liste ouverte, ajout en une ligne depuis les Réglages web
-- [ ] `Interne` en fait partie — c'est pour ça que le mot n'est pas « Client »
-- [ ] On **désactive**, on ne supprime **jamais** : l'historique ne doit pas se trouer
-- [ ] Une couleur par Affectation, utilisée sur les bandeaux
-- [ ] **Une Affectation ne se pose jamais sur une Tâche.** Aucune colonne de ce genre sur `tache`
+- [x] Liste ouverte, ajout en une ligne depuis les Réglages web
+- [x] `Interne` en fait partie — c'est pour ça que le mot n'est pas « Client »
+- [x] On **désactive**, on ne supprime **jamais** : l'historique ne doit pas se trouer
+- [x] Une couleur par Affectation, utilisée sur les bandeaux
+- [x] **Une Affectation ne se pose jamais sur une Tâche.** Aucune colonne de ce genre sur `tache`
 
 ## BRU-27 — Qui est sur quoi
 

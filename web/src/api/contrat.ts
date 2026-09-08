@@ -102,3 +102,12 @@ export const Creneau = z.object({
   nature: z.enum(["point_du_matin", "rappel", "bilan"]),
 });
 export const PoserCreneau = z.object({ heure: Heure });
+
+/* ------------------------------------------------------------------ les Affectations */
+
+export const Affectation = z.object({ id: uuid, nom: z.string(), couleur: z.string(), actif: z.boolean() });
+export const AjouterAffectation = z.object({
+  nom: z.string().trim().min(1, "Un nom").max(40),
+  couleur: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Une couleur, comme #F27313"),
+});
+export const ActiverAffectation = z.object({ actif: z.boolean() });
