@@ -19,10 +19,10 @@ lecture seule, projetable, une seule page.
 Maquette : `Bruno Web v2` → écran « Terminé ». **À renommer « Fait »** : il contient les Tâches
 Terminées *et* Abandonnées, alors que `Terminé` désigne un état précis du glossaire.
 
-- [ ] Groupé par semaine, la semaine courante marquée « en cours »
-- [ ] Compteurs par semaine : `9 terminées · 3 abandonnées`
-- [ ] Filtre par Membre
-- [ ] Pour chaque semaine et chaque personne : son **Affectation de la semaine**, puis ses
+- [x] Groupé par semaine, la semaine courante marquée « en cours »
+- [x] Compteurs par semaine : `9 terminées · 3 abandonnées`
+- [x] Filtre par Membre
+- [x] Pour chaque semaine et chaque personne : son **Affectation de la semaine**, puis ses
       Tâches Terminées et Abandonnées
-- [ ] **Pas de compteur de jours par Client, pas de cumul mensuel.** C'est explicitement hors
+- [x] **Pas de compteur de jours par Client, pas de cumul mensuel.** C'est explicitement hors
       scope — la donnée est stockée, l'écran viendra si le besoin devient réel

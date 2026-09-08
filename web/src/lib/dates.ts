@@ -48,3 +48,14 @@ export function jourOuvrePrecedent(ref: string = aujourdhui()): string {
   while ([0, 6].includes(new Date(j + "T12:00:00Z").getUTCDay())) j = decale(-1, j);
   return j;
 }
+
+/** Le lundi de la semaine d'un jour — c'est lui qui nomme la semaine dans Fait. */
+export function lundiDe(jour: string): string {
+  const js = new Date(jour + "T12:00:00Z").getUTCDay(); // 0 = dimanche
+  return decale(-((js + 6) % 7), jour);
+}
+export const dimancheDe = (lundi: string): string => decale(6, lundi);
+/** « Semaine du 1 septembre ». */
+export function libelleSemaine(lundi: string): string {
+  return "Semaine du " + new Date(lundi + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "UTC" });
+}
