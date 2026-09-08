@@ -1,0 +1,48 @@
+web/src/api/erreurs.ts
+  s_7ec6903985e0db::t_25b686df3055ef 67-77
+web/src/api/recurrences.test.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 1-29
+web/src/app/api/recurrences/[id]/route.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 1-8
+web/src/api/openapi.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 18,151-160
+tickets/E8-recurrence.md
+  s_7ec6903985e0db::t_583417d2b66d1e 9-10,12
+web/src/api/taches.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 10
+web/src/api/contrat.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 120-142
+web/src/app/api/recurrences/route.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 1-6
+web/src/app/Coquille.tsx
+  s_7ec6903985e0db::t_0be27f163fbac7 5,10
+web/src/app/recurrences/page.tsx
+  s_7ec6903985e0db::t_0be27f163fbac7 1-58
+web/src/recurrences/Editeur.tsx
+  s_7ec6903985e0db::t_0be27f163fbac7 1-90
+web/src/recurrences/regle.test.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 1-31
+web/src/db/seed.ts
+  s_7ec6903985e0db::t_0be27f163fbac7 18,84,132-136
+  s_7ec6903985e0db::t_7f462a4aaa970e 137
+web/src/api/recurrences.ts
+  s_7ec6903985e0db::t_96bfadb5201142 1-54
+web/src/recurrences/regle.ts
+  s_7ec6903985e0db::t_0982b01d446b03 1-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "13983a8c377eed0ec41a50fee78d081df46169e6",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
