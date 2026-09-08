@@ -1,0 +1,210 @@
+/**
+ * Les opérations sur les Tâches, contre un vrai Postgres.
+ *
+ * On teste les règles du PRD, pas les getters : ce qui doit être refusé l'est, ce qui doit
+ * être conservé l'est. Chaque fichier travaille dans son propre Espace, puis le supprime.
+ */
+import { randomUUID } from "node:crypto";
+import { eq } from "drizzle-orm";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { db } from "@/db/client";
+import { affectation, membre, space, tache } from "@/db/schema";
+import { ErreurApi } from "./erreurs";
+import * as T from "./taches";
+
+const spaceId = randomUUID();
+const antoine = randomUUID();
+const stan = randomUUID();
+const ctx = { spaceId, membreId: antoine };
+const DEMAIN = "2026-09-09";
+
+beforeAll(async () => {
+  await db.insert(space).values({ id: spaceId, nom: "Test" });
+  await db.insert(membre).values([
+    { id: antoine, spaceId, nom: "Antoine", email: `a-${spaceId}@t.co` },
+    { id: stan, spaceId, nom: "Stan", email: `s-${spaceId}@t.co` },
+  ]);
+  await db.insert(affectation).values({ spaceId, nom: "MONKA", couleur: "#F27313" });
+});
+afterAll(async () => {
+  await db.delete(space).where(eq(space.id, spaceId));
+});
+beforeEach(async () => {
+  await db.delete(tache).where(eq(tache.spaceId, spaceId));
+});
+
+const capture = (titre = "Relancer MONKA sur le devis") =>
+  T.creer(ctx, { titre, bucket: "a_trier", transcriptionBrute: `« ${titre} »` });
+
+describe("la Capture", () => {
+  it("atterrit dans À trier, sans Assigné ni Engagement", async () => {
+    const t = await capture();
+    expect(t.bucket).toBe("a_trier");
+    expect(t.assigneId).toBeNull();
+    expect(t.engagement).toBeNull();
+    expect(t.statut).toBeNull();
+  });
+
+  it("conserve la transcription brute", async () => {
+    const t = await capture("faudrait relancer MONKA");
+    expect(t.transcriptionBrute).toBe("« faudrait relancer MONKA »");
+  });
+
+  it("refuse un titre vide", async () => {
+    await expect(T.creer(ctx, { titre: "   ", bucket: "a_trier" } as never)).rejects.toThrow();
+  });
+});
+
+describe("le droit d'entrée Sur le feu", () => {
+  it("refuse sans Assigné ni Engagement", async () => {
+    const t = await capture();
+    await expect(
+      T.deplacer(ctx, t.id, { bucket: "sur_le_feu" } as never),
+    ).rejects.toMatchObject({ code: "droit_entree_sur_le_feu" });
+  });
+
+  it("refuse avec l'Assigné seul", async () => {
+    const t = await capture();
+    await expect(
+      T.deplacer(ctx, t.id, { bucket: "sur_le_feu", assigneId: antoine, statut: "a_faire" } as never),
+    ).rejects.toMatchObject({ code: "droit_entree_sur_le_feu" });
+  });
+
+  it("accepte avec les deux, et pose le Statut", async () => {
+    const t = await capture();
+    const sur = await T.deplacer(ctx, t.id, {
+      bucket: "sur_le_feu", assigneId: antoine, engagement: DEMAIN, statut: "a_faire",
+    });
+    expect(sur.bucket).toBe("sur_le_feu");
+    expect(sur.statut).toBe("a_faire");
+    expect(sur.engagement).toBe(DEMAIN);
+  });
+
+  it("conserve Assigné et Engagement en sortant de Sur le feu (règle 7)", async () => {
+    const t = await capture();
+    await T.deplacer(ctx, t.id, {
+      bucket: "sur_le_feu", assigneId: antoine, engagement: DEMAIN, statut: "a_faire",
+    });
+    const sortie = await T.deplacer(ctx, t.id, { bucket: "a_venir" });
+    expect(sortie.bucket).toBe("a_venir");
+    expect(sortie.assigneId).toBe(antoine);
+    expect(sortie.engagement).toBe(DEMAIN);
+    expect(sortie.statut).toBeNull();
+  });
+});
+
+async function surLeFeu(titre?: string) {
+  const t = await capture(titre);
+  return T.deplacer(ctx, t.id, {
+    bucket: "sur_le_feu", assigneId: antoine, engagement: DEMAIN, statut: "a_faire",
+  });
+}
+
+describe("le Report", () => {
+  it("déplace l'Engagement, incrémente le compteur et laisse une trace", async () => {
+    const t = await surLeFeu();
+    const apres = await T.reporter(ctx, t.id, { raison: "bloqué par la relecture", nouvelEngagement: "2026-09-10" });
+    expect(apres.engagement).toBe("2026-09-10");
+    expect(apres.reportsCount).toBe(1);
+    const historique = await T.reports(ctx, t.id);
+    expect(historique).toHaveLength(1);
+    expect(historique[0].raison).toBe("bloqué par la relecture");
+    expect(historique[0].ancienEngagement).toBe(DEMAIN);
+  });
+
+  it("refuse une raison vide", async () => {
+    const t = await surLeFeu();
+    await expect(
+      T.reporter(ctx, t.id, { raison: "   ", nouvelEngagement: "2026-09-10" }),
+    ).rejects.toMatchObject({ code: "raison_obligatoire" });
+  });
+
+  it("refuse de reporter une Tâche déjà terminée", async () => {
+    const t = await surLeFeu();
+    await T.terminer(ctx, t.id);
+    await expect(
+      T.reporter(ctx, t.id, { raison: "trop tard", nouvelEngagement: "2026-09-10" }),
+    ).rejects.toMatchObject({ code: "deja_terminee" });
+  });
+});
+
+describe("les fins", () => {
+  it("Terminé et Abandonné sont deux états distincts", async () => {
+    const a = await surLeFeu("une");
+    const b = await surLeFeu("deux");
+    expect((await T.terminer(ctx, a.id)).etatTerminal).toBe("termine");
+    expect((await T.abandonner(ctx, b.id)).etatTerminal).toBe("abandonne");
+  });
+
+  it("une Tâche terminée quitte le board", async () => {
+    const t = await surLeFeu();
+    await T.terminer(ctx, t.id);
+    expect(await T.lister(ctx, { inclureTerminees: false })).toHaveLength(0);
+    expect(await T.lister(ctx, { inclureTerminees: true })).toHaveLength(1);
+  });
+
+  it("on ne termine pas deux fois", async () => {
+    const t = await surLeFeu();
+    await T.terminer(ctx, t.id);
+    await expect(T.terminer(ctx, t.id)).rejects.toMatchObject({ code: "deja_terminee" });
+  });
+
+  it("Supprimer efface pour de bon", async () => {
+    const t = await capture();
+    await T.supprimer(ctx, t.id);
+    await expect(T.obtenir(ctx, t.id)).rejects.toMatchObject({ code: "introuvable" });
+  });
+});
+
+describe("le Rang", () => {
+  it("place entre deux voisines sans jamais perdre en précision", async () => {
+    const a = await capture("a");
+    const b = await capture("b");
+    const c = await capture("c");
+    // On insère c entre a et b, cinquante fois de suite : un flottant aurait cédé.
+    for (let i = 0; i < 50; i++) await T.reordonner(ctx, c.id, { avantId: a.id, apresId: b.id });
+    const ordre = (await T.lister(ctx, { bucket: "a_trier", inclureTerminees: false })).map((t) => t.titre);
+    expect(ordre).toEqual(["a", "c", "b"]);
+  });
+
+  it("remonter en tête place avant tout le monde", async () => {
+    const a = await capture("a");
+    const b = await capture("b");
+    await T.reordonner(ctx, b.id, { apresId: a.id });
+    const ordre = (await T.lister(ctx, { inclureTerminees: false })).map((t) => t.titre);
+    expect(ordre).toEqual(["b", "a"]);
+  });
+});
+
+describe("la liste", () => {
+  it("filtre par Bucket et par Assigné, et cherche dans le texte", async () => {
+    await capture("Relancer MONKA sur le devis");
+    await capture("Préparer le mail Coup de Pâtes");
+    const sur = await surLeFeu("Cadrage atelier AFP");
+    await T.modifier(ctx, sur.id, { assigneId: stan });
+
+    expect(await T.lister(ctx, { bucket: "a_trier", inclureTerminees: false })).toHaveLength(2);
+    expect(await T.lister(ctx, { assigneId: stan, inclureTerminees: false })).toHaveLength(1);
+    const trouve = await T.lister(ctx, { q: "MONKA", inclureTerminees: false });
+    expect(trouve.map((t) => t.titre)).toEqual(["Relancer MONKA sur le devis"]);
+  });
+});
+
+describe("les Aidants", () => {
+  it("se remplacent en bloc et n'empêchent personne de terminer", async () => {
+    const t = await surLeFeu();
+    const avec = await T.modifier(ctx, t.id, { aidantIds: [stan] });
+    expect(avec.aidantIds).toEqual([stan]);
+    // Stan est seulement Aidant, et il peut quand même terminer : aucun verrou d'édition.
+    const parStan = { spaceId, membreId: stan };
+    expect((await T.terminer(parStan, t.id)).etatTerminal).toBe("termine");
+  });
+});
+
+describe("les erreurs", () => {
+  it("une Tâche d'un autre Espace est introuvable", async () => {
+    const t = await capture();
+    await expect(T.obtenir({ spaceId: randomUUID(), membreId: antoine }, t.id))
+      .rejects.toBeInstanceOf(ErreurApi);
+  });
+});

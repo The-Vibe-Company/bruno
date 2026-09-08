@@ -1,0 +1,124 @@
+/**
+ * Le document OpenAPI, **dérivé des schémas que les routes utilisent réellement**.
+ *
+ * L'ADR 0001 met en garde : un contrat écrit après coup ne sert à rien. Ici il ne peut pas
+ * mentir — les formes viennent de `contrat.ts`, c'est-à-dire de la validation elle-même.
+ * Le client Swift se génère à partir de ce document (BRU-6 et suivants).
+ */
+import { z } from "zod";
+import * as C from "./contrat";
+
+const composants = {
+  Tache: C.Tache, CreerTache: C.CreerTache, ModifierTache: C.ModifierTache,
+  DeplacerTache: C.DeplacerTache, ChangerStatut: C.ChangerStatut,
+  Reordonner: C.Reordonner, Reporter: C.Reporter,
+} as const;
+
+const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
+const corps = (nom: keyof typeof composants) => ({
+  required: true,
+  content: { "application/json": { schema: ref(nom) } },
+});
+const tache = { description: "La Tâche", content: { "application/json": { schema: ref("Tache") } } };
+const idTache = {
+  name: "id", in: "path", required: true,
+  schema: { type: "string", format: "uuid" },
+};
+
+export function documentOpenApi() {
+  return {
+    openapi: "3.1.0",
+    info: {
+      title: "Bruno",
+      version: "1.0.0",
+      description:
+        "L'API de la to-do de The Vibe Company. Le vocabulaire est celui de CONTEXT.md. " +
+        "Une Tâche ne peut pas entrer dans Sur le feu sans un Assigné et un Engagement : " +
+        "c'est refusé ici, et la base le refuse aussi.",
+    },
+    paths: {
+      "/api/taches": {
+        get: {
+          summary: "Lister les Tâches",
+          parameters: Object.entries(z.toJSONSchema(C.FiltresTaches).properties ?? {}).map(
+            ([nom, schema]) => ({ name: nom, in: "query", schema }),
+          ),
+          responses: { 200: { description: "Les Tâches, par Rang croissant",
+            content: { "application/json": { schema: { type: "array", items: ref("Tache") } } } } },
+        },
+        post: {
+          summary: "Capturer une Tâche",
+          description: "Atterrit dans À trier. Une Capture ne pose jamais Sur le feu.",
+          requestBody: corps("CreerTache"),
+          responses: { 200: tache },
+        },
+      },
+      "/api/taches/{id}": {
+        parameters: [idTache],
+        get: { summary: "Lire une Tâche", responses: { 200: tache, 404: { description: "Introuvable" } } },
+        patch: { summary: "Modifier une Tâche", requestBody: corps("ModifierTache"), responses: { 200: tache } },
+        delete: {
+          summary: "Supprimer une Tâche",
+          description: "Efface pour de bon. Réservé à ce qui n'aurait jamais dû exister — sinon, Abandonner.",
+          responses: { 204: { description: "Supprimée" } },
+        },
+      },
+      "/api/taches/{id}/bucket": {
+        parameters: [idTache],
+        post: {
+          summary: "Changer de Bucket",
+          description:
+            "Vers `sur_le_feu`, l'Assigné et l'Engagement sont exigés : c'est le droit d'entrée, " +
+            "la seule règle dure de Bruno. Sortir de Sur le feu conserve les deux.",
+          requestBody: corps("DeplacerTache"),
+          responses: { 200: tache, 422: { description: "Droit d'entrée non satisfait" } },
+        },
+      },
+      "/api/taches/{id}/statut": {
+        parameters: [idTache],
+        post: { summary: "Changer de Statut", requestBody: corps("ChangerStatut"), responses: { 200: tache } },
+      },
+      "/api/taches/{id}/rang": {
+        parameters: [idTache],
+        post: {
+          summary: "Réordonner",
+          description: "Se placer entre deux voisines. Le serveur calcule le Rang.",
+          requestBody: corps("Reordonner"),
+          responses: { 200: tache },
+        },
+      },
+      "/api/taches/{id}/terminer": {
+        parameters: [idTache],
+        post: { summary: "Terminer", responses: { 200: tache, 409: { description: "A déjà une fin" } } },
+      },
+      "/api/taches/{id}/abandonner": {
+        parameters: [idTache],
+        post: {
+          summary: "Abandonner",
+          description: "On a décidé de ne pas le faire. C'est une décision, elle reste consultable.",
+          responses: { 200: tache, 409: { description: "A déjà une fin" } },
+        },
+      },
+      "/api/taches/{id}/reporter": {
+        parameters: [idTache],
+        post: {
+          summary: "Reporter",
+          description:
+            "Le seul chemin qui déplace un Engagement, et il exige une raison. " +
+            "Incrémente le compteur et laisse une trace.",
+          requestBody: corps("Reporter"),
+          responses: { 200: tache, 422: { description: "Raison manquante" } },
+        },
+      },
+      "/api/taches/{id}/reports": {
+        parameters: [idTache],
+        get: { summary: "L'historique des Reports", responses: { 200: { description: "Les Reports, du plus récent au plus ancien" } } },
+      },
+    },
+    components: {
+      schemas: Object.fromEntries(
+        Object.entries(composants).map(([nom, schema]) => [nom, z.toJSONSchema(schema, { io: "input" })]),
+      ),
+    },
+  };
+}
