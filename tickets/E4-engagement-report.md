@@ -1,15 +1,23 @@
 # E4 — Engagement et Report · **Invariants 4, 5**
 
-## BRU-20 — Le champ Engagement
+## BRU-20 — Le champ Engagement · **livré**
 
-- [ ] Un **seul** champ de date sur une Tâche
-- [ ] Le mot **« échéance »**, « deadline » ou « date limite » n'apparaît **nulle part** dans
-      l'interface, ni dans le code
-- [ ] **Aucune pastille rouge « en retard »** : Bruno n'a pas de retard, il a des Reports assumés
-- [ ] Vaut **le jour même par défaut** quand une Tâche entre Sur le feu
-- [ ] Une Tâche `À venir` en porte un aussi
-- [ ] Quand la date d'une Tâche À venir arrive, le Point du matin **le propose** — rien ne
-      bouge tout seul *(invariant 1)*
+- [x] Un **seul** champ de date sur une Tâche — `tache.engagement`, et rien d'autre (BRU-2)
+- [x] Le mot **« échéance »**, « deadline » ou « date limite » n'apparaît **nulle part** — un test
+      parcourt tout le code, commentaires compris, et bannit aussi « en retard » / « overdue »
+- [x] **Aucune pastille rouge « en retard »** : une date passée s'affiche comme une date
+      (`4 sept.`), testé
+- [x] Vaut **le jour même par défaut** quand une Tâche entre Sur le feu — la modale du droit
+      d'entrée (BRU-13). L'API, elle, exige la date explicitement : c'est au client de la montrer
+- [x] Une Tâche `À venir` en porte un aussi — passer À venir demande « Pour quand ? » (demain ·
+      lundi · autre date), avec « sans date » pour ce qu'on ne sait pas encore placer. Vérifié
+      dans le navigateur et en base. *Petit écart à la maquette : cette invite n'y figure pas ;
+      à montrer à Claude Design pour la forme*
+- [x] Quand la date d'une Tâche À venir arrive, rien ne bouge tout seul *(invariant 1)* — test
+      « aucun job n'écrit une Tâche » (BRU-11). La proposition au Point du matin : BRU-24
+- [x] **Un trou fermé dans l'invariant 4** : `PATCH` laissait changer l'Engagement d'une Tâche
+      Sur le feu sans Report. Désormais refusé (`422 · seulement par un Report`) ; ailleurs
+      qu'Sur le feu, on planifie librement. Testé
 
 ## BRU-21 — La feuille de Report
 

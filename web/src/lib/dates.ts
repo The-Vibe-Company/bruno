@@ -1,6 +1,6 @@
 /**
- * Comment on nomme un jour. Jamais « en retard » : Bruno n'a pas de retard, il a des Reports
- * assumés — une date passée s'affiche simplement comme une date.
+ * Comment on nomme un jour. Une date passée s'affiche simplement comme une date : Bruno ne
+ * juge pas, il compte les Reports.
  */
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
 
@@ -20,3 +20,13 @@ export function libelleJour(jour: string, ref: string = aujourdhui()): string {
 export function libelleLong(jour: string = aujourdhui()): string {
   return new Date(jour + "T12:00:00Z").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 }
+
+const decale = (jours: number, ref: string = aujourdhui()): string => {
+  const d = new Date(ref + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + jours); return d.toISOString().slice(0, 10);
+};
+export const demain = (ref: string = aujourdhui()): string => decale(1, ref);
+/** Le prochain lundi — jamais aujourd'hui, même un lundi : « lundi » veut dire la semaine d'après. */
+export const lundiProchain = (ref: string = aujourdhui()): string => {
+  const jour = new Date(ref + "T12:00:00Z").getUTCDay(); // 0 = dimanche
+  return decale(((8 - jour) % 7) || 7, ref);
+};

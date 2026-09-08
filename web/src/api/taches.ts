@@ -101,7 +101,13 @@ export async function creer(ctx: Ctx, entree: z.infer<typeof C.CreerTache>) {
 }
 
 export async function modifier(ctx: Ctx, id: string, patch: z.infer<typeof C.ModifierTache>) {
-  await lire(ctx, id);
+  const courante = await lire(ctx, id);
+  // Invariant 4 : Sur le feu, l'Engagement est une promesse, et une promesse ne se renégocie
+  // que par un Report motivé. Ailleurs (À trier, À venir, Idées) on planifie librement.
+  if (patch.engagement !== undefined && courante.bucket === "sur_le_feu" && patch.engagement !== courante.engagement) {
+    throw new ErreurApi("engagement_par_report", 422,
+      "Sur le feu, l'Engagement ne change que par un Report — avec une raison.");
+  }
   return traduire(async () => {
     const { aidantIds, ...champs } = patch;
     if (Object.keys(champs).length > 0) {
