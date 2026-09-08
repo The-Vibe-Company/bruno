@@ -1,0 +1,35 @@
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_8d26471520e64d 5-6,9,28,49-51,53-54,76,80-86
+web/src/board/api.ts
+  s_7ec6903985e0db::t_8d26471520e64d 19-23
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_8d26471520e64d 27-28
+web/src/board/Carte.tsx
+  s_7ec6903985e0db::t_8d26471520e64d 10,27,36
+web/src/board/Colonne.tsx
+  s_7ec6903985e0db::t_8d26471520e64d 10,24
+web/src/board/Detail.tsx
+  s_7ec6903985e0db::t_8d26471520e64d 1-110
+web/package.json
+  s_7ec6903985e0db::t_70a7970da44a03 23-24
+web/pnpm-lock.yaml
+  s_7ec6903985e0db::t_0c3bb5d34c4364 20-25,970-1144,1584-1587,1775-1777,2157-2160,2775-2804,3080-3099,3863-4012,4356-4359,4564-4565,5089-5090,5647-5673,6073-6087
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_333459b5d4104d 24-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "ce50b983f2e188967ceca459c03a198f346b1e6d",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
