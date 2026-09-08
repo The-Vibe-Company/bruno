@@ -63,5 +63,8 @@ jobs:
       - name: Invariants
         run: pnpm check:invariants
 
+      - name: Tests
+        run: pnpm test
+
       - name: Construction
         run: pnpm exec next build

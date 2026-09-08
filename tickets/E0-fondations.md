@@ -65,10 +65,18 @@ les problèmes d'intégration à la fin.
 L'app iOS en a besoin de toute façon, et c'est ce qui rendra les connecteurs d'agents triviaux
 plus tard (PRD §11).
 
-- [ ] Lister les Tâches par Bucket, avec les filtres Assigné et recherche texte
-- [ ] Créer, éditer, changer de Bucket, changer de Statut, changer de Rang
-- [ ] Terminer, Abandonner, Supprimer, Reporter
-- [ ] Le changement vers `sur_le_feu` **rejette** la requête sans Assigné ni Engagement
+- [x] Lister les Tâches par Bucket, avec les filtres Assigné et recherche texte
+- [x] Créer, éditer, changer de Bucket, changer de Statut, changer de Rang
+- [x] Terminer, Abandonner, Supprimer, Reporter
+- [x] Le changement vers `sur_le_feu` **rejette** la requête sans Assigné ni Engagement —
+      refusé deux fois : par le contrat Zod avant d'atteindre la base, et par la contrainte
+      Postgres qui reste le dernier rempart
+- [x] Le contrat **OpenAPI est dérivé des schémas de validation** eux-mêmes, servi sur
+      `/api/openapi.json`. Un test compare les chemins déclarés aux routes présentes sur le
+      disque : ajouter une route sans la mettre au contrat casse la CI
+- [x] 22 tests contre un vrai Postgres, rejoués en CI
+- [ ] ⏳ **L'authentification est provisoire** : un en-tête `x-bruno-membre`, qui **refuse de
+      fonctionner en production**. BRU-4 le remplace par la session Google
 
 ## BRU-4 — Authentification
 
