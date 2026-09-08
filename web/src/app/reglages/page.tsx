@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { lister } from "@/api/creneaux";
+import { lister as listerAffectations } from "@/api/affectations";
+import { Affectations } from "@/reglages/Affectations";
 import { sessionCourante } from "@/auth/serveur";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
@@ -10,17 +12,17 @@ import { Coquille } from "../Coquille";
 
 export const dynamic = "force-dynamic";
 
-/** Les Réglages : les Créneaux, le compte. Et bientôt la liste des Affectations (BRU-26). Rien d'autre. */
+/** Les Réglages : les Créneaux, la liste des Affectations, le compte. Rien d'autre — et surtout pas qui est sur quoi. */
 export default async function Reglages() {
   const session = await sessionCourante();
   if (!session) redirect("/api/auth/google");
-  const [creneaux, [moi]] = await Promise.all([lister(session), db.select().from(membre).where(eq(membre.id, session.membreId))]);
+  const [creneaux, affectations, [moi]] = await Promise.all([lister(session), listerAffectations(session), db.select().from(membre).where(eq(membre.id, session.membreId))]);
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="reglages">
       <header className="flex h-16 flex-none items-center border-b border-bord-2 px-8"><h1 className="text-[22px] font-medium tracking-tight">Réglages</h1></header>
       <main className="grid flex-1 grid-cols-1 content-start gap-16 px-10 py-8 md:grid-cols-2">
         <Creneaux initiaux={creneaux} />
-        <div className="flex flex-col gap-12"><Compte nom={moi.nom} email={moi.email} /></div>
+        <div className="flex flex-col gap-12"><Affectations initiales={affectations} /><Compte nom={moi.nom} email={moi.email} /></div>
       </main>
     </Coquille>
   );

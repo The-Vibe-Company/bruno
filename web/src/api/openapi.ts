@@ -13,6 +13,7 @@ const composants = {
   DeplacerTache: C.DeplacerTache, ChangerStatut: C.ChangerStatut,
   Reordonner: C.Reordonner, Reporter: C.Reporter,
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
+  Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -120,6 +121,15 @@ export function documentOpenApi() {
         parameters: [idTache],
         patch: { summary: "Déplacer un Créneau", description: "Les natures sont recalculées.", requestBody: corps("PoserCreneau"), responses: { 200: { description: "Les Créneaux" } } },
         delete: { summary: "Retirer un Créneau", description: "Refusé sous trois : le Point du matin, au moins un Rappel, le Bilan.", responses: { 200: { description: "Les Créneaux" }, 422: { description: "Minimum de trois" } } },
+      },
+      "/api/affectations": {
+        get: { summary: "Les Affectations", description: "Ce à quoi on peut travailler, désactivées comprises.",
+          responses: { 200: { description: "La liste", content: { "application/json": { schema: { type: "array", items: ref("Affectation") } } } } } },
+        post: { summary: "Ajouter une Affectation", requestBody: corps("AjouterAffectation"), responses: { 200: { description: "La liste" }, 422: { description: "Nom déjà pris" } } },
+      },
+      "/api/affectations/{id}": {
+        parameters: [idTache],
+        patch: { summary: "Désactiver ou réactiver", description: "On ne supprime jamais une Affectation : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
       },
       "/api/taches/{id}/reports": {
         parameters: [idTache],
