@@ -1,0 +1,47 @@
+web/src/app/globals.css
+  s_7ec6903985e0db::t_e629fff3474d1b 115-127
+web/src/api/affectations.test.ts
+  s_7ec6903985e0db::t_a154a35d575b46 1-26
+web/src/board/deplacement.test.ts
+  s_7ec6903985e0db::t_a154a35d575b46 2,47-53
+  s_7ec6903985e0db::t_1b9f0f5fd12752 54-55
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_a154a35d575b46 3-6,19,22,24-28,30,39-43,47-51,53-55
+web/src/board/EnAttente.tsx
+  s_7ec6903985e0db::t_e0f36ffe714888 43
+  s_7ec6903985e0db::t_a154a35d575b46 1-42,44-89
+web/src/board/Filtres.tsx
+  s_7ec6903985e0db::t_a154a35d575b46 1-30
+web/src/board/Affectations.tsx
+  s_7ec6903985e0db::t_a154a35d575b46 1-24
+web/src/api/affectations.ts
+  s_7ec6903985e0db::t_a154a35d575b46 1-21
+web/src/board/api.ts
+  s_7ec6903985e0db::t_a154a35d575b46 19-25
+web/src/board/deplacement.ts
+  s_7ec6903985e0db::t_a154a35d575b46 48-52
+web/src/board/DroitEntree.tsx
+  s_7ec6903985e0db::t_a154a35d575b46 1-70
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_a154a35d575b46 5,7-8,11,25,41-42,50-56,79-91,100-103,108,112-118,120
+  s_7ec6903985e0db::t_1d08ed3585ce1f 2,15-24,99
+  s_7ec6903985e0db::t_78f179eb77f92c 92
+tickets/E2-buckets-tri.md
+  s_7ec6903985e0db::t_0c332d629c2f90 26,28,30-37,39,43-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "cf2d720353025dcfe930e83c4545e716175a3336",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
