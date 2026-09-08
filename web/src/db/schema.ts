@@ -110,7 +110,7 @@ export const tache = pgTable("tache", {
   rang: numeric("rang").notNull(),
 
   assigneId: uuid("assigne_id").references(() => membre.id, { onDelete: "set null" }),
-  /** Le jour où l'on s'engage à le faire. Jamais une échéance. Bouge par Report seul. */
+  /** Le jour où l'on s'engage à le faire. Une promesse qu'on se fait, pas une contrainte imposée. Bouge par Report seul. */
   engagement: date("engagement"),
 
   reportsCount: integer("reports_count").notNull().default(0),

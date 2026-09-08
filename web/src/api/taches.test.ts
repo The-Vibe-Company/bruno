@@ -128,6 +128,23 @@ describe("le Report", () => {
   });
 });
 
+describe("l'Engagement (invariant 4)", () => {
+  it("Sur le feu, ne change pas par une simple modification — seulement par un Report", async () => {
+    const t = await surLeFeu();
+    await expect(T.modifier(ctx, t.id, { engagement: "2026-09-20" })).rejects.toMatchObject({ code: "engagement_par_report" });
+    expect((await T.modifier(ctx, t.id, { engagement: DEMAIN })).engagement).toBe(DEMAIN); // inchangé : accepté
+    const apres = await T.reporter(ctx, t.id, { raison: "trop de choses", nouvelEngagement: "2026-09-20" });
+    expect(apres.engagement).toBe("2026-09-20");
+  });
+
+  it("se pose et se change librement tant qu'on n'est pas Sur le feu", async () => {
+    const t = await capture();
+    const v = await T.deplacer(ctx, t.id, { bucket: "a_venir", engagement: "2026-10-01" });
+    expect(v.engagement).toBe("2026-10-01");
+    expect((await T.modifier(ctx, t.id, { engagement: "2026-10-15" })).engagement).toBe("2026-10-15");
+  });
+});
+
 describe("les fins", () => {
   it("Terminé et Abandonné sont deux états distincts", async () => {
     const a = await surLeFeu("une");

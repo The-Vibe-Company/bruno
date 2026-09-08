@@ -6,6 +6,7 @@ import { abandonner, appliquer, deplacerBucket, supprimer, terminer } from "./ap
 import { Detail } from "./Detail";
 import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
 import { EnAttente, type TacheAttente } from "./EnAttente";
+import { PourQuand, type DemandeAVenir } from "./PourQuand";
 import { Carte, type TacheCarte } from "./Carte";
 import { Colonne } from "./Colonne";
 import { colonneDe, colonneVisee, deplacer, type Colonnes, type Statut } from "./deplacement";
@@ -39,6 +40,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   const [actif, setActif] = useState<TacheCarte | null>(null);
   const [ouverteId, setOuverteId] = useState<string | null>(null);
   const [demande, setDemande] = useState<Demande>(null);
+  const [demandeAVenir, setDemandeAVenir] = useState<DemandeAVenir>(null);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const [erreur, setErreur] = useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -78,8 +80,14 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
 
   async function destination(t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") {
     if (b === "sur_le_feu") { setDemande({ id: t.id, titre: t.titre, statut: "a_faire" }); return; }
+    if (b === "a_venir") { setDemandeAVenir({ id: t.id, titre: t.titre }); return; }
     setErreur(null);
-    try { await deplacerBucket(t.id, b === "a_venir" ? { bucket: "a_venir", engagement: t.engagement } : { bucket: "idees" }); }
+    try { await deplacerBucket(t.id, { bucket: "idees" }); } catch (e) { setErreur((e as Error).message); }
+    rafraichir();
+  }
+  async function passerAVenir(id: string, engagement: string | null) {
+    setErreur(null);
+    try { await deplacerBucket(id, { bucket: "a_venir", engagement }); setDemandeAVenir(null); }
     catch (e) { setErreur((e as Error).message); }
     rafraichir();
   }
@@ -118,6 +126,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         <EnAttente taches={enAttente} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} />
       </div>
       <DroitEntree demande={demande} membres={membres} moiId={moiId} onConfirmer={entrerSurLeFeu} onAnnuler={() => setDemande(null)} />
+      <PourQuand demande={demandeAVenir} onConfirmer={passerAVenir} onAnnuler={() => setDemandeAVenir(null)} />
       <DragOverlay>{actif ? <Carte tache={actif} fantome /> : null}</DragOverlay>
       <Detail
         tache={ouverteId ? (() => { const t = parId.get(ouverteId); return t ? carte(ouverteId, colonneDe(colonnes, ouverteId) ?? t.statut) : null; })() : null}

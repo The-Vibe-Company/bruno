@@ -11,6 +11,7 @@ export type CodeErreur =
   | "droit_entree_sur_le_feu"
   | "statut_hors_sur_le_feu"
   | "raison_obligatoire"
+  | "engagement_par_report"
   | "deja_terminee"
   | "non_authentifie";
 

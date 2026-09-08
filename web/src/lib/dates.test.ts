@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { libelleJour, libelleLong } from "./dates";
+import { demain, libelleJour, libelleLong, lundiProchain } from "./dates";
 
 describe("le nom d'un jour", () => {
   const ref = "2026-09-08";
@@ -14,5 +14,14 @@ describe("le nom d'un jour", () => {
   });
   it("écrit l'en-tête en toutes lettres", () => {
     expect(libelleLong("2026-09-08")).toBe("mardi 8 septembre");
+  });
+});
+
+describe("les raccourcis de date", () => {
+  it("demain, c'est demain", () => { expect(demain("2026-09-08")).toBe("2026-09-09"); expect(demain("2026-12-31")).toBe("2027-01-01"); });
+  it("lundi, c'est le prochain — jamais aujourd'hui", () => {
+    expect(lundiProchain("2026-09-08")).toBe("2026-09-14"); // mardi → lundi suivant
+    expect(lundiProchain("2026-09-07")).toBe("2026-09-14"); // un lundi → celui d'après
+    expect(lundiProchain("2026-09-13")).toBe("2026-09-14"); // dimanche → demain
   });
 });
