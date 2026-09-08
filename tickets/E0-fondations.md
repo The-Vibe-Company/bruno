@@ -75,15 +75,28 @@ plus tard (PRD §11).
       `/api/openapi.json`. Un test compare les chemins déclarés aux routes présentes sur le
       disque : ajouter une route sans la mettre au contrat casse la CI
 - [x] 22 tests contre un vrai Postgres, rejoués en CI
-- [ ] ⏳ **L'authentification est provisoire** : un en-tête `x-bruno-membre`, qui **refuse de
-      fonctionner en production**. BRU-4 le remplace par la session Google
+- [x] L'authentification provisoire a été remplacée par la vraie session Google (BRU-4)
 
 ## BRU-4 — Authentification
 
-- [ ] Google OAuth, **restreint au domaine Google Workspace** de l'entreprise
-- [ ] Fonctionne sur web et sur iOS
-- [ ] Aucun écran d'inscription, aucun mot de passe, aucune réinitialisation
-- [ ] Un email hors domaine est refusé proprement
+- [x] Google OAuth, **restreint au domaine Google Workspace** de l'entreprise. Deux verrous :
+      l'écran de consentement en mode « Interne » côté Google, **et** une revérification du
+      jeton signé côté serveur — on ne fait pas reposer l'accès sur un réglage de console
+- [x] Fonctionne sur web et sur iOS. Un seul format de session, deux transports : cookie
+      `HttpOnly` pour le web, `Authorization: Bearer` pour iOS. L'API ne connaît qu'un chemin
+- [x] Aucun écran d'inscription, aucun mot de passe, aucune réinitialisation — quelqu'un du
+      domaine qui se connecte pour la première fois devient un Membre
+- [x] Un email hors domaine est refusé proprement : redirection avec `?connexion=hors_domaine`
+      sur le web, `403 hors_domaine` sur iOS
+- [x] Un Membre désactivé perd l'accès **immédiatement**, sans attendre l'expiration de sa session
+- [x] 18 tests d'authentification, signés avec une paire de clés locale : le refus hors domaine
+      est prouvé sans dépendre de Google
+- [x] Identifiants Google créés et posés sur Vercel (Production + Preview) et en local
+- [x] **Parcours vérifié de bout en bout dans Chrome**, avec le vrai écran de consentement
+      Google : retour sur `/` sans erreur, `/api/auth/moi` reconnaît le Membre. Au passage, un
+      vrai piège corrigé : le cookie d'état OAuth en `SameSite=Lax` ne revenait pas après le
+      POST de consentement de Google → `SameSite=None; Secure`, validité 15 min, et un
+      diagnostic serveur si ça se reproduit
 
 ## BRU-5 — Données de départ
 
