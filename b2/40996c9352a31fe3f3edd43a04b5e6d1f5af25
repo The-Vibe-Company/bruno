@@ -1,0 +1,33 @@
+web/src/db/url.ts
+  s_7ec6903985e0db::t_8a2dc0163fc2c2 1-23
+web/vercel.json
+  s_7ec6903985e0db::t_7f9e4d1bf174e9 1-9
+docs/adr/0003-migrations.md
+  s_7ec6903985e0db::t_7f9e4d1bf174e9 1-64
+web/scripts/check-invariants.ts
+  s_7ec6903985e0db::t_17fe1c840619fc 12,44,46-49
+  s_7ec6903985e0db::t_8a2dc0163fc2c2 14,16
+  s_7ec6903985e0db::t_0a3ce17fb856ee 6-9,19-20,23,29,53-56,60,63-79,94,104,107,111,113,117,129
+web/package.json
+  s_7ec6903985e0db::t_7f9e4d1bf174e9 7
+web/drizzle.config.ts
+  s_7ec6903985e0db::t_8a2dc0163fc2c2 2,8-9
+web/src/app/api/cron/relances/route.ts
+  s_7ec6903985e0db::t_7f9e4d1bf174e9 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b240996c9352a31fe3f3edd43a04b5e6d1f5af25",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
