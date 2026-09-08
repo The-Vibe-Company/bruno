@@ -1,0 +1,37 @@
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_4376fefdc3f4e8 12-16
+web/src/api/affectations.test.ts
+  s_7ec6903985e0db::t_2f18a5fe710d0f 6-7,28-44
+web/src/api/affectations.ts
+  s_7ec6903985e0db::t_4688a39f78d1c9 1-5,9-37
+web/src/api/contrat.ts
+  s_7ec6903985e0db::t_0686a8e59551a6 105-113
+web/src/api/openapi.ts
+  s_7ec6903985e0db::t_def0d54f562103 16,125-133
+web/src/app/api/affectations/[id]/route.ts
+  s_7ec6903985e0db::t_b65bde6734782b 1-6
+web/src/app/api/affectations/route.ts
+  s_7ec6903985e0db::t_b9fbf38bcc15a5 1-6
+web/src/app/reglages/page.tsx
+  s_7ec6903985e0db::t_47509befa26dfe 4-5,15,19,25
+web/src/reglages/Affectations.tsx
+  s_7ec6903985e0db::t_4209221ea6591b 1-66
+web/src/reglages/palette.ts
+  s_7ec6903985e0db::t_473d68cf9784bd 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "07b4793ae85c7808ef048bad21408af7b429e6d7",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
