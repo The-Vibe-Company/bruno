@@ -1,0 +1,68 @@
+web/src/app/api/taches/[id]/abandonner/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-4
+web/src/app/api/taches/[id]/reporter/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-6
+web/src/api/taches.ts
+  s_7ec6903985e0db::t_db47ef99da370c 138-140
+  s_7ec6903985e0db::t_3cdfb068354f02 1-137,141-244
+web/src/api/erreurs.ts
+  s_7ec6903985e0db::t_db47ef99da370c 34-36,38-45,47
+  s_7ec6903985e0db::t_f992cad00d51c3 1-33,37,46,48-61
+web/src/app/api/taches/[id]/reports/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-4
+web/src/api/membre-courant.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-30
+web/src/app/api/taches/[id]/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-8
+web/src/db/client.ts
+  s_7ec6903985e0db::t_f992cad00d51c3 1-15
+web/src/api/openapi.ts
+  s_7ec6903985e0db::t_7d3693a175b945 1-124
+web/src/app/api/openapi.json/route.ts
+  s_7ec6903985e0db::t_7d3693a175b945 1-6
+web/src/api/contrat.ts
+  s_7ec6903985e0db::t_f992cad00d51c3 1-93
+web/src/app/api/taches/[id]/bucket/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-6
+web/src/api/openapi.test.ts
+  s_7ec6903985e0db::t_b6d756f89f1d10 1-42
+web/src/app/api/taches/[id]/statut/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-5
+web/src/api/route-outils.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-59
+web/src/app/api/taches/[id]/terminer/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-4
+web/src/api/taches.test.ts
+  s_7ec6903985e0db::t_2d7ee155a40c0a 1-210
+web/src/app/api/taches/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-6
+.github/workflows/ci.yml
+  s_7ec6903985e0db::t_7d3693a175b945 66-68
+web/src/app/api/taches/[id]/rang/route.ts
+  s_7ec6903985e0db::t_ed9f89bdd3fb2b 1-5
+web/package.json
+  s_7ec6903985e0db::t_2d7ee155a40c0a 14-15
+  s_7ec6903985e0db::t_e87f1a4c54e59f 22-23,35-36
+tickets/E0-fondations.md
+  s_7ec6903985e0db::t_9c1cf678877787 68-79
+web/pnpm-lock.yaml
+  s_7ec6903985e0db::t_1909d2ea579ef1 26-28,60-62,927-1028,1130-1135,1335-1348,1405-1408,1478-1481,1690-1692,1849-1851,1856-1859,2201-2206,2213-2218,2225-2230,2237-2242,2249-2254,2262-2268,2276-2282,2290-2296,2304-2310,2317-2322,2329-2334,2339-2342,2360-2362,2462-2465,2574-2578,2651-2653,2668-2673,2737-2744,2821-2904,2926-2930,3557-3605,3686-3692,3872-3882,3971-3972,4035-4036,4223-4224,4539-4542,4545-4546,4886-4888,4892-4894,4898-4900,4904-4906,4910-4912,4916-4918,4922-4924,4928-4930,4934-4936,4940-4942,4946-4948,4965-4980,4999-5002,5106-5107,5220-5240,5360-5361,5373-5376,5454-5457,5582-5616,5662-5666
+web/vitest.config.mts
+  s_7ec6903985e0db::t_87f9aee3f557e7 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "96698da95662a4faf2d9808cf56076a89df8e1b0",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
