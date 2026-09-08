@@ -15,7 +15,7 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "./client";
 import { jourOuvrePrecedent } from "@/lib/dates";
-import { affectation, affectationMembre, creneau, membre, space, tache } from "./schema";
+import { affectation, affectationMembre, creneau, membre, recurrence, space, tache } from "./schema";
 import { dbUrl } from "./url";
 
 /** Fixe, pour que « l'Espace » soit le même à chaque exécution et sur chaque base. */
@@ -81,6 +81,7 @@ export async function poserDemo(spaceId = SPACE_ID) {
 
   await db.delete(tache).where(eq(tache.spaceId, spaceId));
   await db.delete(affectationMembre).where(eq(affectationMembre.spaceId, spaceId));
+  await db.delete(recurrence).where(eq(recurrence.spaceId, spaceId));
 
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const jour = (delta: number) => { const d = new Date(); d.setDate(d.getDate() + delta); return d.toISOString().slice(0, 10); };
@@ -127,6 +128,12 @@ export async function poserDemo(spaceId = SPACE_ID) {
     { spaceId: spaceId, membreId: id.Stan, affectationId: aff.Interne, debut: jour(-2) },
     { spaceId: spaceId, membreId: id.Victor, affectationId: aff["Coup de Pâtes"], debut: jour(-20) },
     { spaceId: spaceId, membreId: id.Antoine, affectationId: aff.Interne, debut: jour(-8), fin: hier },
+  ]);
+  await db.insert(recurrence).values([
+    { spaceId, titre: "Post LinkedIn", assigneId: id.Victor, frequence: "hebdomadaire", jourSemaine: 1, occurrences: 3, decalages: [0, 2, 4] },
+    { spaceId, titre: "Point hebdo interne", assigneId: id.Antoine, frequence: "hebdomadaire", jourSemaine: 5, occurrences: 1, decalages: [0] },
+    { spaceId, titre: "Facturation mensuelle", assigneId: id.Antoine, frequence: "mensuelle", jourMois: 1, occurrences: 1, decalages: [0] },
+    { spaceId, titre: "Relance des devis en attente", assigneId: id.Stan, frequence: "hebdomadaire", jourSemaine: 2, occurrences: 2, decalages: [0, 2] },
   ]);
   return { taches: lignes.length };
 }

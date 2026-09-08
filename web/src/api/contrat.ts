@@ -117,3 +117,26 @@ export const AffectationsMembre = z.object({ membreId: uuid, nom: z.string(), af
 /** « Aujourd'hui je suis sur MONKA. » Sans `membreId`, c'est moi. Sans `debut`, c'est aujourd'hui. */
 export const PoserAffectation = z.object({ affectationId: uuid, membreId: uuid.optional(), debut: jour.optional() });
 export const FiltreHistorique = z.object({ membreId: uuid.optional() });
+
+/* ------------------------------------------------------------------ les Récurrences */
+
+export const Frequence = z.enum(["hebdomadaire", "mensuelle"]);
+export const Recurrence = z.object({
+  id: uuid, titre: z.string(), assigneId: uuid, frequence: Frequence,
+  jourSemaine: z.number().int().min(1).max(7).nullable(), jourMois: z.number().int().min(1).max(28).nullable(),
+  occurrences: z.number().int(), decalages: z.array(z.number().int()), actif: z.boolean(),
+});
+/**
+ * Une règle. L'Assigné est obligatoire (règle 21). `decalages` : le décalage en jours de chaque
+ * occurrence — {0, 2, 4} pour lundi, mercredi, vendredi — le premier vaut toujours 0.
+ */
+export const PoserRecurrence = z.object({
+  titre: z.string().trim().min(1, "Un titre").max(200),
+  assigneId: uuid,
+  frequence: Frequence,
+  jourSemaine: z.number().int().min(1).max(7).optional(),
+  jourMois: z.number().int().min(1, "Entre 1 et 28").max(28, "Entre 1 et 28 : pas de mois bancals").optional(),
+  decalages: z.array(z.number().int().min(0).max(366)).min(1).max(12)
+    .refine((d) => d[0] === 0, "La première occurrence tombe le jour même")
+    .refine((d) => d.every((x, i) => i === 0 || x > d[i - 1]), "Les Engagements s'échelonnent dans l'ordre"),
+});

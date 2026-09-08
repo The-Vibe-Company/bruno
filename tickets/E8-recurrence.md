@@ -6,10 +6,10 @@ La maquette existe désormais (BRU-35 livré) — plus de blocage.
 
 Configuration **depuis le web uniquement** *(règle 18)*.
 
-- [ ] Liste des règles existantes, création et édition
-- [ ] Une règle : titre, **Assigné obligatoire** *(règle 21, conséquence de l'invariant 2)*,
+- [x] Liste des règles existantes, création et édition
+- [x] Une règle : titre, **Assigné obligatoire** *(règle 21, conséquence de l'invariant 2)*,
       fréquence, nombre d'occurrences, Engagements échelonnés
-- [ ] Exemple à faire fonctionner tel quel : *le lundi, créer « Post LinkedIn » en 3 occurrences,
+- [x] Exemple à faire fonctionner tel quel : *le lundi, créer « Post LinkedIn » en 3 occurrences,
       Engagements lundi, mercredi, vendredi*
 
 ## BRU-33 — Le moteur de génération

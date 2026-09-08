@@ -7,21 +7,11 @@ import { FUSEAU } from "@/relances/temps";
 import { z } from "zod";
 import { db } from "@/db/client";
 import { membre, tache, tacheAidant, report } from "@/db/schema";
-import { ErreurApi, depuisPostgres, introuvable } from "./erreurs";
+import { ErreurApi, introuvable, traduire } from "./erreurs";
 import type * as C from "./contrat";
 
 type Ctx = { spaceId: string; membreId: string };
 
-/** Enveloppe toute écriture : une contrainte Postgres violée ressort en refus lisible. */
-async function traduire<T>(fn: () => Promise<T>): Promise<T> {
-  try {
-    return await fn();
-  } catch (e) {
-    const err = depuisPostgres(e);
-    if (err) throw err;
-    throw e;
-  }
-}
 
 async function avecAidants(lignes: (typeof tache.$inferSelect)[]) {
   if (lignes.length === 0) return [];

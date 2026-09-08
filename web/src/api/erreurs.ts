@@ -64,3 +64,14 @@ export function depuisPostgres(e: unknown): ErreurApi | null {
       return null;
   }
 }
+
+/** Enveloppe toute écriture : une contrainte Postgres violée ressort en refus lisible. */
+export async function traduire<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (e) {
+    const err = depuisPostgres(e);
+    if (err) throw err;
+    throw e;
+  }
+}
