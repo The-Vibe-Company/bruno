@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, membre, space } from "@/db/schema";
-import { activer, ajouter, auJour, enCours, fermer, historique, lister, poser } from "./affectations";
+import { activer, ajouter, auJour, enCours, fermer, historique, lister, poser, surLaPeriode } from "./affectations";
 import { tache } from "@/db/schema";
 import { instant } from "@/relances/temps";
 
@@ -32,6 +32,12 @@ describe("hier, qui était sur quoi", () => {
     const r = await auJour({ spaceId }, "2026-09-05");
     expect(r.map((m) => [m.nom, m.affectations.map((x) => x.nom)])).toEqual([["Antoine", ["MONKA"]], ["Stan", ["AFP", "MONKA"]]]);
     expect((await auJour({ spaceId }, "2026-08-25")).map((m) => m.affectations.map((x) => x.nom))).toEqual([[], ["AFP"]]);
+  });
+
+  it("sur une semaine, tout ce qui l'a touchée — même fini au milieu, même commencé à la fin", async () => {
+    const r = await surLaPeriode({ spaceId }, "2026-08-31", "2026-09-06");
+    expect(r.map((m) => [m.nom, m.affectations.map((x) => x.nom)])).toEqual([["Antoine", ["MONKA"]], ["Stan", ["AFP", "MONKA"]]]);
+    expect((await surLaPeriode({ spaceId }, "2026-08-24", "2026-08-30")).map((m) => m.affectations.map((x) => x.nom))).toEqual([[], ["AFP"]]);
   });
 });
 

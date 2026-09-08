@@ -64,9 +64,12 @@ async function parMembre(ctx: Ctx, quand: SQL | undefined): Promise<Affectations
 /** Qui est sur quoi, maintenant. */
 export const enCours = (ctx: Ctx) => parMembre(ctx, isNull(affectationMembre.fin));
 
-/** Qui était sur quoi un jour donné — la veille, pour le Daily ; une semaine, pour Fait. */
-export const auJour = (ctx: Ctx, jour: string) =>
-  parMembre(ctx, and(lte(affectationMembre.debut, jour), or(isNull(affectationMembre.fin), gte(affectationMembre.fin, jour))));
+/** Qui a été sur quoi entre deux jours — une semaine, pour Fait. */
+export const surLaPeriode = (ctx: Ctx, du: string, au: string) =>
+  parMembre(ctx, and(lte(affectationMembre.debut, au), or(isNull(affectationMembre.fin), gte(affectationMembre.fin, du))));
+
+/** Qui était sur quoi un jour donné — la veille, pour le Daily. */
+export const auJour = (ctx: Ctx, jour: string) => surLaPeriode(ctx, jour, jour);
 
 /** Tout, fini compris, du plus récent au plus ancien. C'est lui qui répond à « hier j'étais sur MONKA ». */
 export async function historique(ctx: Ctx, membreId: string): Promise<Sur[]> {

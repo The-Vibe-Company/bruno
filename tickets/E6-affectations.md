@@ -38,7 +38,7 @@ Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se
       **Gérer le cas de plusieurs Affectations** — la maquette n'en montre qu'une
 - [x] **Board web** : bandeau une ligne, `Antoine → MONKA · Stan → AFP, Interne · Victor → Coup de Pâtes`
 - [x] **Daily** : les Affectations du jour, et celles de la veille dans le bloc Hier *(avec BRU-30)*
-- [ ] **Fait** : l'Affectation de la semaine au-dessus des Tâches de chacun *(avec BRU-31)*
+- [x] **Fait** : l'Affectation de la semaine au-dessus des Tâches de chacun *(avec BRU-31)*
 - [x] **Prendre une Affectation** se fait en cliquant le bandeau, sur iOS comme sur le web —
       pas dans les Réglages, qui ne gèrent que la liste (BRU-40). *Web : fait. Ma case s'ouvre sur
       « Sur quoi es-tu aujourd'hui ? », une ou plusieurs, à partir d'aujourd'hui ; décocher, c'est
