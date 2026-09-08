@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
+/*
+ * Les tokens de Bruno — BRU-38.
+ *
+ * Un seul jeu, deux valeurs par token. Le thème suit le réglage système, et rien d'autre :
+ * il n'y a pas de sélecteur, donc pas d'état. Aucun composant n'écrit de couleur en dur —
+ * un test s'en assure.
+ *
+ * Les valeurs viennent des maquettes « Bruno Web v2 » (sombre) et « Bruno Web v2 - Light ».
+ * Le point à ne pas rater : l'accent n'est pas le même. L'orange de marque #F27313 est
+ * illisible sur fond clair, il devient #E4640A. Même logique pour les couleurs sémantiques,
+ * qui perdent en luminosité en clair plutôt que d'être inversées.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --fond-page: #EFEDE8;
+  --fond: #F7F5F0;
+  --surface: #FFFFFF;
+  --surface-2: #F1EFEA;
+  --surface-3: #ECEAE4;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bord: #D9D5CC;
+  --bord-2: #DDD9D0;
+  --bord-faible: #D2CEC4;
+  --bord-fort: #CFCAC0;
+
+  --texte: #161512;
+  --texte-2: #3A3833;
+  --texte-sourd: #6B675F;
+  --texte-faible: #9C978C;
+  --texte-tres-faible: #B3AEA3;
+
+  --accent: #E4640A;
+  --accent-survol: #FF9440;
+  --sur-accent: #FFFFFF;
+  --accent-voile: rgb(228 100 10 / 0.12);
+  --accent-lueur: rgb(228 100 10 / 0.40);
+
+  --en-cours: oklch(0.58 0.13 155);
+  --en-cours-voile: oklch(0.62 0.13 155 / 0.10);
+  --bloque: oklch(0.58 0.16 22);
+  --bloque-voile: oklch(0.60 0.16 22 / 0.10);
+  --a-faire: var(--accent);
+  --a-faire-voile: rgb(228 100 10 / 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --fond-page: #060606;
+    --fond: #0B0B0B;
+    --surface: #161616;
+    --surface-2: #121212;
+    --surface-3: #141414;
+
+    --bord: #2A2A2A;
+    --bord-2: #262626;
+    --bord-faible: #2E2E2E;
+    --bord-fort: #333333;
+
+    --texte: #EDEDED;
+    --texte-2: #D8D8D8;
+    --texte-sourd: #B8B8B8;
+    --texte-faible: #8A8A8A;
+    --texte-tres-faible: #4A4A4A;
+
+    --accent: #F27313;
+    --accent-survol: #FF9440;
+    --sur-accent: #0B0B0B;
+    --accent-voile: rgb(242 115 19 / 0.14);
+    --accent-lueur: rgb(242 115 19 / 0.35);
+
+    --en-cours: oklch(0.74 0.13 155);
+    --en-cours-voile: oklch(0.74 0.13 155 / 0.09);
+    --bloque: oklch(0.70 0.16 22);
+    --bloque-voile: oklch(0.70 0.16 22 / 0.09);
+    --a-faire: var(--accent);
+    --a-faire-voile: rgb(242 115 19 / 0.09);
   }
 }
 
+/* Les tokens exposés à Tailwind : `bg-surface`, `text-texte-sourd`, `border-bord`, `text-accent`… */
+@theme inline {
+  --color-fond-page: var(--fond-page);
+  --color-fond: var(--fond);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-bord: var(--bord);
+  --color-bord-2: var(--bord-2);
+  --color-bord-faible: var(--bord-faible);
+  --color-bord-fort: var(--bord-fort);
+  --color-texte: var(--texte);
+  --color-texte-2: var(--texte-2);
+  --color-texte-sourd: var(--texte-sourd);
+  --color-texte-faible: var(--texte-faible);
+  --color-texte-tres-faible: var(--texte-tres-faible);
+  --color-accent: var(--accent);
+  --color-accent-survol: var(--accent-survol);
+  --color-sur-accent: var(--sur-accent);
+  --color-accent-voile: var(--accent-voile);
+  --color-accent-lueur: var(--accent-lueur);
+  --color-en-cours: var(--en-cours);
+  --color-en-cours-voile: var(--en-cours-voile);
+  --color-bloque: var(--bloque);
+  --color-bloque-voile: var(--bloque-voile);
+  --color-a-faire: var(--a-faire);
+  --color-a-faire-voile: var(--a-faire-voile);
+  --font-sans: var(--font-hanken), "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+html {
+  color-scheme: light dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum";
+  -webkit-font-smoothing: antialiased;
 }
