@@ -1,9 +1,9 @@
 "use client";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { libelleJour } from "@/lib/dates";
-import { Initiale, type TacheCarte } from "./Carte";
+import { Initiale, Reporte, type TacheCarte } from "./Carte";
 import type { Statut } from "./deplacement";
 
 const STATUT: Record<Statut, string> = { a_faire: "À faire", en_cours: "En cours", bloque: "Bloqué" };
@@ -19,6 +19,18 @@ export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer,
   onReporter: (t: TacheCarte) => void;
 }) {
   const [occupe, setOccupe] = useState(false);
+  type Report = { id: string; raison: string; ancienEngagement: string; nouvelEngagement: string; createdAt: string; auteur: string | null };
+  // L'historique des Reports, chargé à l'ouverture : visible de tous, avec qui et pourquoi.
+  // Rangé avec l'id de sa Tâche : on n'affiche jamais l'historique d'une autre.
+  const [charge, setCharge] = useState<{ pour: string; liste: Report[] } | null>(null);
+  useEffect(() => {
+    if (!tache || tache.reportsCount === 0) return;
+    let vivant = true;
+    const pour = tache.id;
+    fetch(`/api/taches/${pour}/reports`).then((r) => r.json()).then((liste: Report[]) => { if (vivant) setCharge({ pour, liste }); }).catch(() => {});
+    return () => { vivant = false; };
+  }, [tache]);
+  const historique = tache && charge?.pour === tache.id ? charge.liste : null;
   const agir = (fn: (id: string) => Promise<void>) => async () => {
     if (!tache) return;
     setOccupe(true);
@@ -62,7 +74,7 @@ export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer,
                   <Dialog.Title className="text-2xl font-semibold leading-tight tracking-tight">{tache.titre}</Dialog.Title>
                   <p className="mt-1.5 text-sm text-texte-sourd">
                     {STATUT[tache.statut]}
-                    {tache.reportsCount > 0 && <> · <span className="text-accent">reporté {tache.reportsCount}×</span></>}
+                    {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
                   </p>
                 </div>
 
@@ -80,6 +92,20 @@ export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer,
                     </div>
                   ))}
                 </dl>
+
+                {historique && historique.length > 0 && (
+                  <div>
+                    <h3 className="mb-2 text-sm text-texte-sourd">Reports</h3>
+                    <ol className="flex flex-col gap-1.5 rounded-xl border border-bord bg-surface px-3.5 py-3 text-[14px]">
+                      {historique.map((h) => (
+                        <li key={h.id} className="flex items-baseline gap-2">
+                          <span className="flex-1">« {h.raison} »</span>
+                          <span className="whitespace-nowrap text-[12.5px] text-texte-sourd">{libelleJour(h.ancienEngagement)} → {libelleJour(h.nouvelEngagement)}{h.auteur ? ` · ${h.auteur}` : ""}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
 
                 <div>
                   <h3 className="mb-2 text-sm text-texte-sourd">Notes</h3>

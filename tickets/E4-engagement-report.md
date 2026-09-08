@@ -36,9 +36,14 @@ dans le détail d'une Tâche.
       Vérifié en base
 - [ ] ⏳ La feuille iOS — avec BRU-19
 
-## BRU-22 — Le compteur de Reports
+## BRU-22 — Le compteur de Reports · **livré**
 
-- [ ] `reporté N×` visible **de tous**, sur la carte et sur le détail
-- [ ] Badge visuel au-delà de **3 Reports**, sur le board et dans le bandeau du Daily
-- [ ] **Aucun blocage automatique** — c'est un signal, pas une punition
-- [ ] Chaque Report est historisé avec sa raison et son auteur
+- [x] `reporté N×` visible **de tous**, sur la carte et sur le détail
+- [x] Badge visuel à partir de **3 Reports** sur le board (une pastille accent au lieu du simple
+      texte). Le PRD disait « au-delà de 3 » ici et « 3 fois ou plus » pour le Daily : un seul
+      seuil, **trois**, `SEUIL_SIGNAL`. Pour le bandeau du Daily, `signaux()` compte déjà
+      *à trier* et *reportées 3 fois ou plus* — testé, à brancher dans BRU-30
+- [x] **Aucun blocage automatique** — testé : six Reports, et on change encore de Statut, on
+      termine encore
+- [x] Chaque Report est historisé avec sa raison et son auteur — et **l'historique s'affiche
+      dans le détail** (raison · ancien → nouvel Engagement · auteur). Vérifié dans le navigateur

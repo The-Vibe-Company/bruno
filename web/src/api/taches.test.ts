@@ -145,6 +145,33 @@ describe("l'Engagement (invariant 4)", () => {
   });
 });
 
+describe("le compteur de Reports (BRU-22)", () => {
+  it("historise chaque Report avec sa raison et son auteur", async () => {
+    const t = await surLeFeu();
+    await T.reporter({ spaceId, membreId: stan }, t.id, { raison: "bloqué par quelqu'un", nouvelEngagement: "2026-09-10" });
+    const [h] = await T.reports(ctx, t.id);
+    expect(h.auteur).toBe("Stan");
+    expect(h.raison).toBe("bloqué par quelqu'un");
+  });
+
+  it("ne bloque jamais rien, même après beaucoup de Reports — c'est un signal, pas une punition", async () => {
+    const t = await surLeFeu();
+    for (let i = 1; i <= 6; i++) await T.reporter(ctx, t.id, { raison: `encore ${i}`, nouvelEngagement: `2026-09-${10 + i}` });
+    expect((await T.obtenir(ctx, t.id)).reportsCount).toBe(6);
+    expect((await T.changerStatut(ctx, t.id, "en_cours")).statut).toBe("en_cours");
+    expect((await T.terminer(ctx, t.id)).etatTerminal).toBe("termine");
+  });
+
+  it("compte les signaux : à trier, et reportées trois fois ou plus", async () => {
+    await capture("une"); await capture("deux");
+    const t = await surLeFeu("trois");
+    for (let i = 1; i <= 3; i++) await T.reporter(ctx, t.id, { raison: "…", nouvelEngagement: `2026-09-1${i}` });
+    const u = await surLeFeu("deux fois seulement");
+    for (let i = 1; i <= 2; i++) await T.reporter(ctx, u.id, { raison: "…", nouvelEngagement: `2026-09-1${i}` });
+    expect(await T.signaux(ctx)).toEqual({ aTrier: 2, reportees: 1 });
+  });
+});
+
 describe("les fins", () => {
   it("Terminé et Abandonné sont deux états distincts", async () => {
     const a = await surLeFeu("une");

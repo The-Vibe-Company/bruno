@@ -16,6 +16,13 @@ const TEINTE: Record<Statut, string> = {
   bloque: "bg-bloque-voile border-bloque/35",
 };
 
+/** « reporté N× » — et à partir de trois, un badge : c'est un signal, jamais une sanction (règle 12). */
+export function Reporte({ n }: { n: number }) {
+  return n >= 3
+    ? <span className="rounded-md border border-accent/50 bg-accent-voile px-1.5 py-px text-[12.5px] font-medium text-accent">reporté {n}×</span>
+    : <span className="text-accent">reporté {n}×</span>;
+}
+
 export function Initiale({ nom }: { nom: string }) {
   return (
     <span className="inline-flex h-5 w-5 flex-none items-center justify-center rounded-full bg-bord-faible text-[11px] font-medium text-texte">
@@ -54,7 +61,7 @@ export function Carte({ tache, onTerminer, onOuvrir, fantome }: { tache: TacheCa
         />
         <span className="flex-1 text-[13.5px] text-texte-sourd">
           {tache.engagement ? libelleJour(tache.engagement) : "—"}
-          {tache.reportsCount > 0 && <> · <span className="text-accent">reporté {tache.reportsCount}×</span></>}
+          {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
         </span>
         {tache.assigne && <Initiale nom={tache.assigne.nom} />}
       </div>

@@ -5,7 +5,7 @@
 import { and, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db/client";
-import { tache, tacheAidant, report } from "@/db/schema";
+import { membre, tache, tacheAidant, report } from "@/db/schema";
 import { ErreurApi, depuisPostgres, introuvable } from "./erreurs";
 import type * as C from "./contrat";
 
@@ -243,8 +243,29 @@ export async function reporter(ctx: Ctx, id: string, entree: z.infer<typeof C.Re
   });
 }
 
-/** L'historique des Reports d'une Tâche — le compteur est visible de tous (règle 11). */
+/** L'historique des Reports d'une Tâche — visible de tous, avec qui a reporté et pourquoi (règle 11). */
 export async function reports(ctx: Ctx, id: string) {
   await lire(ctx, id);
-  return db.select().from(report).where(eq(report.tacheId, id)).orderBy(desc(report.createdAt));
+  const lignes = await db
+    .select({ id: report.id, raison: report.raison, ancienEngagement: report.ancienEngagement,
+              nouvelEngagement: report.nouvelEngagement, createdAt: report.createdAt, auteur: membre.nom })
+    .from(report).leftJoin(membre, eq(membre.id, report.auteurId))
+    .where(eq(report.tacheId, id)).orderBy(desc(report.createdAt));
+  return lignes.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() }));
+}
+
+/** Le seuil à partir duquel un Report devient un signal : trois, « reportée 3 fois ou plus ». */
+export const SEUIL_SIGNAL = 3;
+
+/**
+ * Les deux seuls signaux d'alerte de Bruno (PRD §9) : ce qui attend d'être trié, et ce qui a
+ * été reporté trois fois ou plus. Un signal, jamais une sanction : rien n'est bloqué.
+ */
+export async function signaux(ctx: { spaceId: string }) {
+  const vivantes = and(eq(tache.spaceId, ctx.spaceId), isNull(tache.etatTerminal));
+  const [[{ aTrier }], [{ reportees }]] = await Promise.all([
+    db.select({ aTrier: sql<number>`count(*)::int` }).from(tache).where(and(vivantes, eq(tache.bucket, "a_trier"))),
+    db.select({ reportees: sql<number>`count(*)::int` }).from(tache).where(and(vivantes, sql`${tache.reportsCount} >= ${SEUIL_SIGNAL}`)),
+  ]);
+  return { aTrier, reportees };
 }
