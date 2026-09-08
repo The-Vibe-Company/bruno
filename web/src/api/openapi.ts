@@ -15,6 +15,7 @@ const composants = {
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
+  Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -146,6 +147,16 @@ export function documentOpenApi() {
       "/api/affectations/{id}": {
         parameters: [idTache],
         patch: { summary: "Désactiver ou réactiver", description: "On ne supprime jamais une Affectation : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
+      },
+      "/api/recurrences": {
+        get: { summary: "Les Récurrences", responses: { 200: { description: "Les règles", content: { "application/json": { schema: { type: "array", items: ref("Recurrence") } } } } } },
+        post: { summary: "Créer une règle", description: "Assigné obligatoire : ses Tâches entrent Sur le feu. decalages = {0, 2, 4} pour lundi, mercredi, vendredi.", requestBody: corps("PoserRecurrence"), responses: { 200: { description: "La règle" } } },
+      },
+      "/api/recurrences/{id}": {
+        parameters: [idTache],
+        get: { summary: "Une règle", responses: { 200: { description: "La règle", content: { "application/json": { schema: ref("Recurrence") } } } } },
+        put: { summary: "Modifier une règle", description: "Sans effet sur les Tâches déjà fabriquées (règle 20).", requestBody: corps("PoserRecurrence"), responses: { 200: { description: "La règle" } } },
+        delete: { summary: "Supprimer une règle", description: "Les Tâches nées de la règle restent.", responses: { 204: { description: "Supprimée" } } },
       },
       "/api/taches/{id}/reports": {
         parameters: [idTache],
