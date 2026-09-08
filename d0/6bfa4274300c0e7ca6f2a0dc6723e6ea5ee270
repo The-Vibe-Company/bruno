@@ -1,0 +1,32 @@
+web/src/lib/dates.test.ts
+  s_7ec6903985e0db::t_8829f33d83f2ba 2,28-33
+  s_7ec6903985e0db::t_6b5dc9ef8da173 34-35
+web/src/board/Report.tsx
+  s_7ec6903985e0db::t_8829f33d83f2ba 1-107
+web/src/lib/dates.ts
+  s_7ec6903985e0db::t_8829f33d83f2ba 33-40
+web/src/board/api.ts
+  s_7ec6903985e0db::t_8829f33d83f2ba 27-28
+web/src/board/Detail.tsx
+  s_7ec6903985e0db::t_8829f33d83f2ba 16,19,101
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_8829f33d83f2ba 5,10,45,90-95,145,147-149
+tickets/E4-engagement-report.md
+  s_7ec6903985e0db::t_b338b9f6d50229 22,24-25,27-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "d06bfa4274300c0e7ca6f2a0dc6723e6ea5ee270",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
