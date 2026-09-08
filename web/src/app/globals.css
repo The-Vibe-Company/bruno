@@ -112,6 +112,19 @@ html {
   color-scheme: light dark;
 }
 
+/*
+ * Tout ce qui se clique montre une main. Le preflight de Tailwind v4 met `cursor: default`
+ * sur les boutons — une règle globale plutôt qu'un rappel sur chaque composant.
+ */
+@layer base {
+  button, [role="button"], a[href], select, summary, input[type="date"], input[type="checkbox"] {
+    cursor: pointer;
+  }
+  button:disabled, [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
 body {
   background: var(--fond);
   color: var(--texte);

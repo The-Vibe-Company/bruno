@@ -45,3 +45,8 @@ export function deplacer(colonnes: Colonnes, actifId: string, overId: string): {
   if (!inchange) mutations.push({ type: "rang", id: actifId, avantId, apresId });
   return { mutations, colonnes: suivantes };
 }
+
+/** Une carte venue du panneau, lâchée sur le kanban : dans quelle colonne ? `null` si ailleurs. */
+export function colonneVisee(colonnes: Colonnes, overId: string | null): Statut | null {
+  return overId ? colonneDe(colonnes, overId) : null;
+}

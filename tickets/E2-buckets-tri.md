@@ -23,25 +23,31 @@ Maquette : `Bruno iOS v2` → écran « En attente ».
       plus une croix pour supprimer
 - [ ] **Pas de réorganisation du Rang au doigt** — le tri oui, le réordonnancement non
 
-## BRU-13 — Le formulaire du droit d'entrée · **invariant 2** · **bloqué par BRU-37**
+## BRU-13 — Le formulaire du droit d'entrée · **invariant 2** · **web livré, iOS à venir**
 
-Le seul verrou dur de Bruno. À implémenter sur **les deux plateformes**.
+Le seul verrou dur de Bruno. Côté web, livré avec BRU-14 (maquette v3) ; côté iOS, avec BRU-12.
 
-- [ ] Deux champs et deux seulement : **Assigné** et **Engagement**
-- [ ] Pré-remplis avec « moi » et « aujourd'hui », validables en un tap
-- [ ] **Il n'existe aucun chemin vers Sur le feu qui ne passe pas par ce formulaire** — ni le
-      bouton « Sur le feu » d'une carte À trier, ni le drop dans le kanban web, ni l'API
-- [ ] Ni blocage sec (agaçant) ni valeur par défaut silencieuse (on s'engage sans le savoir) :
-      on voit toujours à quoi on s'engage
-- [ ] **Test** : tenter la transition par l'API sans Assigné → rejet
+- [x] Deux champs et deux seulement : **Assigné** et **Engagement** — la modale « Passer Sur le feu »
+- [x] Pré-remplis avec « moi » et « aujourd'hui », validables en un tap
+- [x] **Il n'existe aucun chemin vers Sur le feu qui ne passe pas par ce formulaire** — le bouton
+      « Sur le feu » d'une carte À trier l'ouvre, le dépôt d'une carte du panneau dans le kanban
+      l'ouvre (avec le Statut de la colonne visée), et l'API refuse sans Assigné ni Engagement
+- [x] Ni blocage sec ni valeur par défaut silencieuse : on voit toujours à quoi on s'engage
+- [x] **Test** : tenter la transition par l'API sans Assigné → rejet (BRU-3), et en base (BRU-2)
+- [ ] ⏳ La feuille iOS — avec BRU-12
 
-## BRU-14 — Panneau latéral du Board web
+## BRU-14 — Panneau latéral du Board web · **livré**
 
 Maquette : `Bruno Web v2` → écran « Board », colonne de droite.
 
-- [ ] `À trier` dépliée avec ses cartes complètes (transcription brute + trois boutons),
-      `À venir` et `Idées` repliées
-- [ ] Glisser une carte depuis le panneau vers le kanban change le Bucket et **déclenche
-      BRU-13**
-- [ ] Bandeau supérieur : les Affectations en cours de chacun (voir BRU-28)
-- [ ] Recherche texte et filtre par Assigné. **Rien d'autre** — pas de tags, pas de vues sauvegardées
+- [x] `À trier` dépliée avec ses cartes complètes (transcription brute + trois boutons + croix),
+      `À venir` et `Idées` repliées avec leur compteur, dépliables
+- [x] Glisser une carte depuis le panneau vers le kanban change le Bucket et **déclenche
+      BRU-13** — avec le Statut de la colonne visée. Vérifié avec de vrais événements pointeur,
+      et en base. Au passage, la stratégie de collision est passée à `pointerWithin` (repli
+      `closestCorners`) : la première élisait une carte de la colonne voisine plus haute
+- [x] Bandeau supérieur : les Affectations en cours de chacun, barre à la couleur de
+      l'Affectation (lecture seule — poser et fermer viennent avec BRU-28/40)
+- [x] Recherche texte et filtre par Assigné, portés par l'URL. **Rien d'autre**
+- [x] Tout ce qui se clique montre une main : règle globale dans les tokens (le preflight de
+      Tailwind v4 met `cursor: default` sur les boutons) — audit : 31 éléments, 0 fautif
