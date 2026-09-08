@@ -4,6 +4,14 @@ Découpage du développement. Les tickets sont regroupés par épique, un fichie
 Chaque ticket porte l'invariant ou la règle du [PRD](../PRD.md) qu'il fait respecter — c'est ce
 qui doit être vérifié en relecture, pas seulement « ça marche ».
 
+## État au 8 septembre 2026
+
+**Le web est complet** : E0, E2, E3, E4, E5 (sauf le push), E6, E7, E8, et l'Enrichissement
+(BRU-9) sont livrés et en prod. **Tout ce qui reste est iOS** — BRU-6, 7, 8, 10, 12, 18, 19, 25,
+et les volets iOS de BRU-13 et BRU-28 — et attend trois choses d'Antoine : un compte Apple
+Developer (Team ID, signature, TestFlight), un identifiant OAuth Google *iOS*, et une clé APNs.
+Et une quatrième, côté web : `ANTHROPIC_API_KEY` dans Vercel pour allumer l'Enrichissement.
+
 ## Ordre de livraison
 
 ```
