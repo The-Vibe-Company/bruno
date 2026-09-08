@@ -197,6 +197,23 @@ export const creneau = pgTable("creneau", {
                                    AND extract(second from ${t.heure}) = 0`),
 ]);
 
+/**
+ * Une Relance partie. Une ligne par Membre, par jour, par Créneau — l'unicité garantit qu'une
+ * Relance ne part jamais deux fois, quoi qu'il arrive au cron. Le contenu est gardé : c'est
+ * ce qu'on relira si quelqu'un dit « je n'ai rien reçu ».
+ */
+export const relanceEnvoyee = pgTable("relance_envoyee", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
+  jour: date("jour").notNull(),
+  heure: time("heure").notNull(),
+  nature: text("nature").notNull(),
+  titre: text("titre").notNull(),
+  corps: text("corps").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [unique("relance_envoyee_unique").on(t.membreId, t.jour, t.heure)]);
+
 /* ------------------------------------------------------------------ la Récurrence */
 
 /**

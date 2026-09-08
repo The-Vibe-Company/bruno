@@ -22,22 +22,38 @@ Maquette : les Réglages web v3 (identiques à l'écran iOS). Page `/reglages`, 
 - [x] La page porte aussi le **Compte** (nom, adresse, se déconnecter) ; la section Affectations
       arrive avec BRU-26
 
-## BRU-24 — Le moteur de Relance
+## BRU-24 — Le moteur de Relance · **livré**
 
-- [ ] **Une seule notification groupée par Créneau.** Jamais une notification par Tâche —
-      c'est la décision qui détermine si le système survit *(règle 13)*
-- [ ] **Point du matin** : mon Affectation du jour · mes Tâches engagées aujourd'hui · les Tâches
-      À venir dont l'Engagement arrive (proposition de passage) · mes Bloqué · les Affectations
-      ouvertes depuis plus de 14 jours
-- [ ] **Rappels** : ce qui reste ouvert aujourd'hui. Ton factuel
-- [ ] **Bilan** : ce que je devais finir et qui ne l'est pas. Ton direct, il nomme la Tâche
-- [ ] Les Tâches **Bloqué sont exclues** des Rappels et du Bilan *(règle 16)*
-- [ ] **Aucune Relance le samedi ni le dimanche.** Un Engagement du week-end glisse au lundi
-      **sans compter comme un Report** *(règle 15)*
-- [ ] Aucun mode vacances *(règle 17)*
-- [ ] Rien à envoyer ⇒ **rien n'est envoyé**. Une notification vide est du bruit pur
+`src/relances/` : le temps (fuseau Europe/Paris, quart d'heure courant, jour ouvré), la
+composition (pure, testée) et le moteur (lit tout, n'écrit qu'une trace). Le cron l'appelle
+toutes les 15 minutes ; `?apercu=1&quand=2026-09-08T09:15` rejoue un instant sans rien envoyer.
 
-## BRU-25 — Push iOS actionnable
+- [x] **Une seule notification groupée par Créneau**, jamais une par Tâche *(règle 13)* —
+      `composer()` renvoie un message ou rien
+- [x] **Point du matin** : Affectation du jour · Tâches engagées aujourd'hui · Tâches À venir
+      dont l'Engagement arrive (*« les passer Sur le feu ? »* — proposées, jamais déplacées) ·
+      Bloqué · Affectations ouvertes depuis plus de 14 jours (*« Toujours sur X ? »*) · reportées
+      3 fois ou plus
+- [x] **Rappels** : *« N encore ouvertes aujourd'hui »*. Factuel
+- [x] **Bilan** : *« Tu devais finir X. N autres engagements encore ouverts. »* — la première par Rang
+- [x] Les Tâches **Bloqué sont exclues** des Rappels et du Bilan *(règle 16)* — et mentionnées au
+      Point du matin
+- [x] **Aucune Relance le samedi ni le dimanche** *(règle 15)*. Un Engagement du week-end est
+      simplement « ≤ aujourd'hui » le lundi : il glisse sans Report, et sans écriture — rien ne
+      bouge tout seul
+- [x] Aucun mode vacances *(règle 17)*
+- [x] Rien à envoyer ⇒ **rien n'est envoyé**
+- [x] **Jamais deux fois** : une table `relance_envoyee` (Membre × jour × Créneau, unique) fait
+      barrage si le cron repasse. Testé. La livraison est une interface : le journal aujourd'hui,
+      APNs avec BRU-25 — le moteur n'y verra rien
+- [x] Vérifié sur la démo : trois Points du matin distincts à 09:15, trois Bilans à 17:30, rien
+      le samedi
+
+## BRU-25 — Push iOS actionnable · ⛔ **bloqué : il manque l'app iOS et une clé APNs**
+
+Le moteur est prêt et livre à une interface. Pour brancher APNs il faut : l'app iOS (E1, BRU-6),
+et une **clé d'authentification APNs** (fichier `.p8`, `Key ID`, `Team ID`, `Bundle ID`) créée
+dans le compte développeur Apple — à poser dans Vercel, jamais dans le code.
 
 Maquette : `Bruno iOS v2` → écran « Relance · écran verrouillé ».
 
