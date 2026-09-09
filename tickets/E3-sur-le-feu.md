@@ -91,3 +91,18 @@ Un doigt qui glisse sur « Terminé » n'efface rien.
 - [x] iOS : « Annuler » pendant six secondes après Terminé / Abandonner ; section « Fait récemment »
       sur Aujourd'hui (mes Tâches finies ces sept derniers jours) avec « Rouvrir »
 - [x] Web : le même « Annuler » de six secondes sur le Board
+
+## BRU-50 — Aujourd'hui sur iOS : tout Sur le feu, bandeau compact · **livré le 9 septembre**
+
+- [x] L'écran montre tout ce qui est Sur le feu — En cours, À faire, Bloqué (la raison seule) — puis
+      « J'aide sur » et « Fait récemment »
+- [x] Le bandeau Affectation tient sur une ligne ; un crayon ouvre la feuille pour la changer
+
+## BRU-51 · BRU-52 — La même fiche de Tâche sur le web et sur iOS · **livré le 9 septembre**
+
+- [x] Comme une page Notion : le titre, des propriétés en lignes (Assigné, Aidants, Engagement, Statut,
+      Reports), un filet, puis les Notes en texte nu — plus d'encadrés
+- [x] Changer l'Assigné ne touche pas aux Aidants, sauf pour retirer le nouvel Assigné s'il aidait ;
+      les Aidants se choisissent un par un depuis « + »
+- [x] Le Statut se change depuis la fiche, Bloqué avec sa raison
+

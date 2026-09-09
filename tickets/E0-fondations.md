@@ -135,5 +135,22 @@ peinture à la fin.
 - [x] **Web** : tokens CSS + `prefers-color-scheme` — `globals.css`, exposés à Tailwind
       (`bg-surface`, `text-accent`…). Deux tests gardent le thème honnête : chaque token existe
       dans les deux thèmes, et aucune couleur n'est écrite en dur hors du fichier de tokens
-- [ ] ⏳ **iOS** : Color Assets avec variantes Any/Dark — avec BRU-6, quand le projet Xcode existera
-- [ ] ⏳ **Le widget et les notifications suivent aussi** — avec BRU-10 et BRU-25 — ce sont les deux surfaces qu'on oublie
+- [x] **iOS** : les mêmes tokens dans `Theme.swift`, deux valeurs par token, livrés avec BRU-6
+- [x] **Le widget suit** (BRU-10) — ⏳ les notifications avec BRU-25
+- [x] *9 septembre* : Réglages › Apparence choisit Système / Clair / Sombre en vignettes (cookie `bruno_theme`, BRU-43 puis BRU-53)
+
+## BRU-53 — Un sélecteur maison partout, l'icône Réglages, l'Apparence en vignettes · **livré le 9 septembre**
+
+- [x] Plus de `<select>` natif : le même sélecteur (Radix Popover) pour le Statut, l'Assigné, les
+      Aidants, le droit d'entrée, la Récurrence — sur iOS, la même feuille `ChoixFeuille`
+- [x] L'entrée Réglages du rail a une icône qui se comprend (curseurs)
+- [x] Apparence : trois vignettes qui montrent le thème, pas trois mots
+
+## BRU-54 — La photo de profil, depuis le web ou l'iPhone · **livré le 9 septembre**
+
+- [x] `membre.avatar` : une image de 160 px en data URL (migration 0004) — assez pour un rond ;
+      `GET/PATCH /api/auth/moi`
+- [x] Web : Réglages › Compte — ajouter, changer, retirer, l'image réduite dans le navigateur
+- [x] iOS : l'avatar en haut d'Aujourd'hui ouvre le Profil — photo depuis la pellicule, ou retirer
+- [x] La photo remplace l'initiale partout : cartes, bandeau, filtre, fiche, sélecteurs, Daily, Fait, rail
+
