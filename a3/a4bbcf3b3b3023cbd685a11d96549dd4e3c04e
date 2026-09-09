@@ -1,0 +1,38 @@
+web/src/reglages/Apparence.tsx
+  s_7ec6903985e0db::t_224380ced428b4 7-11,13,17,21-37,42-59
+  s_7ec6903985e0db::t_e760536021d24a 60
+ios/Bruno/Theme/ChoixFeuille.swift
+  s_7ec6903985e0db::t_224380ced428b4 1-53
+web/src/board/Choix.tsx
+  s_7ec6903985e0db::t_2a48113133e9e2 1-43
+web/src/board/DroitEntree.tsx
+  s_7ec6903985e0db::t_2a48113133e9e2 6,50-57
+web/src/recurrences/Editeur.tsx
+  s_7ec6903985e0db::t_2a48113133e9e2 4,59-66
+ios/Bruno/Detail/DetailVue.swift
+  s_7ec6903985e0db::t_224380ced428b4 21-23,83,107,191-210,241
+ios/Bruno/EnAttente/Feuilles.swift
+  s_7ec6903985e0db::t_224380ced428b4 74,88-96,98-101
+web/src/app/Coquille.tsx
+  s_7ec6903985e0db::t_224380ced428b4 11-12
+web/src/board/Detail.tsx
+  s_7ec6903985e0db::t_2a48113133e9e2 8,109-113,128-132,147-152
+web/src/app/globals.css
+  s_7ec6903985e0db::t_224380ced428b4 45-54,89-96,131-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "a3a4bbcf3b3b3023cbd685a11d96549dd4e3c04e",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
