@@ -1,0 +1,90 @@
+web/src/api/contrat.ts
+  s_7ec6903985e0db::t_4dc3b37a100362 114-120
+ios/Bruno/Aujourdhui/AujourdhuiVue.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 14,54-56,69-71,177
+web/src/auth/serveur.ts
+  s_7ec6903985e0db::t_4dc3b37a100362 9
+  s_7ec6903985e0db::t_0eee31d13171c0 16
+ios/Bruno/Aujourdhui/ProfilFeuille.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 1-61
+web/src/api/affectations.ts
+  s_7ec6903985e0db::t_4dc3b37a100362 57,65,72
+ios/Bruno/Reseau/Modeles.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 38,46
+web/src/api/openapi.ts
+  s_7ec6903985e0db::t_4dc3b37a100362 18
+ios/Bruno/Detail/DetailVue.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 85,94,192,198
+ios/Bruno/Theme/ChoixFeuille.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 8,32
+ios/Bruno/Theme/Avatars.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 1-27
+web/src/board/DroitEntree.tsx
+  s_7ec6903985e0db::t_d8706c1cef40c9 10,50,52
+web/src/app/api/auth/moi/route.ts
+  s_7ec6903985e0db::t_4dc3b37a100362 2,10-17
+web/src/app/api/membres/route.ts
+  s_7ec6903985e0db::t_4dc3b37a100362 8
+web/src/db/schema.ts
+  s_7ec6903985e0db::t_4dc3b37a100362 52-53
+ios/Bruno/EnAttente/Feuilles.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 3,6,9-17,95,106
+ios/Bruno/EnAttente/EnAttenteVue.swift
+  s_7ec6903985e0db::t_d8706c1cef40c9 122,196
+web/drizzle/0004_colorful_darwin.sql
+  s_7ec6903985e0db::t_8fa4e5ce6d14c5 1
+web/drizzle/meta/0004_snapshot.json
+  s_7ec6903985e0db::t_8ab25af8b4428b 1-1156
+web/drizzle/meta/_journal.json
+  s_7ec6903985e0db::t_277fb492b50229 32-38
+web/src/app/Coquille.tsx
+  s_7ec6903985e0db::t_6666e8bddeaac4 15,28-31
+web/src/app/daily/page.tsx
+  s_7ec6903985e0db::t_aace26eb063e86 37,39-40,45,48,52
+web/src/app/fait/page.tsx
+  s_7ec6903985e0db::t_83fcc0ec012138 31,45
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_802635900dc7f8 31,35-36,40-41,46-47,51
+web/src/app/recurrences/page.tsx
+  s_7ec6903985e0db::t_1d1f8bbec2d9eb 23,25,32,49
+web/src/app/reglages/page.tsx
+  s_7ec6903985e0db::t_ae16b6ea77c351 25,29
+web/src/board/Affectations.tsx
+  s_7ec6903985e0db::t_0227ed624a218f 23
+web/src/board/Carte.tsx
+  s_7ec6903985e0db::t_0c49cefc25f158 7,9,12-13,25,34,73
+web/src/board/Detail.tsx
+  s_7ec6903985e0db::t_b6eeed19ef47af 109,111,121,128
+web/src/board/EnAttente.tsx
+  s_7ec6903985e0db::t_c5a2f5ed1d7b84 6,11,44,116
+web/src/board/FiltreMembres.tsx
+  s_7ec6903985e0db::t_1b0ead2f306f67 9,26-28
+web/src/board/visuel.tsx
+  s_7ec6903985e0db::t_cd53853ce49fe3 21-29,31
+web/src/daily/Hier.tsx
+  s_7ec6903985e0db::t_ca053b02c0f839 2,5,21,35
+web/src/daily/SurLeFeu.tsx
+  s_7ec6903985e0db::t_69348a77579db8 1,4,30
+web/src/fait/Semaine.tsx
+  s_7ec6903985e0db::t_e61097019782e6 15,35
+web/src/recurrences/Editeur.tsx
+  s_7ec6903985e0db::t_327d8bd4883963 8,60-61
+web/src/reglages/Compte.tsx
+  s_7ec6903985e0db::t_e909987c4dff23 3,6-16,18-30,35,39-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "9381b8b22acf9f45c47c0434935e860093070782",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
