@@ -69,7 +69,7 @@ struct AujourdhuiVue: View {
 
     /// Le bandeau, compact : une ligne par Affectation, et un crayon — tout se change dans « Sur quoi es-tu ? ».
     private var bandeau: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 8) {
                 if modele.mesAffectations.isEmpty {
                     HStack(spacing: 10) {
@@ -92,7 +92,7 @@ struct AujourdhuiVue: View {
             }
             .accessibilityLabel("Changer d’Affectation")
         }
-        .padding(.horizontal, 14).padding(.vertical, 10)
+        .padding(.horizontal, 14).padding(.vertical, 10).frame(minHeight: 52)
         .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Teinte.bord))
     }
