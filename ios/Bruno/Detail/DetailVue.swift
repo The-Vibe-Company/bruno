@@ -18,6 +18,9 @@ struct DetailVue: View {
     @FocusState private var focus: Champ?
     @State private var report = false
     @State private var blocage = false
+    @State private var choixAssigne = false
+    @State private var choixAidant = false
+    @State private var choixStatut = false
     @State private var engagementFeuille = false
     @State private var supprimer = false
     @State private var occupe = false
@@ -77,11 +80,7 @@ struct DetailVue: View {
                         // Les propriétés, en clair : un libellé, une valeur, rien autour.
                         VStack(alignment: .leading, spacing: 14) {
                             propriete("Assigné") {
-                                Menu {
-                                    ForEach(membres) { m in
-                                        Button { assigner(m) } label: { m.id == tache.assigneId ? Label(m.nom, systemImage: "checkmark") : Label(m.nom, systemImage: "") }
-                                    }
-                                } label: {
+                                Button { choixAssigne = true } label: {
                                     HStack(spacing: 8) {
                                         if let a = membre(tache.assigneId) { Initiale(nom: a.nom); Text(a.nom) } else { Text("personne").foregroundStyle(Teinte.texteFaible) }
                                         Image(systemName: "chevron.down").font(.system(size: 11, weight: .semibold)).foregroundStyle(Teinte.texteFaible)
@@ -105,9 +104,7 @@ struct DetailVue: View {
                                 let candidats = membres.filter { $0.id != tache.assigneId && !tache.aidantIds.contains($0.id) }
                                 if candidats.isEmpty && tache.aidantIds.isEmpty { Text("—").foregroundStyle(Teinte.texteFaible) }
                                 if !candidats.isEmpty {
-                                    Menu {
-                                        ForEach(candidats) { m in Button(m.nom) { enregistrer(Patch(aidantIds: tache.aidantIds + [m.id])) } }
-                                    } label: {
+                                    Button { choixAidant = true } label: {
                                         Image(systemName: "plus").font(.system(size: 12, weight: .semibold)).foregroundStyle(Teinte.texteSourd)
                                             .frame(width: 28, height: 28).overlay(Circle().stroke(Teinte.bordFort))
                                     }
@@ -191,6 +188,26 @@ struct DetailVue: View {
                 await onChange(); fermer()
             }
         }
+        .sheet(isPresented: $choixAssigne) {
+            ChoixFeuille(titre: "Assigner à", choix: membres.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom) }, courant: tache.assigneId) { id in
+                if let m = membres.first(where: { $0.id == id }) { assigner(m) }
+            }
+        }
+        .sheet(isPresented: $choixAidant) {
+            let candidats = membres.filter { $0.id != tache.assigneId && !tache.aidantIds.contains($0.id) }
+            ChoixFeuille(titre: "Ajouter un Aidant", choix: candidats.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom) }, courant: nil) { id in
+                enregistrer(Patch(aidantIds: tache.aidantIds + [id]))
+            }
+        }
+        .sheet(isPresented: $choixStatut) {
+            ChoixFeuille(titre: "Statut", choix: [
+                Choix(id: "a_faire", libelle: "À faire", couleur: Teinte.accent),
+                Choix(id: "en_cours", libelle: "En cours", couleur: Teinte.enCours),
+                Choix(id: "bloque", libelle: tache.statut == .bloque ? "Bloqué — changer la raison" : "Bloqué…", couleur: Teinte.bloque),
+            ], courant: tache.statut?.rawValue) { id in
+                if id == "bloque" { blocage = true } else if let s = Statut(rawValue: id) { changerStatut(s) }
+            }
+        }
         .sheet(isPresented: $blocage) {
             BlocageFeuille(tache: tache) { raison in
                 // Déjà Bloqué : on ne change que la raison. Sinon, on bloque — avec elle.
@@ -221,11 +238,7 @@ struct DetailVue: View {
     /// Le Statut, en pastille à sa couleur : un tap, et on en change. Bloqué passe par sa raison.
     private var pastilleStatut: some View {
         let couleur: Color = switch tache.statut { case .enCours: Teinte.enCours; case .bloque: Teinte.bloque; default: Teinte.accent }
-        return Menu {
-            Button { changerStatut(.aFaire) } label: { tache.statut == .aFaire ? Label("À faire", systemImage: "checkmark") : Label("À faire", systemImage: "") }
-            Button { changerStatut(.enCours) } label: { tache.statut == .enCours ? Label("En cours", systemImage: "checkmark") : Label("En cours", systemImage: "") }
-            Button { blocage = true } label: { tache.statut == .bloque ? Label("Bloqué — changer la raison", systemImage: "checkmark") : Label("Bloqué…", systemImage: "") }
-        } label: {
+        return Button { choixStatut = true } label: {
             HStack(spacing: 6) {
                 Circle().fill(couleur).frame(width: 7, height: 7)
                 Text(statut).font(.system(size: 14, weight: .medium)).foregroundStyle(Teinte.texte)
