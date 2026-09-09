@@ -200,6 +200,12 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         onSupprimer={action(supprimer)}
         onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })}
         onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}
+        onStatut={(t, statut) => {
+          if (statut === t.statut) return;
+          // Vers Bloqué, la raison d'abord ; sinon, tout de suite.
+          if (statut === "bloque") { setMutationsEnAttente([{ type: "statut", id: t.id, statut: "bloque" }]); setDemandeBlocage({ id: t.id, titre: t.titre, raison: null, mode: "bloquer" }); }
+          else action((id) => appliquer({ type: "statut", id, statut }))(t.id);
+        }}
       />
       <Blocage demande={demandeBlocage} onConfirmer={bloquer} onAnnuler={annulerBlocage} />
       {derniereFin && (

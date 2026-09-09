@@ -67,12 +67,12 @@ struct DetailVue: View {
                             .focused($focus, equals: .titre)
                             .submitLabel(.done)
                             .onSubmit { focus = nil }
-                        HStack(spacing: 8) {
-                            if tache.bucket == .surLeFeu { pastilleStatut } else { Text(tache.bucket.libelle).font(.system(size: 14)).foregroundStyle(Teinte.texteSourd) }
-                            if tache.statut == .bloque, let r = tache.raisonBlocage { Text(r).font(.system(size: 14)).foregroundStyle(Teinte.bloque).lineLimit(1) }
-                            if tache.reportsCount > 0 { Text("· reporté \(tache.reportsCount)×").font(.system(size: 14)).foregroundStyle(Teinte.accent) }
+                        HStack(spacing: 6) {
+                            Text(tache.bucket == .surLeFeu ? "Sur le feu" : tache.bucket.libelle).foregroundStyle(Teinte.texteSourd)
+                            if tache.reportsCount > 0 { Text("· reporté \(tache.reportsCount)×").foregroundStyle(Teinte.accent) }
                         }
-                        .padding(.top, 8)
+                        .font(.system(size: 14))
+                        .padding(.top, 6)
 
                         // Les propriétés, en clair : un libellé, une valeur, rien autour.
                         VStack(alignment: .leading, spacing: 14) {
@@ -126,6 +126,14 @@ struct DetailVue: View {
                                 }
                                 .disabled(tache.bucket == .surLeFeu && tache.engagement == nil)
                                 if tache.bucket == .surLeFeu, tache.engagement != nil { Text("par un Report").font(.system(size: 13)).foregroundStyle(Teinte.texteFaible) }
+                            }
+                            propriete("Statut") {
+                                if tache.bucket == .surLeFeu {
+                                    pastilleStatut
+                                    if tache.statut == .bloque, let r = tache.raisonBlocage { Text(r).font(.system(size: 14)).foregroundStyle(Teinte.bloque).lineLimit(1) }
+                                } else {
+                                    Text("—").foregroundStyle(Teinte.texteFaible)
+                                }
                             }
                             propriete("Reports") { Text("\(tache.reportsCount)") }
                         }
