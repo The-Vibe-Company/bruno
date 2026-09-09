@@ -1,0 +1,29 @@
+ios/Bruno/Detail/ReportFeuille.swift
+  s_7ec6903985e0db::t_4aa8b0ed1b6781 1-105
+ios/Bruno/Detail/DetailVue.swift
+  s_7ec6903985e0db::t_4aa8b0ed1b6781 1-144
+ios/Bruno/EnAttente/EnAttenteVue.swift
+  s_7ec6903985e0db::t_4aa8b0ed1b6781 14,42,45,56-58,189,191-201,203
+ios/Bruno/Theme/Dates.swift
+  s_7ec6903985e0db::t_4aa8b0ed1b6781 32-57
+ios/Bruno/Aujourdhui/AujourdhuiVue.swift
+  s_7ec6903985e0db::t_4aa8b0ed1b6781 11,40-42,116,132-141,143,154,163-171,173
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_b4d36f4539ce4e 56,60-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "ae3f8cb990ffa8342a564141f13ba1a72ebf4ea0",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
