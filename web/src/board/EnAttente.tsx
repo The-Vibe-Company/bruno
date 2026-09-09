@@ -3,12 +3,12 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { useDraggable } from "@dnd-kit/core";
 import { useState } from "react";
 import { libelleJour } from "@/lib/dates";
-import { Initiale } from "./visuel";
+import { Initiale, type Personne } from "./visuel";
 import { poserReplie, useReplie } from "./replie";
 
 export type TacheAttente = {
   id: string; titre: string; bucket: "a_trier" | "a_venir" | "idees"; transcriptionBrute: string | null;
-  engagement: string | null; auteur: { nom: string } | null; assigne: { nom: string } | null;
+  engagement: string | null; auteur: Personne | null; assigne: Personne | null;
 };
 type Bucket = TacheAttente["bucket"];
 const LIBELLE: Record<Bucket, string> = { a_trier: "À trier", a_venir: "À venir", idees: "Idées" };
@@ -41,7 +41,7 @@ function CarteATrier({ t, onDestination, onSupprimer }: { t: TacheAttente; onDes
     <div ref={setNodeRef} {...attributes} {...listeners} className={`mt-1.5 cursor-grab rounded-lg border border-bord-fort bg-surface px-3 py-2.5 shadow-md select-none ${isDragging ? "opacity-40" : ""}`}>
       <div className="flex items-center gap-2">
         <span className="flex-1 text-[13.5px]">{t.titre}</span>
-        {t.auteur && <Initiale nom={t.auteur.nom} />}
+        {t.auteur && <Initiale nom={t.auteur.nom} avatar={t.auteur.avatar} />}
       </div>
       {t.transcriptionBrute && <p className="mt-0.5 text-[12px] italic text-texte-sourd">« {t.transcriptionBrute} »</p>}
       <div className="mt-2 flex gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
@@ -113,7 +113,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir }: {
                 <button key={t.id} onClick={() => onOuvrir(t.id)} className="mt-1.5 flex w-full items-center gap-2 rounded-lg border border-bord-2 bg-surface px-3 py-2 text-left">
                   <span className="flex-1 text-[13.5px]">{t.titre}</span>
                   {t.engagement && <span className="text-[12px] text-texte-sourd">{libelleJour(t.engagement)}</span>}
-                  {t.assigne && <Initiale nom={t.assigne.nom} />}
+                  {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} />}
                 </button>
               )))}
             {ouverts[b] && par(b).length === 0 && <p className="py-2.5 text-[13px] text-texte-faible">Rien ici.</p>}

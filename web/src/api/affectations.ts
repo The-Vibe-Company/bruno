@@ -54,7 +54,7 @@ export async function supprimer(ctx: Ctx, id: string): Promise<Affectation[]> {
  * `depuis` répond à « depuis quand », et l'`id` sert à dire « je ne suis plus dessus ».
  */
 export type Sur = { id: string; affectationId: string; nom: string; couleur: string; depuis: string; jusqu: string | null };
-export type AffectationsMembre = { membreId: string; nom: string; affectations: Sur[] };
+export type AffectationsMembre = { membreId: string; nom: string; avatar: string | null; affectations: Sur[] };
 
 const colonnes = {
   id: affectationMembre.id, affectationId: affectationMembre.affectationId, nom: affectation.nom, couleur: affectation.couleur,
@@ -62,14 +62,14 @@ const colonnes = {
 };
 
 async function parMembre(ctx: Ctx, quand: SQL | undefined): Promise<AffectationsMembre[]> {
-  const membres = await db.select({ id: membre.id, nom: membre.nom }).from(membre)
+  const membres = await db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre)
     .where(and(eq(membre.spaceId, ctx.spaceId), eq(membre.actif, true))).orderBy(asc(membre.createdAt));
   const lignes = await db.select({ ...colonnes, membreId: affectationMembre.membreId }).from(affectationMembre)
     .innerJoin(affectation, eq(affectation.id, affectationMembre.affectationId))
     .where(and(eq(affectationMembre.spaceId, ctx.spaceId), quand))
     .orderBy(asc(affectationMembre.debut));
   return membres.map((m) => ({
-    membreId: m.id, nom: m.nom,
+    membreId: m.id, nom: m.nom, avatar: m.avatar,
     affectations: lignes.filter((l) => l.membreId === m.id).map(({ id, affectationId, nom, couleur, depuis, jusqu }) => ({ id, affectationId, nom, couleur, depuis, jusqu })),
   }));
 }

@@ -82,7 +82,7 @@ struct DetailVue: View {
                             propriete("Assigné") {
                                 Button { choixAssigne = true } label: {
                                     HStack(spacing: 8) {
-                                        if let a = membre(tache.assigneId) { Initiale(nom: a.nom); Text(a.nom) } else { Text("personne").foregroundStyle(Teinte.texteFaible) }
+                                        if let a = membre(tache.assigneId) { Initiale(nom: a.nom, avatar: a.avatar); Text(a.nom) } else { Text("personne").foregroundStyle(Teinte.texteFaible) }
                                         Image(systemName: "chevron.down").font(.system(size: 11, weight: .semibold)).foregroundStyle(Teinte.texteFaible)
                                     }
                                     .foregroundStyle(Teinte.texte)
@@ -91,7 +91,7 @@ struct DetailVue: View {
                             propriete("Aidants") {
                                 ForEach(tache.aidantIds.compactMap { membre($0) }) { a in
                                     HStack(spacing: 5) {
-                                        Initiale(nom: a.nom, taille: 20); Text(a.nom).font(.system(size: 15))
+                                        Initiale(nom: a.nom, avatar: a.avatar, taille: 20); Text(a.nom).font(.system(size: 15))
                                         Button { enregistrer(Patch(aidantIds: tache.aidantIds.filter { $0 != a.id })) } label: {
                                             Image(systemName: "xmark").font(.system(size: 10, weight: .bold)).foregroundStyle(Teinte.texteFaible).frame(width: 20, height: 20)
                                         }
@@ -189,13 +189,13 @@ struct DetailVue: View {
             }
         }
         .sheet(isPresented: $choixAssigne) {
-            ChoixFeuille(titre: "Assigner à", choix: membres.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom) }, courant: tache.assigneId) { id in
+            ChoixFeuille(titre: "Assigner à", choix: membres.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom, avatar: $0.avatar) }, courant: tache.assigneId) { id in
                 if let m = membres.first(where: { $0.id == id }) { assigner(m) }
             }
         }
         .sheet(isPresented: $choixAidant) {
             let candidats = membres.filter { $0.id != tache.assigneId && !tache.aidantIds.contains($0.id) }
-            ChoixFeuille(titre: "Ajouter un Aidant", choix: candidats.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom) }, courant: nil) { id in
+            ChoixFeuille(titre: "Ajouter un Aidant", choix: candidats.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom, avatar: $0.avatar) }, courant: nil) { id in
                 enregistrer(Patch(aidantIds: tache.aidantIds + [id]))
             }
         }

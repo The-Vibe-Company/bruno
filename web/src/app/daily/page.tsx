@@ -34,21 +34,22 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
     auJour(session, hier),
     terminees(session, hier),
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
-    db.select({ id: membre.id, nom: membre.nom }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
   ]);
-  const nomDe = new Map(membres.map((m) => [m.id, m.nom]));
+  const parId = new Map(membres.map((m) => [m.id, m]));
+  const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
   const actifs = membresActifs(filtre, membres);
   const deLui = <T extends { membreId: string }>(l: T[]) => l.filter((m) => actifs.has(m.membreId));
   const tachesHier: TacheFinie[] = finies
     .filter((t) => t.assigneId && actifs.has(t.assigneId))
-    .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null }));
+    .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, assigne: t.assigneId ? personne(t.assigneId) : null }));
   const tachesFeu: TacheDuJour[] = feu.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement, reportsCount: t.reportsCount,
-    assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null, raisonBlocage: t.raisonBlocage,
+    assigne: t.assigneId ? personne(t.assigneId) : null, raisonBlocage: t.raisonBlocage,
   }));
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="daily">
+    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="daily">
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Daily</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong(jour)}</span>

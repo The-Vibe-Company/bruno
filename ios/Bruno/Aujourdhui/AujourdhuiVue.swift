@@ -11,6 +11,7 @@ struct AujourdhuiVue: View {
     @State private var ouverte: Tache?
     @State private var erreurAction: String?
     @State private var ravisement = Ravisement()
+    @State private var profil = false
     @State private var faitesOuvertes = false
 
     var body: some View {
@@ -50,6 +51,9 @@ struct AujourdhuiVue: View {
         .fullScreenCover(item: $ouverte) { t in
             DetailVue(tache: t, membres: modele.membres, retour: "Aujourd'hui", onFin: { t, libelle in ravisement.poser(Fin(tache: t, libelle: libelle)) }) { await modele.charger() }
         }
+        .sheet(isPresented: $profil) {
+            if let moi = modele.moi { ProfilFeuille(moi: moi) { await modele.charger() } }
+        }
         .sheet(isPresented: $choisir) {
             AffectationFeuille(choix: modele.choix, dessus: Set(modele.mesAffectations.map(\.affectationId))) { ids in try await modele.poser(affectationIds: ids) }
         }
@@ -62,7 +66,9 @@ struct AujourdhuiVue: View {
                 Text("Aujourd'hui").font(.system(size: 28, weight: .semibold)).foregroundStyle(Teinte.texte)
             }
             Spacer()
-            if let moi = modele.moi { Initiale(nom: moi.nom, taille: 34) }
+            if let moi = modele.moi {
+                Button { profil = true } label: { Initiale(nom: moi.nom, avatar: moi.avatar, taille: 34) }.accessibilityLabel("Mon profil")
+            }
         }
         .padding(.horizontal, 20).padding(.top, 4)
     }
@@ -168,7 +174,7 @@ struct AujourdhuiVue: View {
                     HStack(spacing: 12) {
                         Text(t.titre).font(.system(size: 16)).foregroundStyle(Color(hex: 0xD8D8D8))
                         Spacer(minLength: 0)
-                        if let a = modele.membre(t.assigneId) { Initiale(nom: a.nom) }
+                        if let a = modele.membre(t.assigneId) { Initiale(nom: a.nom, avatar: a.avatar) }
                     }
                     .padding(.horizontal, 14).padding(.vertical, 11)
                     .background(Color(hex: 0x121212), in: RoundedRectangle(cornerRadius: 12))

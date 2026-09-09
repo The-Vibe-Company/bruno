@@ -5,7 +5,7 @@ import { Chevron, Choix } from "@/board/Choix";
 import { Initiale } from "@/board/visuel";
 import { JOURS, libelleEngagement, occurrencesDe, prochaineDate, type Frequence } from "./regle";
 
-export type Membre = { id: string; nom: string };
+export type Membre = { id: string; nom: string; avatar?: string | null };
 export type Brouillon = { id: string | null; titre: string; assigneId: string; frequence: Frequence; jourSemaine: number; jourMois: number; decalages: number[] };
 
 const CHOIX_FREQUENCE = [...JOURS.map((j, i) => ({ valeur: `h${i + 1}`, libelle: `Chaque ${j}` })), ...Array.from({ length: 28 }, (_, i) => ({ valeur: `m${i + 1}`, libelle: `Le ${i + 1} du mois` }))];
@@ -57,8 +57,8 @@ export function Editeur({ initial, membres, aujourdhui }: { initial: Brouillon; 
         <label className="flex flex-col gap-1.5"><span className="text-[13px] text-texte-sourd">Titre</span>
           <input value={b.titre} onChange={(e) => setB({ ...b, titre: e.target.value })} placeholder="Post LinkedIn" className={champ} required maxLength={200} /></label>
         <div className="flex flex-col gap-1.5"><span className="flex justify-between text-[13px] text-texte-sourd">Assigné<span className="text-texte-faible">obligatoire</span></span>
-          <Choix valeur={b.assigneId} onChoisir={(id) => setB({ ...b, assigneId: id })} options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} /> }))}>
-            <button type="button" className={`${champ} flex items-center gap-2 text-left`}><Initiale nom={membres.find((m) => m.id === b.assigneId)?.nom ?? "?"} /><span className="flex-1">{membres.find((m) => m.id === b.assigneId)?.nom ?? "—"}</span><Chevron /></button>
+          <Choix valeur={b.assigneId} onChoisir={(id) => setB({ ...b, assigneId: id })} options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} avatar={m.avatar} /> }))}>
+            <button type="button" className={`${champ} flex items-center gap-2 text-left`}><Initiale nom={membres.find((m) => m.id === b.assigneId)?.nom ?? "?"} avatar={membres.find((m) => m.id === b.assigneId)?.avatar} /><span className="flex-1">{membres.find((m) => m.id === b.assigneId)?.nom ?? "—"}</span><Chevron /></button>
           </Choix></div>
         <div className="flex flex-col gap-1.5"><span className="text-[13px] text-texte-sourd">Fréquence</span>
           <Choix valeur={frequence} onChoisir={poserFrequence} options={CHOIX_FREQUENCE}>

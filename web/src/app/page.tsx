@@ -28,26 +28,27 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     lister(session, { bucket: "a_trier", inclureTerminees: false }),
     lister(session, { bucket: "a_venir", inclureTerminees: false }),
     lister(session, { bucket: "idees", inclureTerminees: false }),
-    db.select({ id: membre.id, nom: membre.nom }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
     enCours(session),
     listerAffectations(session),
   ]);
-  const nomDe = new Map(membres.map((m) => [m.id, m.nom]));
+  const parId = new Map(membres.map((m) => [m.id, m]));
+  const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
   const actifs = membresActifs(filtre, membres);
   const cartes: TacheCarte[] = taches.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
-    reportsCount: t.reportsCount, assigneId: t.assigneId, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
-    aidantIds: t.aidantIds, aidants: t.aidantIds.map((id) => ({ nom: nomDe.get(id) ?? "?" })),
+    reportsCount: t.reportsCount, assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
+    aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
     notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
   }));
   const enAttente: TacheAttente[] = [...aTrier, ...aVenir, ...idees].map((t) => ({
     id: t.id, titre: t.titre, bucket: t.bucket as TacheAttente["bucket"], transcriptionBrute: t.transcriptionBrute,
-    engagement: t.engagement, auteur: t.creeParId ? { nom: nomDe.get(t.creeParId) ?? "?" } : null,
-    assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
+    engagement: t.engagement, auteur: t.creeParId ? personne(t.creeParId) : null,
+    assigne: t.assigneId ? personne(t.assigneId) : null,
   }));
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()}>
+    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar}>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Sur le feu</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong()}</span>

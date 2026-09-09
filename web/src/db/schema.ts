@@ -49,6 +49,8 @@ export const membre = pgTable("membre", {
   /** Tous les Membres ont exactement les mêmes droits : il n'y a pas de colonne `role`. */
   type: membreTypeEnum("type").notNull().default("humain"),
   actif: boolean("actif").notNull().default(true),
+  /** La photo de profil, petite (160 px), en data URL — assez pour un rond, pas de quoi faire un stockage. */
+  avatar: text("avatar"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [unique("membre_email_unique").on(t.spaceId, t.email)]);
 

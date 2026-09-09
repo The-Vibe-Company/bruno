@@ -5,6 +5,7 @@ struct Choix: Identifiable, Hashable {
     let id: String
     let libelle: String
     var initiale: String? = nil
+    var avatar: String? = nil
     var couleur: Color? = nil
 }
 
@@ -28,7 +29,7 @@ struct ChoixFeuille: View {
                     let actif = c.id == courant
                     Button { fermer(); if !actif { onChoisir(c.id) } } label: {
                         HStack(spacing: 12) {
-                            if let initiale = c.initiale { Initiale(nom: initiale, taille: 24) }
+                            if let initiale = c.initiale { Initiale(nom: initiale, avatar: c.avatar, taille: 24) }
                             else if let couleur = c.couleur { Circle().fill(couleur).frame(width: 9, height: 9).frame(width: 24) }
                             Text(c.libelle).font(.system(size: 16)).foregroundStyle(Teinte.texte)
                             Spacer()

@@ -28,7 +28,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
 
   const [finies, membres] = await Promise.all([
     terminees(session, "2000-01-01", jour),
-    db.select({ id: membre.id, nom: membre.nom }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
   ]);
   const actifs = membresActifs(filtre, membres);
   const visibles = membres.filter((m) => actifs.has(m.id));
@@ -42,7 +42,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
   })));
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="fait">
+    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="fait">
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Fait</h1>
         <FiltreMembres membres={membres} />

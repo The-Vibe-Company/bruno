@@ -35,6 +35,7 @@ struct Tache: Codable, Identifiable, Sendable, Hashable {
 struct Membre: Codable, Identifiable, Sendable, Hashable {
     let id: String
     let nom: String
+    var avatar: String?
     var initiale: String { String(nom.trimmingCharacters(in: .whitespaces).prefix(1)).uppercased() }
 }
 
@@ -42,6 +43,7 @@ struct Moi: Codable, Sendable {
     let id: String
     let nom: String
     let email: String
+    var avatar: String?
 }
 
 /// Une Affectation — ce à quoi on peut travailler. La couleur est une donnée, stockée en base.

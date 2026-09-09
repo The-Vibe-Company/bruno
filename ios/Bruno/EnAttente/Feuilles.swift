@@ -1,15 +1,20 @@
 import SwiftUI
 
-/// Une pastille avec l'initiale — la même partout.
+/// La pastille d'une personne : sa photo si elle en a une, son initiale sinon — la même partout.
 struct Initiale: View {
     let nom: String
+    var avatar: String? = nil
     var taille: CGFloat = 22
     var body: some View {
-        Text(String(nom.trimmingCharacters(in: .whitespaces).prefix(1)).uppercased())
-            .font(.system(size: taille * 0.55, weight: .medium))
-            .foregroundStyle(Teinte.texte)
-            .frame(width: taille, height: taille)
-            .background(Color(hex: 0x2E2E2E), in: Circle())
+        if let image = avatar.flatMap(Avatars.image) {
+            Image(uiImage: image).resizable().scaledToFill().frame(width: taille, height: taille).clipShape(Circle())
+        } else {
+            Text(String(nom.trimmingCharacters(in: .whitespaces).prefix(1)).uppercased())
+                .font(.system(size: taille * 0.55, weight: .medium))
+                .foregroundStyle(Teinte.texte)
+                .frame(width: taille, height: taille)
+                .background(Color(hex: 0x2E2E2E), in: Circle())
+        }
     }
 }
 
@@ -87,7 +92,7 @@ struct DroitEntreeFeuille: View {
             Champ(libelle: "Assigné") {
                 Button { choixAssigne = true } label: {
                     HStack(spacing: 9) {
-                        Initiale(nom: membres.first { $0.id == assigneId }?.nom ?? "?", taille: 24)
+                        Initiale(nom: membres.first { $0.id == assigneId }?.nom ?? "?", avatar: membres.first { $0.id == assigneId }?.avatar, taille: 24)
                         Text(membres.first { $0.id == assigneId }?.nom ?? "—").foregroundStyle(Teinte.texte)
                         Spacer()
                         if assigneId == moiId { Text("moi").font(.system(size: 13.5)).foregroundStyle(Teinte.texteFaible) }
@@ -98,7 +103,7 @@ struct DroitEntreeFeuille: View {
                 .buttonStyle(.plain)
             }
             .sheet(isPresented: $choixAssigne) {
-                ChoixFeuille(titre: "Assigner à", choix: membres.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom) }, courant: assigneId) { assigneId = $0 }
+                ChoixFeuille(titre: "Assigner à", choix: membres.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom, avatar: $0.avatar) }, courant: assigneId) { assigneId = $0 }
             }
             Champ(libelle: "Engagement") {
                 Text(Jours.long(Jours.jour(engagement)))

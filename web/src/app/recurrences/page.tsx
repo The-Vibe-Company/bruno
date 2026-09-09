@@ -20,16 +20,16 @@ export default async function Recurrences({ searchParams }: { searchParams: Prom
   const { regle: ouverteId, nouvelle } = await searchParams;
   const [regles, membres] = await Promise.all([
     lister(session),
-    db.select({ id: membre.id, nom: membre.nom }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
   ]);
-  const nomDe = new Map(membres.map((m) => [m.id, m.nom]));
+  const nomDe = new Map(membres.map((m) => [m.id, m]));
   const ouverte = nouvelle ? null : (regles.find((r) => r.id === ouverteId) ?? regles[0] ?? null);
   const brouillon: Brouillon = ouverte
     ? { id: ouverte.id, titre: ouverte.titre, assigneId: ouverte.assigneId, frequence: ouverte.frequence, jourSemaine: ouverte.jourSemaine ?? 1, jourMois: ouverte.jourMois ?? 1, decalages: ouverte.decalages }
     : { id: null, titre: "", assigneId: session.membreId, frequence: "hebdomadaire", jourSemaine: 1, jourMois: 1, decalages: [0] };
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="recurrences">
+    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="recurrences">
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Récurrences</h1>
         <span className="text-[13px] text-texte-sourd">{regles.length} règle{regles.length > 1 ? "s" : ""}</span>
@@ -46,7 +46,7 @@ export default async function Recurrences({ searchParams }: { searchParams: Prom
               <div className="text-[15.5px]">{r.titre}</div>
               <div className="mt-1.5 flex items-center gap-2">
                 <span className="flex-1 text-[13.5px] text-texte-sourd">{libelleFrequence(r)} · {libelleNombre(r.occurrences)}</span>
-                <Initiale nom={nomDe.get(r.assigneId) ?? "?"} />
+                <Initiale nom={nomDe.get(r.assigneId)?.nom ?? "?"} avatar={nomDe.get(r.assigneId)?.avatar} />
               </div>
             </Link>
           ))}

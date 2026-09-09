@@ -7,7 +7,7 @@ import { Chevron, Choix } from "./Choix";
 import { Initiale } from "./visuel";
 import type { Statut } from "./deplacement";
 
-export type Membre = { id: string; nom: string };
+export type Membre = { id: string; nom: string; avatar?: string | null };
 export type Demande = { id: string; titre: string; statut: Statut } | null;
 
 /**
@@ -47,9 +47,9 @@ export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }:
           <div className="flex flex-col gap-3.5">
             <label className="flex flex-col gap-1.5 text-[13px] text-texte-sourd">
               Assigné
-              <Choix valeur={assigneId} onChoisir={setAssigneId} options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} /> }))}>
+              <Choix valeur={assigneId} onChoisir={setAssigneId} options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} avatar={m.avatar} /> }))}>
                 <button type="button" className="flex h-11 w-full items-center gap-2 rounded-lg border border-bord-fort bg-fond px-3 text-left text-[15.5px] text-texte hover:border-bord">
-                  <Initiale nom={membres.find((m) => m.id === assigneId)?.nom ?? "?"} />
+                  <Initiale nom={membres.find((m) => m.id === assigneId)?.nom ?? "?"} avatar={membres.find((m) => m.id === assigneId)?.avatar} />
                   <span className="flex-1">{membres.find((m) => m.id === assigneId)?.nom}</span>
                   {assigneId === moiId && <span className="text-[13px] text-texte-faible">moi</span>}
                   <Chevron />

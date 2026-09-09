@@ -20,7 +20,7 @@ export function Affectations({ membres, moiId, choix, lectureSeule = false }: { 
     <div className="grid flex-none border-b border-bord-2" style={{ gridTemplateColumns: `repeat(${Math.max(membres.length, 1)}, minmax(0, 1fr))` }}>
       {membres.map((m, i) => (
         <div key={m.membreId} className={`flex h-10 min-w-0 items-center gap-3 overflow-hidden px-5 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
-          <span className="flex flex-none items-center gap-1.5 text-[12px] text-texte-sourd"><Initiale nom={m.nom} />{m.nom}</span>
+          <span className="flex flex-none items-center gap-1.5 text-[12px] text-texte-sourd"><Initiale nom={m.nom} avatar={m.avatar} />{m.nom}</span>
           {lectureSeule ? <Lignes sur={m.affectations} /> : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} sur={m.affectations} choix={choix} />}
         </div>
       ))}

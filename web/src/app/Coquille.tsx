@@ -12,7 +12,7 @@ const ENTREES: { page: Page; href: string; libelle: string; icone: ReactNode }[]
   { page: "reglages", href: "/reglages", libelle: "Réglages", icone: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4.5h14M2 9h14M2 13.5h14" /><circle cx="6" cy="4.5" r="1.8" fill="var(--fond)" /><circle cx="12" cy="9" r="1.8" fill="var(--fond)" /><circle cx="7.5" cy="13.5" r="1.8" fill="var(--fond)" /></svg> },
 ];
 
-export function Coquille({ children, initiale, page = "board" }: { children: ReactNode; initiale: string; page?: Page }) {
+export function Coquille({ children, initiale, avatar, page = "board" }: { children: ReactNode; initiale: string; avatar?: string | null; page?: Page }) {
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-14 flex-none flex-col items-center gap-1.5 border-r border-bord-2 py-4">
@@ -25,7 +25,10 @@ export function Coquille({ children, initiale, page = "board" }: { children: Rea
             {e.icone}
           </Link>
         ))}
-        <span className="mt-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-bord-faible text-xs font-medium">{initiale}</span>
+        <Link href="/reglages" aria-label="Mon compte" className="mt-auto inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-bord-faible text-xs font-medium">
+          {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}
+          {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initiale}
+        </Link>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">{children}</div>
     </div>
