@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import { lister } from "@/api/taches";
 import { enCours, lister as listerAffectations } from "@/api/affectations";
 import { Affectations } from "@/board/Affectations";
-import { Filtres } from "@/board/Filtres";
+import { Recherche } from "@/board/Filtres";
+import { FiltreMembres } from "@/board/FiltreMembres";
+import { membresActifs } from "@/lib/filtre-membres";
 import type { TacheAttente } from "@/board/EnAttente";
 import { sessionCourante } from "@/auth/serveur";
 import { db } from "@/db/client";
@@ -16,13 +18,13 @@ import { Coquille } from "./Coquille";
 export const dynamic = "force-dynamic";
 
 /** Le Board : Sur le feu en kanban. La colonne latérale (À trier, À venir, Idées) arrive avec BRU-14. */
-export default async function Board({ searchParams }: { searchParams: Promise<{ q?: string; assigne?: string }> }) {
+export default async function Board({ searchParams }: { searchParams: Promise<{ q?: string; membres?: string }> }) {
   const session = await sessionCourante();
   if (!session) redirect("/api/auth/google");
-  const { q, assigne } = await searchParams;
+  const { q, membres: filtre } = await searchParams;
 
   const [taches, aTrier, aVenir, idees, membres, affectations, choix] = await Promise.all([
-    lister(session, { bucket: "sur_le_feu", inclureTerminees: false, q: q?.trim() || undefined, assigneId: assigne || undefined }),
+    lister(session, { bucket: "sur_le_feu", inclureTerminees: false, q: q?.trim() || undefined }),
     lister(session, { bucket: "a_trier", inclureTerminees: false }),
     lister(session, { bucket: "a_venir", inclureTerminees: false }),
     lister(session, { bucket: "idees", inclureTerminees: false }),
@@ -31,7 +33,8 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     listerAffectations(session),
   ]);
   const nomDe = new Map(membres.map((m) => [m.id, m.nom]));
-  const cartes: TacheCarte[] = taches.map((t) => ({
+  const actifs = membresActifs(filtre, membres);
+  const cartes: TacheCarte[] = taches.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
     reportsCount: t.reportsCount, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
     aidants: t.aidantIds.map((id) => ({ nom: nomDe.get(id) ?? "?" })),
@@ -48,8 +51,9 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       <header className="flex h-16 flex-none items-center gap-8 border-b border-bord-2 px-8">
         <h1 className="text-[22px] font-medium tracking-tight">Sur le feu</h1>
         <span className="text-[15px] text-texte-sourd">{libelleLong()}</span>
+        <FiltreMembres membres={membres} />
         <div className="flex-1" />
-        <Filtres membres={membres} />
+        <Recherche />
       </header>
       <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} />
       <main className="flex min-h-0 flex-1 flex-col">

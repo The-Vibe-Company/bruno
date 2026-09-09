@@ -1,4 +1,5 @@
 "use client";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { PALETTE } from "./palette";
@@ -12,8 +13,8 @@ async function appel(chemin: string, method: string, corps?: unknown): Promise<A
 }
 
 /**
- * La liste de ce à quoi on peut travailler. On désactive, on ne supprime jamais — et qui est
- * sur quoi ne se règle pas ici : ça se voit, et se change, là où c'est affiché.
+ * La liste de ce à quoi on peut travailler. On désactive ; on ne supprime que ce qui n'a jamais
+ * servi — et qui est sur quoi ne se règle pas ici : ça se voit, et se change, là où c'est affiché.
  */
 export function Affectations({ initiales }: { initiales: Affectation[] }) {
   const router = useRouter();
@@ -42,6 +43,20 @@ export function Affectations({ initiales }: { initiales: Affectation[] }) {
             <button onClick={() => agir(() => appel(`/api/affectations/${a.id}`, "PATCH", { actif: !a.actif }))} className="text-[13.5px] text-texte-sourd hover:text-texte">
               {a.actif ? "Désactiver" : "Réactiver"}
             </button>
+            <AlertDialog.Root>
+              <AlertDialog.Trigger asChild><button className="text-[13.5px] text-texte-faible hover:text-bloque">Supprimer</button></AlertDialog.Trigger>
+              <AlertDialog.Portal>
+                <AlertDialog.Overlay className="fixed inset-0 bg-fond-page/60" />
+                <AlertDialog.Content className="fixed left-1/2 top-1/2 w-[400px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
+                  <AlertDialog.Title className="text-lg font-semibold tracking-tight">Supprimer « {a.nom} » ?</AlertDialog.Title>
+                  <AlertDialog.Description className="mt-2 text-[14.5px] text-texte-sourd">Possible seulement si personne n’a jamais été dessus. Sinon, Bruno refusera : désactivez-la, l’historique la nomme.</AlertDialog.Description>
+                  <div className="mt-5 flex justify-end gap-2">
+                    <AlertDialog.Cancel asChild><button className="h-10 rounded-lg border border-bord-fort px-4 text-[14.5px]">Annuler</button></AlertDialog.Cancel>
+                    <AlertDialog.Action asChild><button onClick={() => agir(() => appel(`/api/affectations/${a.id}`, "DELETE"))} className="h-10 rounded-lg bg-bloque px-4 text-[14.5px] font-medium text-sur-accent">Supprimer</button></AlertDialog.Action>
+                  </div>
+                </AlertDialog.Content>
+              </AlertDialog.Portal>
+            </AlertDialog.Root>
           </li>
         ))}
       </ul>

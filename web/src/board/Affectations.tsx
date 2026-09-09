@@ -10,44 +10,56 @@ import { Initiale } from "./Carte";
 export type Choix = { id: string; nom: string; couleur: string };
 
 /**
- * Qui est sur quoi, en un coup d'œil — et, sur ma case, là où ça se change : un clic ouvre
- * « Sur quoi es-tu aujourd'hui ? », on coche une ou plusieurs Affectations, à partir
- * d'aujourd'hui. Décocher, c'est « je ne suis plus dessus ». Rien de tout ça dans les Réglages.
+ * Qui est sur quoi, en un coup d'œil — et là où ça se change : un clic sur une case ouvre
+ * « Sur quoi es-tu aujourd'hui ? » (ou « Sur quoi est Stan ? » : n'importe qui peut bouger
+ * l'Affectation de n'importe qui), on coche une ou plusieurs, à partir d'aujourd'hui. Décocher,
+ * c'est « je ne suis plus dessus ». Le bandeau garde toujours la même hauteur : plusieurs
+ * Affectations se posent côte à côte. Rien de tout ça dans les Réglages.
  */
-export function Affectations({ membres, moiId, choix }: { membres: AffectationsMembre[]; moiId: string; choix: Choix[] }) {
+export function Affectations({ membres, moiId, choix, lectureSeule = false }: { membres: AffectationsMembre[]; moiId: string; choix: Choix[]; lectureSeule?: boolean }) {
   return (
     <div className="grid flex-none border-b border-bord-2" style={{ gridTemplateColumns: `repeat(${Math.max(membres.length, 1)}, minmax(0, 1fr))` }}>
       {membres.map((m, i) => (
-        <div key={m.membreId} className={`flex flex-col gap-1 px-7 py-4 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
+        <div key={m.membreId} className={`flex h-[78px] min-w-0 flex-col justify-center gap-1.5 px-7 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
           <span className="flex items-center gap-2 text-[13.5px] text-texte-sourd"><Initiale nom={m.nom} />{m.nom}</span>
-          {m.membreId === moiId ? <Mienne sur={m.affectations} choix={choix} /> : <Lignes sur={m.affectations} />}
+          {lectureSeule ? <Lignes sur={m.affectations} /> : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} sur={m.affectations} choix={choix} />}
         </div>
       ))}
     </div>
   );
 }
 
-function Lignes({ sur }: { sur: Sur[] }) {
+/** Les Affectations d'une personne, côte à côte — jamais l'une sous l'autre. */
+function Lignes({ sur, choisir = false }: { sur: Sur[]; choisir?: boolean }) {
   return (
-    <div className="mt-0.5 flex flex-col gap-1">
+    <span className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-1">
       {sur.length === 0 && (
         <span className="flex items-center gap-2.5">
           <span className="h-[18px] w-1 border border-dashed border-texte-tres-faible" />
           <span className="text-lg font-medium leading-none tracking-tight text-texte-sourd">Aucune Affectation</span>
+          {choisir && <span className="ml-1.5 text-sm text-accent">Choisir</span>}
         </span>
       )}
       {sur.map((a) => (
         <span key={a.id} className="flex items-center gap-2.5">
           <span className="h-[18px] w-1" style={{ background: a.couleur }} />
-          <span className="text-lg font-medium leading-none tracking-tight">{a.nom}</span>
+          <span className="truncate text-lg font-medium leading-none tracking-tight">{a.nom}</span>
+          {traine({ joursOuverts: joursEntre(a.depuis, aujourdhui()) }) && (
+            <span className="text-[13px] text-texte-sourd">toujours dessus ? · depuis le {libelleJour(a.depuis)}</span>
+          )}
         </span>
       ))}
-    </div>
+    </span>
   );
 }
 
-/** Ma case : la même chose, cliquable, avec le sélecteur en dessous. */
-function Mienne({ sur, choix }: { sur: Sur[]; choix: Choix[] }) {
+async function poster(chemin: string, corps?: unknown) {
+  const r = await fetch(chemin, { method: "POST", headers: corps ? { "content-type": "application/json" } : undefined, body: corps ? JSON.stringify(corps) : undefined });
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message ?? `Erreur ${r.status}`);
+}
+
+/** Une case cliquable, avec le sélecteur en dessous. */
+function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: string; moi: boolean; sur: Sur[]; choix: Choix[] }) {
   const router = useRouter();
   const [, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
@@ -55,18 +67,19 @@ function Mienne({ sur, choix }: { sur: Sur[]; choix: Choix[] }) {
   const [occupe, setOccupe] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const dessus = new Set(sur.map((a) => a.affectationId));
+  const question = moi ? "Sur quoi es-tu aujourd’hui ?" : `Sur quoi est ${nom} aujourd’hui ?`;
 
   const ouvrir = (o: boolean) => { if (o) { setCoches(new Set(dessus)); setErreur(null); } setOuvert(o); };
   const basculer = (id: string) => setCoches((c) => { const n = new Set(c); if (n.has(id)) n.delete(id); else n.add(id); return n; });
 
   const prises = [...coches].filter((id) => !dessus.has(id));
   const quittees = sur.filter((a) => !coches.has(a.affectationId));
-  const libelle = prises.length > 0 ? "Commencer aujourd'hui" : quittees.length > 0 ? "Je ne suis plus dessus" : "Commencer aujourd'hui";
+  const libelle = prises.length === 0 && quittees.length > 0 ? (moi ? "Je ne suis plus dessus" : `${nom} n’est plus dessus`) : "Commencer aujourd’hui";
 
   async function confirmer() {
     setOccupe(true); setErreur(null);
     try {
-      for (const affectationId of prises) await poster("/api/affectations/en-cours", { affectationId });
+      for (const affectationId of prises) await poster("/api/affectations/en-cours", { affectationId, membreId });
       for (const a of quittees) await poster(`/api/affectations/en-cours/${a.id}/fin`);
       setOuvert(false);
       demarrer(() => router.refresh());
@@ -77,28 +90,13 @@ function Mienne({ sur, choix }: { sur: Sur[]; choix: Choix[] }) {
   return (
     <Popover.Root open={ouvert} onOpenChange={ouvrir}>
       <Popover.Trigger asChild>
-        <button aria-label="Sur quoi es-tu aujourd'hui ?" className="-mx-2 mt-0.5 flex flex-col items-start gap-1 rounded-md px-2 py-1 text-left hover:bg-surface-2">
-          {sur.length === 0 && (
-            <span className="flex items-center gap-2.5">
-              <span className="h-[18px] w-1 border border-dashed border-texte-tres-faible" />
-              <span className="text-lg font-medium leading-none tracking-tight text-texte-sourd">Aucune Affectation</span>
-              <span className="ml-1.5 text-sm text-accent">Choisir</span>
-            </span>
-          )}
-          {sur.map((a) => (
-            <span key={a.id} className="flex items-center gap-2.5">
-              <span className="h-[18px] w-1" style={{ background: a.couleur }} />
-              <span className="text-lg font-medium leading-none tracking-tight">{a.nom}</span>
-              {traine({ joursOuverts: joursEntre(a.depuis, aujourdhui()) }) && (
-                <span className="ml-1.5 text-[13px] text-texte-sourd">toujours dessus ? · depuis le {libelleJour(a.depuis)}</span>
-              )}
-            </span>
-          ))}
+        <button aria-label={question} className="-mx-2 flex min-w-0 items-center rounded-md px-2 py-1 text-left hover:bg-surface-2">
+          <Lignes sur={sur} choisir />
         </button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content align="start" sideOffset={8} className="z-40 w-80 overflow-hidden rounded-xl border border-bord-fort bg-surface shadow-[0_20px_60px_rgb(0_0_0/0.35)] outline-none">
-          <div className="border-b border-bord-2 px-3.5 pb-2.5 pt-3.5 text-[13px] text-texte-sourd">Sur quoi es-tu aujourd’hui ?</div>
+          <div className="border-b border-bord-2 px-3.5 pb-2.5 pt-3.5 text-[13px] text-texte-sourd">{question}</div>
           <ul>
             {choix.map((c) => {
               const coche = coches.has(c.id);
@@ -125,9 +123,4 @@ function Mienne({ sur, choix }: { sur: Sur[]; choix: Choix[] }) {
       </Popover.Portal>
     </Popover.Root>
   );
-}
-
-async function poster(chemin: string, corps?: unknown) {
-  const r = await fetch(chemin, { method: "POST", headers: corps ? { "content-type": "application/json" } : undefined, body: corps ? JSON.stringify(corps) : undefined });
-  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message ?? `Erreur ${r.status}`);
 }

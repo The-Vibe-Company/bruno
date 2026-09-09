@@ -164,7 +164,7 @@ Plusieurs Affectations simultanées sont normales, sans limite. Elles sont **con
 jours sélectionnés, pas de demi-journées, pas de pourcentages.
 
 Une Affectation ne se pose **jamais** sur une Tâche. La liste est ouverte, modifiable dans les
-Réglages, et on ne supprime jamais une Affectation — on la **désactive**, pour ne pas trouer
+Réglages, et on ne supprime une Affectation que si elle n'a jamais servi — sinon on la **désactive**, pour ne pas trouer
 l'historique.
 
 ## 6. Les règles métier
