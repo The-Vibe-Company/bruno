@@ -16,11 +16,10 @@ final class AujourdhuiModele {
     private(set) var erreur: String?
     private(set) var chargeUneFois = false
 
-    /// Mes Tâches, Engagement aujourd'hui ou avant, vivantes. La liste vient triée par Rang.
+    /// Mes Tâches Sur le feu, vivantes, par Statut — toutes, l'Engagement se lit sur la ligne. La liste vient triée par Rang.
     func miennes(_ statut: Statut) -> [Tache] {
         guard let moi else { return [] }
-        let jour = Jours.aujourdhui()
-        return surLeFeu.filter { $0.assigneId == moi.id && $0.statut == statut && ($0.engagement ?? jour) <= jour }
+        return surLeFeu.filter { $0.assigneId == moi.id && $0.statut == statut }
     }
     var aideSur: [Tache] { guard let moi else { return [] }; return surLeFeu.filter { $0.aidantIds.contains(moi.id) } }
     var mesAffectations: [Sur] { quiEstSurQuoi.first { $0.membreId == moi?.id }?.affectations ?? [] }

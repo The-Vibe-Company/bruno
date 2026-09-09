@@ -67,40 +67,32 @@ struct AujourdhuiVue: View {
         .padding(.horizontal, 20).padding(.top, 4)
     }
 
-    /// Le bandeau : une ligne par Affectation, « Je ne suis plus dessus » à côté ; vide, il propose de choisir.
+    /// Le bandeau, compact : une ligne par Affectation, et un crayon — tout se change dans « Sur quoi es-tu ? ».
     private var bandeau: some View {
-        VStack(spacing: 10) {
-            if modele.mesAffectations.isEmpty {
-                HStack(spacing: 14) {
-                    RoundedRectangle(cornerRadius: 1).stroke(Color(hex: 0x4A4A4A), style: StrokeStyle(lineWidth: 1, dash: [3, 2])).frame(width: 4, height: 36)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Affectation").font(.system(size: 13)).foregroundStyle(Teinte.texteSourd)
-                        Text("Aucune Affectation").font(.system(size: 18, weight: .medium)).foregroundStyle(Teinte.texteSourd)
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
+                if modele.mesAffectations.isEmpty {
+                    HStack(spacing: 10) {
+                        RoundedRectangle(cornerRadius: 1).stroke(Color(hex: 0x4A4A4A), style: StrokeStyle(lineWidth: 1, dash: [3, 2])).frame(width: 4, height: 20)
+                        Text("Aucune Affectation").font(.system(size: 17, weight: .medium)).foregroundStyle(Teinte.texteSourd)
                     }
-                    Spacer()
-                    Button("Choisir") { choisir = true }.font(.system(size: 14)).foregroundStyle(Teinte.accent)
-                        .padding(.horizontal, 12).frame(height: 36).overlay(RoundedRectangle(cornerRadius: 8).stroke(Teinte.accent.opacity(0.5)))
                 }
-            } else {
                 ForEach(modele.mesAffectations) { sur in
-                    HStack(spacing: 14) {
-                        RoundedRectangle(cornerRadius: 1).fill(Color(hexChaine: sur.couleur)).frame(width: 4, height: 36)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Affectation · \(Jours.depuis(sur.depuis))").font(.system(size: 13)).foregroundStyle(Teinte.texteSourd)
-                            Text(sur.nom).font(.system(size: 20, weight: .medium)).foregroundStyle(Teinte.texte)
-                        }
-                        Spacer()
-                        Button("Je ne suis plus dessus") { agir { try await modele.quitter(sur) } }
-                            .font(.system(size: 13)).foregroundStyle(Teinte.texteSourd)
-                            .padding(.horizontal, 10).frame(height: 36).overlay(RoundedRectangle(cornerRadius: 8).stroke(Teinte.bordFort))
+                    HStack(spacing: 10) {
+                        RoundedRectangle(cornerRadius: 1).fill(Color(hexChaine: sur.couleur)).frame(width: 4, height: 20)
+                        Text(sur.nom).font(.system(size: 17, weight: .medium)).foregroundStyle(Teinte.texte)
+                        Text(Jours.depuis(sur.depuis)).font(.system(size: 12.5)).foregroundStyle(Teinte.texteFaible)
                     }
-                }
-                Button { choisir = true } label: {
-                    Text("+ Ajouter une Affectation").font(.system(size: 14)).foregroundStyle(Teinte.accent).frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+            Spacer(minLength: 0)
+            Button { choisir = true } label: {
+                Image(systemName: "pencil").font(.system(size: 14, weight: .medium)).foregroundStyle(Teinte.texteSourd)
+                    .frame(width: 32, height: 32).overlay(RoundedRectangle(cornerRadius: 8).stroke(Teinte.bordFort))
+            }
+            .accessibilityLabel("Changer d’Affectation")
         }
-        .padding(.horizontal, 16).padding(.vertical, 12)
+        .padding(.horizontal, 14).padding(.vertical, 10)
         .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Teinte.bord))
     }
@@ -205,8 +197,8 @@ struct LigneTache: View {
             .accessibilityLabel("Terminé")
             Button(action: onOuvrir) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(tache.titre).font(.system(size: 16)).foregroundStyle(tache.statut == .bloque ? Color(hex: 0xD8D8D8) : Teinte.texte)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(tache.titre).font(.system(size: 15.5)).foregroundStyle(tache.statut == .bloque ? Color(hex: 0xD8D8D8) : Teinte.texte).lineLimit(2)
                         sousTitre
                     }
                     Spacer(minLength: 0)
@@ -215,17 +207,19 @@ struct LigneTache: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 14).padding(.vertical, 11)
+        .padding(.horizontal, 12).padding(.vertical, 9)
         .background(couleur.opacity(0.09), in: RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(couleur.opacity(0.35)))
     }
 
+    /// Une seule ligne sous le titre. Bloqué ne dit que sa raison — c'est ce qui compte.
     private var sousTitre: some View {
         HStack(spacing: 0) {
             if tache.statut == .bloque, let raison = tache.raisonBlocage {
-                Text(raison).foregroundStyle(Teinte.bloque); Text(" · ").foregroundStyle(Teinte.texteSourd)
+                Text(raison).foregroundStyle(Teinte.bloque).lineLimit(1)
+            } else {
+                Text(tache.engagement.map(Jours.libelle) ?? "—").foregroundStyle(Teinte.texteSourd)
             }
-            Text(tache.engagement.map(Jours.libelle) ?? "—").foregroundStyle(Teinte.texteSourd)
             if tache.reportsCount > 0 {
                 Text(" · ").foregroundStyle(Teinte.texteSourd); Text("reporté \(tache.reportsCount)×").foregroundStyle(Teinte.accent)
             }
