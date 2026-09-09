@@ -1,0 +1,64 @@
+web/src/reglages/Affectations.tsx
+  s_7ec6903985e0db::t_6aada64da04394 2,16-17,46-59
+web/src/board/Filtres.tsx
+  s_7ec6903985e0db::t_6aada64da04394 5-6,18-19
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_679653e0563575 14
+web/src/api/affectations.ts
+  s_7ec6903985e0db::t_6aada64da04394 3-4,6,37-46
+  s_7ec6903985e0db::t_3f55d5f53653b2 47-49
+web/src/reglages/theme-client.ts
+  s_7ec6903985e0db::t_679653e0563575 1-8
+web/src/app/layout.tsx
+  s_7ec6903985e0db::t_6aada64da04394 3-4,19-20,22
+web/src/reglages/Apparence.tsx
+  s_7ec6903985e0db::t_6aada64da04394 1-3,6-14,16-30
+  s_7ec6903985e0db::t_679653e0563575 4-5,15
+web/src/app/reglages/page.tsx
+  s_7ec6903985e0db::t_6aada64da04394 9-11,18,22-23,29
+PRD.md
+  s_7ec6903985e0db::t_679653e0563575 167
+web/src/api/affectations.test.ts
+  s_7ec6903985e0db::t_6aada64da04394 6,96-104
+  s_7ec6903985e0db::t_4f3e9a117f6d2d 105-106
+web/src/board/replie.ts
+  s_7ec6903985e0db::t_6aada64da04394 1-11
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_6aada64da04394 5-7,21,24,27,36-37,54,56
+web/src/app/globals.css
+  s_7ec6903985e0db::t_6aada64da04394 48-49,82-114,148-149
+web/src/board/EnAttente.tsx
+  s_7ec6903985e0db::t_6aada64da04394 7,15-31,80,82-98,101,103
+web/src/app/fait/page.tsx
+  s_7ec6903985e0db::t_6aada64da04394 6-7,22,25,33-35,48
+web/src/board/FiltreMembres.tsx
+  s_7ec6903985e0db::t_6aada64da04394 1-32
+web/src/api/openapi.ts
+  s_7ec6903985e0db::t_6aada64da04394 149-150
+web/src/app/api/affectations/[id]/route.ts
+  s_7ec6903985e0db::t_6aada64da04394 2,5,7-8
+web/src/app/daily/page.tsx
+  s_7ec6903985e0db::t_6aada64da04394 7-8,24,27,36,40-41,43,45,55,59
+web/src/board/Affectations.tsx
+  s_7ec6903985e0db::t_6aada64da04394 13-17,19,23,25,32-33,35,40,46-49,52,56-62,70,77,82,93-94,99
+web/src/lib/filtre-membres.ts
+  s_7ec6903985e0db::t_6aada64da04394 1-9
+web/src/lib/theme.ts
+  s_7ec6903985e0db::t_6aada64da04394 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "79a52b59d83f55bafad5601baed9c81112575c72",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
