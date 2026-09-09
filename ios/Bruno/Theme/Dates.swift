@@ -29,6 +29,32 @@ enum Jours {
         return ["aujourd'hui", "hier", "demain"].contains(l) ? "depuis \(l)" : "depuis le \(l)"
     }
 
+    static func decale(_ jours: Int, depuis ref: String = aujourdhui()) -> String {
+        guard let d = date(ref), let r = cal.date(byAdding: .day, value: jours, to: d) else { return ref }
+        return jour(r)
+    }
+    static func demain() -> String { decale(1) }
+    /// Le prochain lundi — jamais aujourd'hui, même un lundi : « lundi » veut dire la semaine d'après.
+    static func lundiProchain() -> String {
+        guard let d = date(aujourdhui()) else { return aujourdhui() }
+        let js = cal.component(.weekday, from: d) // 1 = dimanche
+        let delta = ((9 - js) % 7 == 0) ? 7 : (9 - js) % 7
+        return decale(delta)
+    }
+    /// « Reporter à demain », « à lundi », « au 20 sept. » — le libellé du bouton qui engage.
+    static func libelleReport(_ jour: String) -> String {
+        let l = libelle(jour)
+        if l == "demain" { return "Reporter à demain" }
+        if jour == lundiProchain() { return "Reporter à lundi" }
+        return "Reporter au \(l)"
+    }
+    /// « mardi 8 » — le sous-titre des raccourcis de date.
+    static func court(_ jour: String) -> String {
+        guard let d = date(jour) else { return jour }
+        let f = DateFormatter(); f.locale = Locale(identifier: "fr_FR"); f.timeZone = cal.timeZone; f.dateFormat = "EEEE d"
+        return f.string(from: d)
+    }
+
     /// « lundi 7 septembre »
     static func long(_ jour: String) -> String {
         guard let d = date(jour) else { return jour }

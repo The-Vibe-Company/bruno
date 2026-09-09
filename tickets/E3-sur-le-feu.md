@@ -53,15 +53,15 @@ Maquette : `Bruno iOS v2` → écran « Aujourd'hui ».
 - [x] `reporté N×` en orange sous le titre quand N > 0
 - [x] Un cercle à cocher par Tâche ; celui d'une Tâche Bloqué est en pointillés
 
-## BRU-19 — Détail d'une Tâche iOS
+## BRU-19 — Détail d'une Tâche iOS · **livré le 9 septembre**
 
 Maquette : `Bruno iOS v2` → écran « Détail d'une Tâche ».
 
-- [ ] Titre, puis `Statut · reporté N×`
-- [ ] Champs : Assigné, Aidants, Engagement, Statut, Reports (lecture seule)
-- [ ] Notes, avec la **transcription brute en italique** sous un filet
-- [ ] Actions : `Terminé` en primaire, `Reporter` et `Abandonner` côte à côte
-- [ ] `Supprimer` dans le menu `···`
+- [x] Titre, puis `Statut · reporté N×`
+- [x] Champs : Assigné, Aidants, Engagement, Statut, Reports (lecture seule)
+- [x] Notes, avec la **transcription brute en italique** sous un filet
+- [x] Actions : `Terminé` en primaire, `Reporter` et `Abandonner` côte à côte
+- [x] `Supprimer` dans le menu `···`
 
 ## BRU-44 — Bloqué avec une raison · **livré le 9 septembre**
 

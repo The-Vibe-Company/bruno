@@ -11,6 +11,7 @@ struct EnAttenteVue: View {
     @State private var droitEntree: Tache?
     @State private var pourQuand: Tache?
     @State private var aSupprimer: Tache?
+    @State private var ouverte: Tache?
     @State private var erreurAction: String?
     private let file = FileAttente.partagee
 
@@ -38,10 +39,10 @@ struct EnAttenteVue: View {
                         }
                         Color.clear.frame(height: 10)
                         section(.aVenir, compteur: modele.taches(.aVenir).count, accent: false) {
-                            ForEach(modele.taches(.aVenir)) { t in Ligne(tache: t, assigne: modele.membre(t.assigneId)) }
+                            ForEach(modele.taches(.aVenir)) { t in Ligne(tache: t, assigne: modele.membre(t.assigneId)) { ouverte = t } }
                         }
                         section(.idees, compteur: modele.taches(.idees).count, accent: false) {
-                            ForEach(modele.taches(.idees)) { t in Ligne(tache: t, assigne: modele.membre(t.assigneId)) }
+                            ForEach(modele.taches(.idees)) { t in Ligne(tache: t, assigne: modele.membre(t.assigneId)) { ouverte = t } }
                         }
                         Color.clear.frame(height: 90)
                     }
@@ -52,6 +53,9 @@ struct EnAttenteVue: View {
         }
         .task { await modele.charger() }
         .onChange(of: file.enAttente) { _, _ in Task { await modele.charger() } }
+        .fullScreenCover(item: $ouverte) { t in
+            DetailVue(tache: t, membres: modele.membres, retour: "En attente") { await modele.charger() }
+        }
         .sheet(item: $droitEntree) { t in
             DroitEntreeFeuille(tache: t, membres: modele.membres, moiId: modele.moi?.id) { assigneId, engagement in
                 try await modele.passerSurLeFeu(t, assigneId: assigneId, engagement: engagement)
@@ -182,15 +186,20 @@ private struct CarteEnRoute: View {
 private struct Ligne: View {
     let tache: Tache
     let assigne: Membre?
+    let onOuvrir: () -> Void
     var body: some View {
-        HStack(spacing: 10) {
-            Text(tache.titre).font(.system(size: 15)).foregroundStyle(Teinte.texte)
-            Spacer(minLength: 0)
-            if let e = tache.engagement { Text(Jours.libelle(e)).font(.system(size: 13)).foregroundStyle(Teinte.texteSourd) }
-            if let assigne { Initiale(nom: assigne.nom, taille: 20) }
+        Button(action: onOuvrir) {
+            HStack(spacing: 10) {
+                Text(tache.titre).font(.system(size: 15)).foregroundStyle(Teinte.texte)
+                Spacer(minLength: 0)
+                if let e = tache.engagement { Text(Jours.libelle(e)).font(.system(size: 13)).foregroundStyle(Teinte.texteSourd) }
+                if let assigne { Initiale(nom: assigne.nom, taille: 20) }
+            }
+            .padding(.horizontal, 14).padding(.vertical, 11)
+            .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Teinte.bord))
+            .contentShape(RoundedRectangle(cornerRadius: 12))
         }
-        .padding(.horizontal, 14).padding(.vertical, 11)
-        .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Teinte.bord))
+        .buttonStyle(.plain)
     }
 }
