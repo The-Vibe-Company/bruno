@@ -12,15 +12,15 @@ export function Colonne({ statut, taches, onTerminer, onOuvrir }: { statut: Stat
   const [point, filet] = COULEUR[statut].split(" ");
   return (
     <section className="flex min-h-0 flex-1 flex-col">
-      <header className={`flex items-baseline justify-between border-b pb-2.5 ${filet}`}>
-        <h2 className="flex items-center gap-2.5 text-xl font-medium tracking-tight">
-          <span className={`h-2 w-2 rounded-full ${point}`} />
+      <header className={`flex items-baseline justify-between border-b pb-1.5 ${filet}`}>
+        <h2 className="flex items-center gap-2 text-[15px] font-medium tracking-tight">
+          <span className={`h-1.5 w-1.5 rounded-full ${point}`} />
           {LIBELLE[statut]}
         </h2>
-        <span className="text-sm text-texte-sourd">{taches.length}</span>
+        <span className="text-xs text-texte-sourd">{taches.length}</span>
       </header>
       <SortableContext id={statut} items={taches.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-        <div ref={setNodeRef} className={`flex min-h-24 flex-1 flex-col gap-2.5 pt-2.5 rounded-b-lg transition-colors ${isOver ? "bg-surface-2" : ""}`}>
+        <div ref={setNodeRef} className={`flex min-h-24 flex-1 flex-col gap-2 pt-2 rounded-b-lg transition-colors ${isOver ? "bg-surface-2" : ""}`}>
           {taches.map((t) => <Carte key={t.id} tache={t} onTerminer={onTerminer} onOuvrir={onOuvrir} />)}
         </div>
       </SortableContext>

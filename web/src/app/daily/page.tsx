@@ -44,20 +44,20 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
     .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null }));
   const tachesFeu: TacheDuJour[] = feu.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement, reportsCount: t.reportsCount,
-    assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
+    assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null, raisonBlocage: t.raisonBlocage,
   }));
 
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="daily">
-      <header className="flex h-16 flex-none items-center gap-7 border-b border-bord-2 px-8">
-        <h1 className="text-[22px] font-medium tracking-tight">Daily</h1>
-        <span className="text-[15px] text-texte-sourd">{libelleLong(jour)}</span>
+      <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
+        <h1 className="text-[17px] font-medium tracking-tight">Daily</h1>
+        <span className="text-[13px] text-texte-sourd">{libelleLong(jour)}</span>
         <FiltreMembres membres={membres} />
         <div className="flex-1" />
         <Sante aTrier={sante.aTrier} reportees={sante.reportees} seuil={SEUIL_SIGNAL} />
       </header>
       <Affectations membres={deLui(dujour)} moiId="" choix={[]} lectureSeule />
-      <main className="grid min-h-0 flex-1 grid-cols-[340px_repeat(3,minmax(0,1fr))]">
+      <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))]">
         <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} taches={tachesHier} />
         <SurLeFeu taches={tachesFeu} />
       </main>

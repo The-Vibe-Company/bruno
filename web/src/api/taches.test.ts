@@ -10,6 +10,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { affectation, membre, space, tache } from "@/db/schema";
 import { ErreurApi } from "./erreurs";
+import * as C from "./contrat";
 import * as T from "./taches";
 
 const spaceId = randomUUID();
@@ -158,7 +159,7 @@ describe("le compteur de Reports (BRU-22)", () => {
     const t = await surLeFeu();
     for (let i = 1; i <= 6; i++) await T.reporter(ctx, t.id, { raison: `encore ${i}`, nouvelEngagement: `2026-09-${10 + i}` });
     expect((await T.obtenir(ctx, t.id)).reportsCount).toBe(6);
-    expect((await T.changerStatut(ctx, t.id, "en_cours")).statut).toBe("en_cours");
+    expect((await T.changerStatut(ctx, t.id, { statut: "en_cours" })).statut).toBe("en_cours");
     expect((await T.terminer(ctx, t.id)).etatTerminal).toBe("termine");
   });
 
@@ -250,6 +251,30 @@ describe("les erreurs", () => {
     const t = await capture();
     await expect(T.obtenir({ spaceId: randomUUID(), membreId: antoine }, t.id))
       .rejects.toBeInstanceOf(ErreurApi);
+  });
+});
+
+describe("Bloqué, avec une raison", () => {
+  it("bloquer exige une raison ; elle se lit, se change, et s'efface en sortant de Bloqué", async () => {
+    const t = await T.creer(ctx, { titre: "Contrat AFP", bucket: "a_trier" });
+    await T.deplacer(ctx, t.id, { bucket: "sur_le_feu", assigneId: antoine, engagement: "2026-09-08", statut: "a_faire" });
+    expect(() => C.ChangerStatut.parse({ statut: "bloque" })).toThrow();
+    expect(() => C.ChangerStatut.parse({ statut: "bloque", raison: " " })).toThrow(/pourquoi/);
+    let b = await T.changerStatut(ctx, t.id, C.ChangerStatut.parse({ statut: "bloque", raison: "En attente de réponse" }));
+    expect([b.statut, b.raisonBlocage]).toEqual(["bloque", "En attente de réponse"]);
+    b = await T.modifier(ctx, t.id, { raisonBlocage: "En attente de validation" });
+    expect(b.raisonBlocage).toBe("En attente de validation");
+    b = await T.changerStatut(ctx, t.id, { statut: "en_cours" });
+    expect([b.statut, b.raisonBlocage]).toEqual(["en_cours", null]);
+    await expect(T.modifier(ctx, t.id, { raisonBlocage: "x" })).rejects.toMatchObject({ statut: 422 });
+  });
+
+  it("entrer Sur le feu directement dans Bloqué demande la raison — par le contrat, puis par la base", async () => {
+    const t = await T.creer(ctx, { titre: "Accès serveur", bucket: "a_trier" });
+    expect(() => C.DeplacerTache.parse({ bucket: "sur_le_feu", assigneId: antoine, engagement: "2026-09-08", statut: "bloque" })).toThrow(/pourquoi/);
+    const b = await T.deplacer(ctx, t.id, C.DeplacerTache.parse({ bucket: "sur_le_feu", assigneId: antoine, engagement: "2026-09-08", statut: "bloque", raison: "Il manque une info" }));
+    expect(b.raisonBlocage).toBe("Il manque une info");
+    await expect(db.update(tache).set({ statut: "a_faire" }).where(eq(tache.id, t.id))).rejects.toMatchObject({ cause: { constraint_name: "tache_raison_blocage" } });
   });
 });
 

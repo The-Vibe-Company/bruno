@@ -2,6 +2,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { aujourdhui, libelleJour, libelleLong } from "@/lib/dates";
+import { RAISONS_BLOCAGE } from "./raisons-blocage";
 import { Initiale } from "./Carte";
 import type { Statut } from "./deplacement";
 
@@ -15,19 +16,22 @@ export type Demande = { id: string; titre: string; statut: Statut } | null;
  */
 export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }: {
   demande: Demande; membres: Membre[]; moiId: string;
-  onConfirmer: (d: { id: string; assigneId: string; engagement: string; statut: Statut }) => Promise<void>;
+  onConfirmer: (d: { id: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) => Promise<void>;
   onAnnuler: () => void;
 }) {
   const [assigneId, setAssigneId] = useState(moiId);
   const [engagement, setEngagement] = useState(aujourdhui());
   const [occupe, setOccupe] = useState(false);
+  const [raison, setRaison] = useState("");
   const ouvert = demande !== null;
+  const versBloque = demande?.statut === "bloque";
 
   async function confirmer() {
     if (!demande) return;
     setOccupe(true);
-    try { await onConfirmer({ id: demande.id, assigneId, engagement, statut: demande.statut }); }
-    finally { setOccupe(false); setAssigneId(moiId); setEngagement(aujourdhui()); }
+    if (versBloque && !raison.trim()) return;
+    try { await onConfirmer({ id: demande.id, assigneId, engagement, statut: demande.statut, raison: versBloque ? raison.trim() : undefined }); }
+    finally { setOccupe(false); setAssigneId(moiId); setEngagement(aujourdhui()); setRaison(""); }
   }
 
   return (
@@ -58,9 +62,20 @@ export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }:
                 <span className="text-[13px] text-texte-faible">{libelleJour(engagement)}</span>
               </span>
             </label>
+            {versBloque && (
+              <label className="flex flex-col gap-1.5 text-[13px] text-texte-sourd">
+                Pourquoi c’est bloqué ?
+                <span className="flex flex-wrap gap-1.5">
+                  {RAISONS_BLOCAGE.map((r) => (
+                    <button key={r} type="button" onClick={() => setRaison(raison === r ? "" : r)} className={`h-8 rounded-md border px-2.5 text-[12.5px] ${raison === r ? "border-bloque bg-bloque-voile text-texte" : "border-bord-fort text-texte-2"}`}>{r}</button>
+                  ))}
+                </span>
+                <input value={raison} onChange={(e) => setRaison(e.target.value)} placeholder="ou dis-le avec tes mots" aria-label="Raison du blocage" className="h-10 rounded-lg border border-bord-fort bg-fond px-3 text-[14px] text-texte outline-none focus:border-accent" />
+              </label>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={confirmer} disabled={occupe} className="h-11 flex-1 rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Passer Sur le feu</button>
+            <button onClick={confirmer} disabled={occupe || (versBloque && !raison.trim())} className="h-11 flex-1 rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Passer Sur le feu</button>
             <Dialog.Close asChild><button className="h-11 px-3 text-sm text-texte-sourd">Annuler</button></Dialog.Close>
           </div>
         </Dialog.Content>

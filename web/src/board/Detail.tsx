@@ -13,10 +13,10 @@ const STATUT: Record<Statut, string> = { a_faire: "À faire", en_cours: "En cour
  * Les trois fins vivent ici : Terminé en primaire, Abandonner à côté, Supprimer à l'écart
  * et derrière une confirmation, parce qu'il efface pour de bon.
  */
-export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter }: {
+export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison }: {
   tache: TacheCarte | null; onFermer: () => void;
   onTerminer: (id: string) => Promise<void>; onAbandonner: (id: string) => Promise<void>; onSupprimer: (id: string) => Promise<void>;
-  onReporter: (t: TacheCarte) => void;
+  onReporter: (t: TacheCarte) => void; onRaison: (t: TacheCarte) => void;
 }) {
   const [occupe, setOccupe] = useState(false);
   type Report = { id: string; raison: string; ancienEngagement: string; nouvelEngagement: string; createdAt: string; auteur: string | null };
@@ -83,7 +83,9 @@ export function Detail({ tache, onFermer, onTerminer, onAbandonner, onSupprimer,
                     ["Assigné", tache.assigne ? <span className="flex items-center gap-2"><Initiale nom={tache.assigne.nom} />{tache.assigne.nom}</span> : <span className="text-texte-faible">personne</span>],
                     ["Aidants", tache.aidants.length ? <span className="flex items-center gap-2">{tache.aidants.map((a) => <span key={a.nom} className="flex items-center gap-1.5"><Initiale nom={a.nom} />{a.nom}</span>)}</span> : <span className="text-texte-faible">—</span>],
                     ["Engagement", tache.engagement ? libelleJour(tache.engagement) : "—"],
-                    ["Statut", STATUT[tache.statut]],
+                    ["Statut", tache.statut === "bloque"
+                      ? <span className="flex items-center gap-2">{STATUT[tache.statut]}<span className="text-bloque">· {tache.raisonBlocage ?? "raison à préciser"}</span><button onClick={() => onRaison(tache)} className="ml-auto text-[12.5px] text-texte-sourd hover:text-texte">changer</button></span>
+                      : STATUT[tache.statut]],
                     ["Reports", String(tache.reportsCount)],
                   ].map(([k, v], i, arr) => (
                     <div key={String(k)} className={`flex min-h-[50px] items-center gap-3 px-3.5 ${i < arr.length - 1 ? "border-b border-bord-2" : ""}`}>

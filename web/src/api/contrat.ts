@@ -29,6 +29,7 @@ export const Tache = z.object({
   aidantIds: z.array(uuid),
   engagement: jour.nullable(),
   reportsCount: z.number().int(),
+  raisonBlocage: z.string().nullable(),
   etatTerminal: EtatTerminal.nullable(),
   createdAt: z.string(),
 });
@@ -51,6 +52,8 @@ export const ModifierTache = z.object({
   assigneId: uuid.nullish(),
   engagement: jour.nullish(),
   aidantIds: z.array(uuid).optional(),
+  /** Changer la raison d'une Tâche déjà Bloquée. Ailleurs, refusé. */
+  raisonBlocage: z.string().trim().min(1).optional(),
 });
 
 /**
@@ -64,13 +67,18 @@ export const DeplacerTache = z.discriminatedUnion("bucket", [
     assigneId: uuid,
     engagement: jour,
     statut: Statut.default("a_faire"),
-  }),
+    raison: z.string().trim().min(1).optional(),
+  }).refine((d) => d.statut !== "bloque" || !!d.raison, { message: "Bloqué, oui — mais pourquoi ? La raison est obligatoire.", path: ["raison"] }),
   z.object({ bucket: z.literal("a_trier") }),
   z.object({ bucket: z.literal("a_venir"), engagement: jour.nullish() }),
   z.object({ bucket: z.literal("idees") }),
 ]);
 
-export const ChangerStatut = z.object({ statut: Statut });
+/** Bloquer exige une raison — c'est elle qui rend le blocage lisible sur la carte. */
+export const ChangerStatut = z.discriminatedUnion("statut", [
+  z.object({ statut: z.literal("bloque"), raison: z.string().trim().min(1, "Bloqué, oui — mais pourquoi ? La raison est obligatoire.") }),
+  z.object({ statut: z.enum(["a_faire", "en_cours"]) }),
+]);
 
 /** Réordonner, c'est se placer entre deux voisines. Le serveur calcule le rang. */
 export const Reordonner = z.object({

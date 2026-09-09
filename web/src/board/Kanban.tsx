@@ -2,7 +2,8 @@
 import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { abandonner, appliquer, deplacerBucket, reporter, supprimer, terminer } from "./api";
+import { abandonner, appliquer, deplacerBucket, modifierRaison, reporter, supprimer, terminer } from "./api";
+import { Blocage, type DemandeBlocage } from "./Blocage";
 import { Detail } from "./Detail";
 import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
 import { EnAttente, type TacheAttente } from "./EnAttente";
@@ -10,7 +11,7 @@ import { PourQuand, type DemandeAVenir } from "./PourQuand";
 import { Report, type DemandeReport } from "./Report";
 import { Carte, type TacheCarte } from "./Carte";
 import { Colonne } from "./Colonne";
-import { colonneDe, colonneVisee, deplacer, type Colonnes, type Statut } from "./deplacement";
+import { colonneDe, colonneVisee, deplacer, type Colonnes, type Mutation, type Statut } from "./deplacement";
 
 const STATUTS: Statut[] = ["a_faire", "en_cours", "bloque"];
 
@@ -43,6 +44,9 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   const [demande, setDemande] = useState<Demande>(null);
   const [demandeAVenir, setDemandeAVenir] = useState<DemandeAVenir>(null);
   const [demandeReport, setDemandeReport] = useState<DemandeReport>(null);
+  // Une carte lâchée dans Bloqué attend sa raison avant que rien ne parte au serveur.
+  const [demandeBlocage, setDemandeBlocage] = useState<DemandeBlocage>(null);
+  const [mutationsEnAttente, setMutationsEnAttente] = useState<Mutation[]>([]);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const [erreur, setErreur] = useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -62,6 +66,15 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
     const { mutations, colonnes: suivantes } = deplacer(colonnes, String(active.id), String(over.id));
     if (mutations.length === 0) return;
     setColonnes(suivantes);
+    if (mutations.some((m) => m.type === "statut" && m.statut === "bloque")) {
+      const t = parId.get(String(active.id));
+      setMutationsEnAttente(mutations);
+      setDemandeBlocage({ id: String(active.id), titre: t?.titre ?? "", raison: null, mode: "bloquer" });
+      return;
+    }
+    await envoyer(mutations);
+  }
+  async function envoyer(mutations: Mutation[]) {
     try {
       for (const m of mutations) await appliquer(m);
     } catch (e) {
@@ -69,6 +82,20 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       setColonnes(initiales);
     }
     rafraichir();
+  }
+  async function bloquer(id: string, raison: string) {
+    if (demandeBlocage?.mode === "modifier") {
+      setErreur(null);
+      try { await modifierRaison(id, raison); } catch (e) { setErreur((e as Error).message); }
+      setDemandeBlocage(null); rafraichir(); return;
+    }
+    const mutations = mutationsEnAttente.map((m) => (m.type === "statut" ? { ...m, raison } : m));
+    setDemandeBlocage(null); setMutationsEnAttente([]);
+    await envoyer(mutations);
+  }
+  function annulerBlocage() {
+    if (demandeBlocage?.mode === "bloquer") setColonnes(initiales);
+    setDemandeBlocage(null); setMutationsEnAttente([]);
   }
 
   const action = (fn: (id: string) => Promise<void>) => async (id: string) => {
@@ -99,9 +126,9 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
     catch (e) { setErreur((e as Error).message); }
     rafraichir();
   }
-  async function entrerSurLeFeu(d: { id: string; assigneId: string; engagement: string; statut: Statut }) {
+  async function entrerSurLeFeu(d: { id: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) {
     setErreur(null);
-    try { await deplacerBucket(d.id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut }); setDemande(null); }
+    try { await deplacerBucket(d.id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut, raison: d.raison }); setDemande(null); }
     catch (e) { setErreur((e as Error).message); }
     rafraichir();
   }
@@ -115,7 +142,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       collisionDetection={collision}
       onDragStart={({ active }: DragStartEvent) => {
         const id = String(active.id); const a = attenteParId.get(id);
-        setActif(parId.get(id) ?? (a ? { id: a.id, titre: a.titre, statut: "a_faire", engagement: a.engagement, reportsCount: 0, assigne: a.assigne, aidants: [], notes: null, transcriptionBrute: a.transcriptionBrute } : null));
+        setActif(parId.get(id) ?? (a ? { id: a.id, titre: a.titre, statut: "a_faire", engagement: a.engagement, reportsCount: 0, assigne: a.assigne, aidants: [], notes: null, transcriptionBrute: a.transcriptionBrute, raisonBlocage: null } : null));
       }}
       onDragEnd={finDeGlisser}
       onDragCancel={() => setActif(null)}
@@ -126,7 +153,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         </p>
       )}
       <div className="flex min-h-0 flex-1">
-        <div className="grid min-h-0 flex-1 grid-cols-3 gap-6 px-8 pb-8 pt-6">
+        <div className="grid min-h-0 flex-1 grid-cols-3 gap-4 px-5 pb-5 pt-4">
           {STATUTS.map((s) => (
             <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} onTerminer={onTerminer} onOuvrir={setOuverteId} />
           ))}
@@ -143,7 +170,9 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         onAbandonner={action(abandonner)}
         onSupprimer={action(supprimer)}
         onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })}
+        onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}
       />
+      <Blocage demande={demandeBlocage} onConfirmer={bloquer} onAnnuler={annulerBlocage} />
       <Report demande={demandeReport} onReporter={reporterTache}
         onAbandonner={async (id) => { await action(abandonner)(id); setDemandeReport(null); setOuverteId(null); }}
         onAnnuler={() => setDemandeReport(null)} />

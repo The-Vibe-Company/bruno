@@ -17,14 +17,14 @@ describe("ce que dit une Relance", () => {
     const m = composer("point_du_matin", {
       jour,
       affectations: [{ id: "p-monka", nom: "MONKA", depuis: "2026-08-20", joursOuverts: 19 }, { id: "p-afp", nom: "AFP", depuis: "2026-09-01", joursOuverts: 7 }],
-      engagees: [t("Relancer MONKA"), t("Maquettes", "en_cours"), t("Contrat AFP", "bloque")],
+      engagees: [t("Relancer MONKA"), t("Maquettes", "en_cours"), { ...t("Contrat AFP", "bloque"), raisonBlocage: "En attente de réponse" }],
       aVenirArrivees: [{ id: "x", titre: "Comité de septembre", engagement: jour }],
     })!;
     expect(m.titre).toBe("Point du matin");
     expect(m.corps).toContain("Aujourd'hui : MONKA, AFP.");
     expect(m.corps).toContain("2 Tâches engagées aujourd'hui — Relancer MONKA · Maquettes.");
     expect(m.corps).toContain("Comité de septembre — les passer Sur le feu ?");
-    expect(m.corps).toContain("Toujours bloquée : Contrat AFP.");
+    expect(m.corps).toContain("Toujours bloquée : Contrat AFP (en attente de réponse).");
     expect(m.corps).toContain("Toujours sur MONKA ? (depuis 19 jours)");
     expect(m.corps).not.toContain("Toujours sur AFP");
   });

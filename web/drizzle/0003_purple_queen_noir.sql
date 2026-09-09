@@ -1,0 +1,2 @@
+ALTER TABLE "tache" ADD COLUMN "raison_blocage" text;--> statement-breakpoint
+ALTER TABLE "tache" ADD CONSTRAINT "tache_raison_blocage" CHECK ("tache"."raison_blocage" IS NULL OR "tache"."statut" = 'bloque');

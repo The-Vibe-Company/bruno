@@ -38,7 +38,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
     reportsCount: t.reportsCount, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
     aidants: t.aidantIds.map((id) => ({ nom: nomDe.get(id) ?? "?" })),
-    notes: t.notes, transcriptionBrute: t.transcriptionBrute,
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
   }));
   const enAttente: TacheAttente[] = [...aTrier, ...aVenir, ...idees].map((t) => ({
     id: t.id, titre: t.titre, bucket: t.bucket as TacheAttente["bucket"], transcriptionBrute: t.transcriptionBrute,
@@ -48,9 +48,9 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()}>
-      <header className="flex h-16 flex-none items-center gap-8 border-b border-bord-2 px-8">
-        <h1 className="text-[22px] font-medium tracking-tight">Sur le feu</h1>
-        <span className="text-[15px] text-texte-sourd">{libelleLong()}</span>
+      <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
+        <h1 className="text-[17px] font-medium tracking-tight">Sur le feu</h1>
+        <span className="text-[13px] text-texte-sourd">{libelleLong()}</span>
         <FiltreMembres membres={membres} />
         <div className="flex-1" />
         <Recherche />

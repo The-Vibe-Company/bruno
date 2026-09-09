@@ -30,9 +30,9 @@ export default async function Recurrences({ searchParams }: { searchParams: Prom
 
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="recurrences">
-      <header className="flex h-16 flex-none items-center gap-8 border-b border-bord-2 px-8">
-        <h1 className="text-[22px] font-medium tracking-tight">Récurrences</h1>
-        <span className="text-[15px] text-texte-sourd">{regles.length} règle{regles.length > 1 ? "s" : ""}</span>
+      <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
+        <h1 className="text-[17px] font-medium tracking-tight">Récurrences</h1>
+        <span className="text-[13px] text-texte-sourd">{regles.length} règle{regles.length > 1 ? "s" : ""}</span>
         <div className="flex-1" />
         <Link href="/recurrences?nouvelle=1" className="flex h-9 items-center rounded-md bg-accent px-3.5 text-sm font-medium text-sur-accent">Nouvelle règle</Link>
       </header>

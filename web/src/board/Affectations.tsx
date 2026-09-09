@@ -20,8 +20,8 @@ export function Affectations({ membres, moiId, choix, lectureSeule = false }: { 
   return (
     <div className="grid flex-none border-b border-bord-2" style={{ gridTemplateColumns: `repeat(${Math.max(membres.length, 1)}, minmax(0, 1fr))` }}>
       {membres.map((m, i) => (
-        <div key={m.membreId} className={`flex h-[78px] min-w-0 flex-col justify-center gap-1.5 px-7 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
-          <span className="flex items-center gap-2 text-[13.5px] text-texte-sourd"><Initiale nom={m.nom} />{m.nom}</span>
+        <div key={m.membreId} className={`flex h-[54px] min-w-0 flex-col justify-center gap-1 px-5 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
+          <span className="flex items-center gap-1.5 text-[11.5px] text-texte-sourd"><Initiale nom={m.nom} />{m.nom}</span>
           {lectureSeule ? <Lignes sur={m.affectations} /> : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} sur={m.affectations} choix={choix} />}
         </div>
       ))}
@@ -32,20 +32,20 @@ export function Affectations({ membres, moiId, choix, lectureSeule = false }: { 
 /** Les Affectations d'une personne, côte à côte — jamais l'une sous l'autre. */
 function Lignes({ sur, choisir = false }: { sur: Sur[]; choisir?: boolean }) {
   return (
-    <span className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-1">
+    <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-0.5">
       {sur.length === 0 && (
-        <span className="flex items-center gap-2.5">
-          <span className="h-[18px] w-1 border border-dashed border-texte-tres-faible" />
-          <span className="text-lg font-medium leading-none tracking-tight text-texte-sourd">Aucune Affectation</span>
-          {choisir && <span className="ml-1.5 text-sm text-accent">Choisir</span>}
+        <span className="flex items-center gap-2">
+          <span className="h-[14px] w-[3px] border border-dashed border-texte-tres-faible" />
+          <span className="text-[14.5px] font-medium leading-none tracking-tight text-texte-sourd">Aucune Affectation</span>
+          {choisir && <span className="ml-1 text-xs text-accent">Choisir</span>}
         </span>
       )}
       {sur.map((a) => (
-        <span key={a.id} className="flex items-center gap-2.5">
-          <span className="h-[18px] w-1" style={{ background: a.couleur }} />
-          <span className="truncate text-lg font-medium leading-none tracking-tight">{a.nom}</span>
+        <span key={a.id} className="flex items-center gap-2">
+          <span className="h-[14px] w-[3px]" style={{ background: a.couleur }} />
+          <span className="truncate text-[14.5px] font-medium leading-none tracking-tight">{a.nom}</span>
           {traine({ joursOuverts: joursEntre(a.depuis, aujourdhui()) }) && (
-            <span className="text-[13px] text-texte-sourd">toujours dessus ? · depuis le {libelleJour(a.depuis)}</span>
+            <span className="text-[11.5px] text-texte-sourd">toujours dessus ? · depuis le {libelleJour(a.depuis)}</span>
           )}
         </span>
       ))}
@@ -90,7 +90,7 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
   return (
     <Popover.Root open={ouvert} onOpenChange={ouvrir}>
       <Popover.Trigger asChild>
-        <button aria-label={question} className="-mx-2 flex min-w-0 items-center rounded-md px-2 py-1 text-left hover:bg-surface-2">
+        <button aria-label={question} className="-mx-1.5 flex min-w-0 items-center rounded-md px-1.5 py-0.5 text-left hover:bg-surface-2">
           <Lignes sur={sur} choisir />
         </button>
       </Popover.Trigger>
