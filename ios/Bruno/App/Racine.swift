@@ -48,8 +48,13 @@ struct Racine: View {
         }
         .padding(.horizontal, 36).padding(.top, 10)
         .frame(maxWidth: .infinity)
-        .background(Teinte.fond.opacity(0.96).ignoresSafeArea(edges: .bottom))
-        .overlay(alignment: .top) { Rectangle().fill(Teinte.bord).frame(height: 1) }
+        // Le filet du haut vit dans le fond, pas en surimpression : le micro passe au-dessus, entier.
+        .background {
+            ZStack(alignment: .top) {
+                Teinte.fond.opacity(0.96).ignoresSafeArea(edges: .bottom)
+                Rectangle().fill(Teinte.bord).frame(height: 1)
+            }
+        }
     }
 
     private func bouton(_ cible: Onglet, icone: String, libelle: String) -> some View {
