@@ -9,12 +9,14 @@ import { Initiale, Reporte } from "./visuel";
 import type { Statut } from "./deplacement";
 
 const STATUT: Record<Statut, string> = { a_faire: "À faire", en_cours: "En cours", bloque: "Bloqué" };
-const PASTILLE: Record<Statut, string> = { a_faire: "border-accent/40 bg-a-faire-voile text-accent", en_cours: "border-en-cours/40 bg-en-cours-voile text-en-cours", bloque: "border-bloque/40 bg-bloque-voile text-bloque" };
+const PASTILLE: Record<Statut, string> = { a_faire: "border-accent/40 bg-a-faire-voile text-texte", en_cours: "border-en-cours/40 bg-en-cours-voile text-texte", bloque: "border-bloque/40 bg-bloque-voile text-texte" };
+const POINT: Record<Statut, string> = { a_faire: "bg-accent", en_cours: "bg-en-cours", bloque: "bg-bloque" };
 
 type Props = {
   tache: TacheCarte | null; membres: Membre[]; onFermer: () => void;
   onTerminer: (id: string) => Promise<void>; onAbandonner: (id: string) => Promise<void>; onSupprimer: (id: string) => Promise<void>;
   onReporter: (t: TacheCarte) => void; onRaison: (t: TacheCarte) => void; onModifier: (id: string, patch: Patch) => Promise<void>;
+  onStatut: (t: TacheCarte, statut: Statut) => void;
 };
 
 /**
@@ -37,7 +39,7 @@ export function Detail(props: Props) {
   );
 }
 
-function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier }: Props & { tache: TacheCarte }) {
+function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut }: Props & { tache: TacheCarte }) {
   const [occupe, setOccupe] = useState(false);
   const [titre, setTitre] = useState(tache.titre);
   const [notes, setNotes] = useState(tache.notes ?? "");
@@ -57,9 +59,12 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
   };
   const poserTitre = () => { const t = titre.trim(); if (t && t !== tache.titre) onModifier(tache.id, { titre: t }); else setTitre(tache.titre); };
   const poserNotes = () => { const n = notes.trim(); if (n !== (tache.notes ?? "")) onModifier(tache.id, { notes: n || null }); };
-  const basculerAidant = (id: string) => onModifier(tache.id, { aidantIds: tache.aidantIds.includes(id) ? tache.aidantIds.filter((x) => x !== id) : [...tache.aidantIds, id] });
+  /** Changer d'Assigné ne touche pas aux Aidants — sauf que le nouvel Assigné, s'il aidait, cesse d'aider. */
+  const assigner = (assigneId: string) => onModifier(tache.id, { assigneId, ...(tache.aidantIds.includes(assigneId) ? { aidantIds: tache.aidantIds.filter((x) => x !== assigneId) } : {}) });
+  const candidats = membres.filter((m) => m.id !== tache.assigneId && !tache.aidantIds.includes(m.id));
 
-  const ligne = "flex min-h-[46px] items-center gap-3 px-3.5 border-b border-bord-2 last:border-b-0";
+  const ligne = "flex min-h-7 items-center gap-3";
+  const libelle = "w-24 flex-none text-sm text-texte-sourd";
   return (
     <>
       <header className="flex items-center justify-between px-6 pt-5 pb-3">
@@ -90,70 +95,86 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <input value={titre} onChange={(e) => setTitre(e.target.value)} onBlur={poserTitre} onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { setTitre(tache.titre); e.currentTarget.blur(); } }}
             aria-label="Titre" className="-mx-1 w-[calc(100%+0.5rem)] rounded-md border border-transparent bg-transparent px-1 text-2xl font-semibold leading-tight tracking-tight outline-none hover:border-bord-faible focus:border-accent" />
           <p className="mt-1.5 text-sm text-texte-sourd">
-            {STATUT[tache.statut]}
+            Sur le feu
             {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
           </p>
         </div>
 
-        <dl className="overflow-hidden rounded-xl border border-bord bg-surface text-[15px]">
+        {/* Les propriétés, en clair : un libellé, une valeur, rien autour — la même fiche que sur l'iPhone. */}
+        <dl className="flex flex-col gap-3.5 text-[15px]">
           <div className={ligne}>
-            <dt className="w-24 text-sm text-texte-sourd">Assigné</dt>
+            <dt className={libelle}>Assigné</dt>
             <dd className="flex flex-1 items-center gap-2">
               <Initiale nom={tache.assigne?.nom ?? "?"} />
-              <select value={tache.assigneId ?? ""} onChange={(e) => e.target.value && onModifier(tache.id, { assigneId: e.target.value })} aria-label="Assigné"
-                className="-ml-1 flex-1 appearance-none rounded-md border border-transparent bg-transparent px-1 py-1 outline-none hover:border-bord-faible focus:border-accent">
+              <select value={tache.assigneId ?? ""} onChange={(e) => e.target.value && assigner(e.target.value)} aria-label="Assigné"
+                className="-ml-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-bord-faible focus:border-accent">
                 {!tache.assigneId && <option value="">personne</option>}
                 {membres.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}
               </select>
             </dd>
           </div>
           <div className={ligne}>
-            <dt className="w-24 text-sm text-texte-sourd">Aidants</dt>
-            <dd className="flex flex-1 flex-wrap gap-1.5 py-2">
-              {membres.filter((m) => m.id !== tache.assigneId).map((m) => {
-                const aide = tache.aidantIds.includes(m.id);
-                return (
-                  <button key={m.id} aria-pressed={aide} onClick={() => basculerAidant(m.id)}
-                    className={`flex h-7 items-center gap-1.5 rounded-full border pl-0.5 pr-2.5 text-[13px] ${aide ? "border-accent/50 bg-accent-voile text-texte" : "border-bord-faible text-texte-sourd hover:text-texte"}`}>
-                    <Initiale nom={m.nom} />{m.nom}
+            <dt className={libelle}>Aidants</dt>
+            <dd className="flex flex-1 flex-wrap items-center gap-1.5">
+              {tache.aidantIds.map((id) => { const m = membres.find((x) => x.id === id); return m && (
+                <span key={id} className="flex h-7 items-center gap-1.5 rounded-full border border-bord bg-surface pl-0.5 pr-1 text-[13px]">
+                  <Initiale nom={m.nom} />{m.nom}
+                  <button onClick={() => onModifier(tache.id, { aidantIds: tache.aidantIds.filter((x) => x !== id) })} aria-label={`Retirer ${m.nom}`} className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full text-texte-faible hover:text-texte">
+                    <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 2l6 6M8 2l-6 6" /></svg>
                   </button>
-                );
-              })}
-              {membres.filter((m) => m.id !== tache.assigneId).length === 0 && <span className="text-texte-faible">—</span>}
+                </span>
+              ); })}
+              {candidats.length > 0 && (
+                <select value="" onChange={(e) => e.target.value && onModifier(tache.id, { aidantIds: [...tache.aidantIds, e.target.value] })} aria-label="Ajouter un Aidant"
+                  className="h-7 w-7 appearance-none rounded-full border border-bord-fort bg-transparent text-center text-texte-sourd outline-none hover:text-texte focus:border-accent">
+                  <option value="">+</option>
+                  {candidats.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}
+                </select>
+              )}
+              {candidats.length === 0 && tache.aidantIds.length === 0 && <span className="text-texte-faible">—</span>}
             </dd>
           </div>
           <div className={ligne}>
-            <dt className="w-24 text-sm text-texte-sourd">Engagement</dt>
+            <dt className={libelle}>Engagement</dt>
             <dd className="flex flex-1 items-center gap-2">
               {tache.engagement ? libelleJour(tache.engagement) : "—"}
-              {tache.engagement && <button onClick={() => onReporter(tache)} className="ml-auto text-[12.5px] text-texte-sourd hover:text-texte">reporter</button>}
+              {tache.engagement && <button onClick={() => onReporter(tache)} className="text-[12.5px] text-texte-sourd hover:text-texte">par un Report</button>}
             </dd>
           </div>
           <div className={ligne}>
-            <dt className="w-24 text-sm text-texte-sourd">Statut</dt>
+            <dt className={libelle}>Statut</dt>
             <dd className="flex flex-1 items-center gap-2">
-              <span className={`rounded-md border px-2 py-0.5 text-[13px] font-medium ${PASTILLE[tache.statut]}`}>{STATUT[tache.statut]}</span>
+              <span className={`relative flex h-7 items-center gap-1.5 rounded-full border pl-2.5 pr-1.5 text-[13px] font-medium ${PASTILLE[tache.statut]}`}>
+                <span className={`h-[7px] w-[7px] rounded-full ${POINT[tache.statut]}`} />{STATUT[tache.statut]}
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" className="ml-0.5 opacity-70"><path d="M2 3.5l3 3 3-3" /></svg>
+                <select value={tache.statut} onChange={(e) => onStatut(tache, e.target.value as Statut)} aria-label="Statut" className="absolute inset-0 cursor-pointer opacity-0">
+                  <option value="a_faire">À faire</option><option value="en_cours">En cours</option><option value="bloque">Bloqué…</option>
+                </select>
+              </span>
+              {tache.statut === "bloque" && (
+                <button onClick={() => onRaison(tache)} className={`truncate text-[13.5px] ${tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}`} title="Changer la raison">{tache.raisonBlocage ?? "raison à préciser"}</button>
+              )}
             </dd>
           </div>
-          {tache.statut === "bloque" && (
-            <div className={ligne}>
-              <dt className="w-24 text-sm text-texte-sourd">Raison</dt>
-              <dd className="flex flex-1 items-center gap-2">
-                <span className={tache.raisonBlocage ? "" : "italic text-texte-faible"}>{tache.raisonBlocage ?? "à préciser"}</span>
-                <button onClick={() => onRaison(tache)} className="ml-auto text-[12.5px] text-texte-sourd hover:text-texte">changer</button>
-              </dd>
-            </div>
-          )}
           <div className={ligne}>
-            <dt className="w-24 text-sm text-texte-sourd">Reports</dt>
+            <dt className={libelle}>Reports</dt>
             <dd className="flex-1">{tache.reportsCount}</dd>
           </div>
         </dl>
 
+        <hr className="border-bord-2" />
+
+        {/* Puis du texte, directement — comme une page. */}
+        <div>
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={poserNotes} rows={Math.max(4, Math.min(14, notes.split("\n").length + 1))} placeholder="Une note, un contexte, un lien…" aria-label="Notes"
+            className="w-full resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-texte-faible" />
+          {tache.transcriptionBrute && <p className="mt-1 text-sm italic leading-relaxed text-texte-sourd">« {tache.transcriptionBrute} »</p>}
+        </div>
+
         {historique && historique.length > 0 && (
           <div>
             <h3 className="mb-2 text-sm text-texte-sourd">Reports</h3>
-            <ol className="flex flex-col gap-1.5 rounded-xl border border-bord bg-surface px-3.5 py-3 text-[14px]">
+            <ol className="flex flex-col gap-1.5 text-[14px]">
               {historique.map((h) => (
                 <li key={h.id} className="flex items-baseline gap-2">
                   <span className="flex-1">« {h.raison} »</span>
@@ -163,20 +184,6 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
             </ol>
           </div>
         )}
-
-        <div>
-          <h3 className="mb-2 text-sm text-texte-sourd">Notes</h3>
-          <div className="rounded-xl border border-bord bg-surface px-3.5 py-3 text-[15px] leading-relaxed">
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={poserNotes} rows={notes ? Math.min(8, notes.split("\n").length + 1) : 2} placeholder="Une note, un contexte, un lien…" aria-label="Notes"
-              className="w-full resize-none bg-transparent outline-none placeholder:text-texte-faible" />
-            {tache.transcriptionBrute && (
-              <>
-                <hr className="my-3 border-bord-2" />
-                <p className="text-sm italic text-texte-sourd">« {tache.transcriptionBrute} »</p>
-              </>
-            )}
-          </div>
-        </div>
       </div>
 
       <footer className="flex flex-col gap-2 border-t border-bord-faible px-6 pt-4 pb-6">
