@@ -1,0 +1,24 @@
+web/src/board/Detail.tsx
+  s_7ec6903985e0db::t_8c13c400d6e19d 12-13,19,42,62-64,66-67,98,103-104,106,109-110,117-123,125-134,138,141,145,147-156,160,165-173,177
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_8c13c400d6e19d 203-208
+ios/Bruno/Detail/DetailVue.swift
+  s_7ec6903985e0db::t_3d668702ff79d8 70-72,74-75,130-136
+  s_7ec6903985e0db::t_f3bc99513562e1 137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "38ee9ec63afdc6d849cb7757e9f825670139352b",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
