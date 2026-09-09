@@ -1,0 +1,33 @@
+web/src/board/deplacement.ts
+  s_7ec6903985e0db::t_d0599c2adc186b 4-6,20-23,26-27,30-43,45-48,50-61
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_d0599c2adc186b 2,14,43-44,58-64,74-78,92,107,160,163,165
+web/src/board/Affectations.tsx
+  s_7ec6903985e0db::t_d0599c2adc186b 6,22-23,34,46
+web/src/board/deplacement.test.ts
+  s_7ec6903985e0db::t_d0599c2adc186b 2,48-70
+  s_7ec6903985e0db::t_fe7b7c80776738 71-72
+web/src/lib/dates.ts
+  s_7ec6903985e0db::t_d0599c2adc186b 44-52
+web/src/lib/dates.test.ts
+  s_7ec6903985e0db::t_d0599c2adc186b 2,56-62
+  s_7ec6903985e0db::t_d90a14cfd93bf5 63-64
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_5108f8076a6dfc 78-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "3560ab66ebebbf1ab927070ccf7a529237ebaf07",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
