@@ -1,0 +1,37 @@
+ios/Bruno/App/Racine.swift
+  s_7ec6903985e0db::t_e498ea5b0a17bf 15
+ios/Bruno/Aujourdhui/AujourdhuiModele.swift
+  s_7ec6903985e0db::t_e498ea5b0a17bf 1-68
+ios/Bruno/Aujourdhui/AujourdhuiVue.swift
+  s_7ec6903985e0db::t_e498ea5b0a17bf 1-74,76-177
+  s_7ec6903985e0db::t_74951eddb96508 75
+ios/Bruno/Reseau/Modeles.swift
+  s_7ec6903985e0db::t_e498ea5b0a17bf 41-65
+ios/Bruno/Theme/Theme.swift
+  s_7ec6903985e0db::t_e498ea5b0a17bf 17-18,22-27
+ios/Bruno/Aujourdhui/AffectationFeuille.swift
+  s_7ec6903985e0db::t_e498ea5b0a17bf 1-44,46-73
+  s_7ec6903985e0db::t_2e42b899ed921a 45
+ios/Bruno/Theme/Dates.swift
+  s_7ec6903985e0db::t_74951eddb96508 26-31
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_74951eddb96508 44,48-50,52-54
+tickets/E6-affectations.md
+  s_7ec6903985e0db::t_74951eddb96508 31,36-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "e47c7b79c4bf405c298123e9fbfab3b26b32bf5a",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
