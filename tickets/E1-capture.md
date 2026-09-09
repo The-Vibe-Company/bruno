@@ -3,36 +3,38 @@
 > Une idée doit atterrir dans Bruno en quelques secondes, à la voix, depuis le mobile,
 > sans jamais échouer.
 
-## BRU-6 — Écran Capture iOS
+## BRU-6 — Écran Capture iOS · **livré le 9 septembre**
 
 Maquette : `Bruno iOS v2` → écran « Capture ».
 
-- [ ] Gros bouton micro central, appui = enregistrement, transcription affichée en direct
-- [ ] Champ texte juste en dessous — **pas optionnel** (réunions, transports, open space)
-- [ ] Compteur de durée
-- [ ] Bandeau d'état réseau : `hors ligne · N en attente d'envoi`
-- [ ] Bouton d'action libellé **« Envoyer dans À trier »** — la destination est explicite
-- [ ] Accessible depuis le bouton central de la barre d'onglets, sur tous les écrans
+- [x] Gros bouton micro central, appui = enregistrement, transcription affichée en direct
+- [x] Champ texte juste en dessous — **pas optionnel** (réunions, transports, open space)
+- [x] Compteur de durée
+- [x] Bandeau d'état réseau : `hors ligne · N en attente d'envoi`
+- [x] Bouton d'action libellé **« Envoyer dans À trier »** — la destination est explicite
+- [x] Accessible depuis le bouton central de la barre d'onglets, sur tous les écrans
 
-## BRU-7 — La Capture ne peut jamais échouer *(règle 1)*
+## BRU-7 — La Capture ne peut jamais échouer *(règle 1)* · **livré le 9 septembre**
 
 Le ticket le plus important du produit. Si la capture échoue une seule fois, la confiance est
 morte et le pilier 1 avec.
 
-- [ ] L'audio est écrit sur le disque **avant** tout appel réseau
-- [ ] La Tâche est créée localement immédiatement et apparaît dans À trier
-- [ ] File d'attente persistante, qui survit à un kill de l'app et à un redémarrage du téléphone
-- [ ] Renvoi automatique au retour du réseau, avec back-off
-- [ ] Aucun écran d'erreur bloquant, jamais — l'échec réseau est un état, pas une alerte
-- [ ] **Test explicite** : mode avion, trois captures, kill de l'app, retour du réseau,
-      les trois arrivent
+- [x] L'audio est écrit sur le disque **avant** tout appel réseau
+- [x] La Tâche est créée localement immédiatement (la file sur le disque) — elle s'affichera dans
+      À trier de l'écran En attente iOS avec BRU-12
+- [x] File d'attente persistante, qui survit à un kill de l'app et à un redémarrage du téléphone
+- [x] Renvoi automatique au retour du réseau, avec back-off
+- [x] Aucun écran d'erreur bloquant, jamais — l'échec réseau est un état, pas une alerte
+- [x] **Test explicite** : mode avion, trois captures, kill de l'app, retour du réseau,
+      les trois arrivent — *joué dans le simulateur avec le serveur coupé : deux captures en file,
+      app tuée, serveur revenu, les deux arrivent dans l'ordre, la file se vide*
 
-## BRU-8 — Transcription vocale
+## BRU-8 — Transcription vocale · **livré le 9 septembre**
 
-- [ ] Choix du moteur documenté dans un ADR : sur l'appareil (rapide, hors ligne, moins précis)
+- [x] Choix du moteur documenté dans un ADR : sur l'appareil (rapide, hors ligne, moins précis)
       contre API (précis, exige le réseau). Le hors ligne étant obligatoire, prévoir au minimum
-      un repli sur l'appareil
-- [ ] La **transcription brute est toujours stockée** et jamais écrasée *(règle 3)*
+      un repli sur l'appareil — [ADR 0004](../docs/adr/0004-transcription.md)
+- [x] La **transcription brute est toujours stockée** et jamais écrasée *(règle 3)*
 
 ## BRU-9 — Enrichissement LLM asynchrone
 

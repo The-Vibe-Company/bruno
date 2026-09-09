@@ -1,0 +1,39 @@
+# Le projet Xcode est généré : `xcodegen generate` dans ce dossier. On ne commite pas le .xcodeproj.
+name: Bruno
+options:
+  bundleIdPrefix: co.thevibecompany
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    # Pas d'équipe Apple pour l'instant : on ne signe pas, le simulateur s'en passe.
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+targets:
+  Bruno:
+    type: application
+    platform: iOS
+    sources:
+      - path: Bruno
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.thevibecompany.bruno
+        TARGETED_DEVICE_FAMILY: "1"
+        INFOPLIST_KEY_UIUserInterfaceStyle: Dark
+    info:
+      path: Bruno/Info.plist
+      properties:
+        CFBundleDisplayName: Bruno
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        NSMicrophoneUsageDescription: "Bruno écoute pour capturer une idée à la voix."
+        NSSpeechRecognitionUsageDescription: "Bruno transcrit ce que tu dis — sur l'iPhone quand c'est possible."
+        # Le serveur de développement tourne sur le Mac, en http.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
