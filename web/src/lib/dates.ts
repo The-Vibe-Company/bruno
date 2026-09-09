@@ -41,6 +41,15 @@ export function libelleReport(jour: string, ref: string = aujourdhui()): string 
   return `Reporter au ${l}`;
 }
 
+/** « aujourd'hui », « 3 j », « 2 sem. », « 1 mois » — depuis quand on est dessus, en petit. */
+export function libelleDuree(depuis: string, ref: string = aujourdhui()): string {
+  const j = joursEntre(depuis, ref);
+  if (j <= 0) return "aujourd'hui";
+  if (j < 7) return `${j} j`;
+  if (j < 30) return `${Math.floor(j / 7)} sem.`;
+  return `${Math.floor(j / 30)} mois`;
+}
+
 export const veille = (ref: string = aujourdhui()): string => decale(-1, ref);
 /** Le jour ouvré d'avant — le vendredi quand on est lundi. C'est lui que le Daily appelle « hier ». */
 export function jourOuvrePrecedent(ref: string = aujourdhui()): string {
