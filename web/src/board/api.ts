@@ -24,6 +24,8 @@ export type Destination =
 /** Changer de Bucket. Vers Sur le feu, le droit d'entrée est exigé — par le contrat, puis par la base. */
 export const deplacerBucket = (id: string, destination: Destination) => poster(`/api/taches/${id}/bucket`, destination);
 export const abandonner = (id: string) => poster(`/api/taches/${id}/abandonner`);
+/** Un Terminé ou un Abandonné de trop : la fin s'efface, tout le reste est resté. */
+export const rouvrir = (id: string) => poster(`/api/taches/${id}/rouvrir`);
 export type Patch = { titre?: string; notes?: string | null; assigneId?: string; aidantIds?: string[]; raisonBlocage?: string };
 /** Modifier ce qui se modifie librement : titre, Notes, Assigné, Aidants, raison du blocage. Jamais l'Engagement Sur le feu. */
 export async function modifierTache(id: string, patch: Patch) {

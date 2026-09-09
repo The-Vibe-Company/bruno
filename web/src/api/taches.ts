@@ -219,6 +219,14 @@ async function terminerAvec(ctx: Ctx, id: string, etat: "termine" | "abandonne")
 export const terminer = (ctx: Ctx, id: string) => terminerAvec(ctx, id, "termine");
 export const abandonner = (ctx: Ctx, id: string) => terminerAvec(ctx, id, "abandonne");
 
+/** Rouvrir une Tâche finie par erreur : la fin s'efface, tout le reste — Bucket, Statut, Engagement — est resté. */
+export async function rouvrir(ctx: Ctx, id: string) {
+  const courante = await lire(ctx, id);
+  if (!courante.etatTerminal) throw new ErreurApi("requete_invalide", 409, "Cette Tâche n'a pas de fin à annuler.");
+  await db.update(tache).set({ etatTerminal: null, termineLe: null, updatedAt: new Date() }).where(eq(tache.id, id));
+  return obtenir(ctx, id);
+}
+
 /** Supprimer efface pour de bon : c'est réservé à ce qui n'aurait jamais dû exister. */
 export async function supprimer(ctx: Ctx, id: string) {
   await lire(ctx, id);

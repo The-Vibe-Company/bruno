@@ -23,8 +23,13 @@ struct Tache: Codable, Identifiable, Sendable, Hashable {
     var engagement: String?
     var reportsCount: Int
     var raisonBlocage: String?
+    var etatTerminal: String?
+    var termineLe: String?
     let creeParId: String?
     let createdAt: String
+
+    var finie: Bool { etatTerminal != nil }
+    var libelleFin: String { etatTerminal == "abandonne" ? "Abandonnée" : "Terminée" }
 }
 
 struct Membre: Codable, Identifiable, Sendable, Hashable {

@@ -254,6 +254,17 @@ describe("les erreurs", () => {
   });
 });
 
+describe("rouvrir une Tâche finie par erreur", () => {
+  it("efface la fin et rien d'autre ; une Tâche vivante n'a rien à rouvrir", async () => {
+    const t = await T.creer(ctx, { titre: "Terminée trop vite", bucket: "a_trier" });
+    await T.deplacer(ctx, t.id, { bucket: "sur_le_feu", assigneId: antoine, engagement: "2026-09-08", statut: "en_cours" });
+    await expect(T.rouvrir(ctx, t.id)).rejects.toMatchObject({ statut: 409 });
+    await T.terminer(ctx, t.id);
+    const r = await T.rouvrir(ctx, t.id);
+    expect([r.etatTerminal, r.termineLe, r.bucket, r.statut, r.engagement]).toEqual([null, null, "sur_le_feu", "en_cours", "2026-09-08"]);
+  });
+});
+
 describe("Bloqué, avec une raison", () => {
   it("bloquer exige une raison ; elle se lit, se change, et s'efface en sortant de Bloqué", async () => {
     const t = await T.creer(ctx, { titre: "Contrat AFP", bucket: "a_trier" });

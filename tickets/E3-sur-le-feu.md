@@ -80,3 +80,12 @@ Maquette : `Bruno iOS v2` → écran « Détail d'une Tâche ».
 
 - [x] Vers une autre colonne, la carte entre pendant le glisser, à la hauteur où elle atterrira
 - [x] Le bandeau Affectations tient sur une ligne, avec depuis quand en petit (j · sem. · mois)
+
+## BRU-47 — Rouvrir une Tâche finie par erreur · **livré le 9 septembre**
+
+Un doigt qui glisse sur « Terminé » n'efface rien.
+
+- [x] `POST /api/taches/{id}/rouvrir` : la fin s'efface, Bucket, Statut et Engagement sont restés
+- [x] iOS : « Annuler » pendant six secondes après Terminé / Abandonner ; section « Fait récemment »
+      sur Aujourd'hui (mes Tâches finies ces sept derniers jours) avec « Rouvrir »
+- [x] Web : le même « Annuler » de six secondes sur le Board

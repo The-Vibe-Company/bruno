@@ -8,6 +8,8 @@ struct DetailVue: View {
     let tache: Tache
     let membres: [Membre]
     let retour: String
+    /// Après un Terminé ou un Abandonné : l'écran d'en dessous propose d'annuler, six secondes.
+    var onFin: ((Tache, String) -> Void)? = nil
     let onChange: () async -> Void
     @Environment(\.dismiss) private var fermer
     @State private var report = false
@@ -86,13 +88,13 @@ struct DetailVue: View {
                 }
 
                 VStack(spacing: 8) {
-                    Button { agir { try await Api.partagee.poster("api/taches/\(tache.id)/terminer") } } label: {
+                    Button { agir { try await Api.partagee.poster("api/taches/\(tache.id)/terminer"); onFin?(tache, "terminée") } } label: {
                         Text("Terminé").font(.system(size: 16, weight: .medium)).foregroundStyle(Teinte.surAccent)
                             .frame(maxWidth: .infinity, minHeight: 52).background(Teinte.accent, in: RoundedRectangle(cornerRadius: 12))
                     }
                     HStack(spacing: 8) {
                         Button { report = true } label: { secondaire("Reporter") }.disabled(tache.engagement == nil).opacity(tache.engagement == nil ? 0.5 : 1)
-                        Button { agir { try await Api.partagee.poster("api/taches/\(tache.id)/abandonner") } } label: { secondaire("Abandonner") }
+                        Button { agir { try await Api.partagee.poster("api/taches/\(tache.id)/abandonner"); onFin?(tache, "abandonnée") } } label: { secondaire("Abandonner") }
                     }
                 }
                 .disabled(occupe)
@@ -106,6 +108,7 @@ struct DetailVue: View {
                 await onChange(); fermer()
             } onAbandonner: {
                 try await Api.partagee.poster("api/taches/\(tache.id)/abandonner")
+                onFin?(tache, "abandonnée")
                 await onChange(); fermer()
             }
         }

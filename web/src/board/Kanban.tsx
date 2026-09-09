@@ -2,7 +2,7 @@
 import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragOverEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { abandonner, appliquer, deplacerBucket, modifierTache, reporter, supprimer, terminer, type Patch } from "./api";
+import { abandonner, appliquer, deplacerBucket, modifierTache, reporter, rouvrir, supprimer, terminer, type Patch } from "./api";
 import { Blocage, type DemandeBlocage } from "./Blocage";
 import { Detail } from "./Detail";
 import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
@@ -51,6 +51,8 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   const [mutationsEnAttente, setMutationsEnAttente] = useState<Mutation[]>([]);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const [erreur, setErreur] = useState<string | null>(null);
+  // Le dernier Terminé / Abandonné, le temps de se raviser : un « Annuler » de six secondes.
+  const [derniereFin, setDerniereFin] = useState<{ id: string; titre: string; libelle: string } | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   const rafraichir = () => demarrer(() => router.refresh());
@@ -113,7 +115,15 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
     try { await fn(id); } catch (e) { setErreur((e as Error).message); }
     rafraichir();
   };
-  const onTerminer = action(terminer);
+  const finir = (fn: (id: string) => Promise<void>, libelle: string) => async (id: string) => {
+    const titre = parId.get(id)?.titre ?? "";
+    setErreur(null);
+    try { await fn(id); setDerniereFin({ id, titre, libelle }); setTimeout(() => setDerniereFin((d) => (d?.id === id ? null : d)), 6000); }
+    catch (e) { setErreur((e as Error).message); }
+    rafraichir();
+  };
+  const onTerminer = finir(terminer, "terminée");
+  const onAbandonner = finir(abandonner, "abandonnée");
   async function modifier(id: string, patch: Patch) {
     setErreur(null);
     try { await modifierTache(id, patch); } catch (e) { setErreur((e as Error).message); }
@@ -185,15 +195,21 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         membres={membres}
         onModifier={modifier}
         onFermer={() => setOuverteId(null)}
-        onTerminer={action(terminer)}
-        onAbandonner={action(abandonner)}
+        onTerminer={onTerminer}
+        onAbandonner={onAbandonner}
         onSupprimer={action(supprimer)}
         onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })}
         onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}
       />
       <Blocage demande={demandeBlocage} onConfirmer={bloquer} onAnnuler={annulerBlocage} />
+      {derniereFin && (
+        <div role="status" className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-bord-fort bg-surface px-4 py-2.5 text-sm shadow-2xl">
+          <span>« {derniereFin.titre} » {derniereFin.libelle}</span>
+          <button onClick={() => { const id = derniereFin.id; setDerniereFin(null); action(rouvrir)(id); }} className="font-medium text-accent">Annuler</button>
+        </div>
+      )}
       <Report demande={demandeReport} onReporter={reporterTache}
-        onAbandonner={async (id) => { await action(abandonner)(id); setDemandeReport(null); setOuverteId(null); }}
+        onAbandonner={async (id) => { await onAbandonner(id); setDemandeReport(null); setOuverteId(null); }}
         onAnnuler={() => setDemandeReport(null)} />
     </DndContext>
   );
