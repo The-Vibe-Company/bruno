@@ -59,7 +59,8 @@ Maquette : `Bruno iOS v2` → écran « Détail d'une Tâche ».
 
 - [x] Titre, puis `Statut · reporté N×`
 - [x] Champs : Assigné, Aidants, Engagement, Statut, Reports — *et depuis le 9 septembre, le titre,
-      l'Assigné, les Aidants et les Notes se modifient sur place (BRU-48) ; l'Engagement reste au Report*
+      l'Assigné, les Aidants et les Notes se modifient sur place (BRU-48), le Statut aussi — Bloqué avec
+      sa raison — et l'Engagement : par le Report Sur le feu, librement ailleurs (BRU-49)*
 - [x] Notes, avec la **transcription brute en italique** sous un filet
 - [x] Actions : `Terminé` en primaire, `Reporter` et `Abandonner` côte à côte
 - [x] `Supprimer` dans le menu `···`
