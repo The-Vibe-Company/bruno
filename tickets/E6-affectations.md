@@ -28,14 +28,15 @@ Ce second mot n'apparaît **jamais** dans l'interface — elle dit simplement «
 - [x] L'historique est conservé — c'est lui qui répond à « hier j'étais sur MONKA »
 - [x] Ni Engagement, ni Statut, ni Rang, ni Report sur une Affectation
 
-## BRU-28 — Affichage des Affectations · **web livré, iOS en attente de l'app**
+## BRU-28 — Affichage des Affectations · **livré, web et iOS**
 
 On voit son Affectation partout et on peut en sortir, mais rien ne permet d'en prendre une.
 Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se voit.
 
-- [ ] **iOS « Aujourd'hui »** : épinglées en tête, une ligne par Client, à la couleur du Client,
-      libellées `MONKA · depuis le 3 sept.`, avec le bouton « Je ne suis plus dessus ».
-      **Gérer le cas de plusieurs Affectations** — la maquette n'en montre qu'une
+- [x] **iOS « Aujourd'hui »** : épinglées en tête, une ligne par Affectation, à sa couleur,
+      libellées `Affectation · depuis le 4 sept. · MONKA`, avec le bouton « Je ne suis plus dessus ».
+      Plusieurs Affectations : une ligne chacune, puis « + Ajouter une Affectation » ; vide :
+      « Aucune Affectation » + « Choisir » → « Sur quoi es-tu ? » *(livré le 9 septembre)*
 - [x] **Board web** : bandeau une ligne, `Antoine → MONKA · Stan → AFP, Interne · Victor → Coup de Pâtes`
 - [x] **Daily** : les Affectations du jour, et celles de la veille dans le bloc Hier *(avec BRU-30)*
 - [x] **Fait** : l'Affectation de la semaine au-dessus des Tâches de chacun *(avec BRU-31)*

@@ -12,7 +12,7 @@ struct Racine: View {
         ZStack(alignment: .bottom) {
             Group {
                 switch onglet {
-                case .aujourdhui: Bientot(titre: "Aujourd'hui", sous: "Les Affectations du jour, les Engagements, la Relance.")
+                case .aujourdhui: AujourdhuiVue()
                 case .enAttente: EnAttenteVue()
                 }
             }

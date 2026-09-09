@@ -38,3 +38,28 @@ struct Moi: Codable, Sendable {
     let nom: String
     let email: String
 }
+
+/// Une Affectation — ce à quoi on peut travailler. La couleur est une donnée, stockée en base.
+struct Affectation: Codable, Identifiable, Sendable, Hashable {
+    let id: String
+    let nom: String
+    let couleur: String
+    let actif: Bool
+}
+
+/// Une ligne de « qui est sur quoi » : l'`id` est celui de la période — c'est lui qu'on ferme.
+struct Sur: Codable, Identifiable, Sendable, Hashable {
+    let id: String
+    let affectationId: String
+    let nom: String
+    let couleur: String
+    let depuis: String
+    let jusqu: String?
+}
+
+struct AffectationsMembre: Codable, Identifiable, Sendable {
+    let membreId: String
+    let nom: String
+    let affectations: [Sur]
+    var id: String { membreId }
+}

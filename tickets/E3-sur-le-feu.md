@@ -41,17 +41,17 @@ sans quitter le Board. Les trois fins y vivent, chacune à sa place.
       compatibles avec le PRD : une bannière « Terminé · Annuler » quelques secondes, ou ne
       terminer que depuis le panneau. Pas tranché ici — ce n'est pas au code de le décider
 
-## BRU-18 — Écran « Aujourd'hui » iOS
+## BRU-18 — Écran « Aujourd'hui » iOS · **livré le 9 septembre**
 
 Maquette : `Bruno iOS v2` → écran « Aujourd'hui ».
 
-- [ ] En-tête : date, « Aujourd'hui », avatar
-- [ ] Bandeau **Affectations** épinglé (voir BRU-28)
-- [ ] Mes Tâches Sur le feu dont l'Engagement est aujourd'hui ou avant, groupées par Statut,
+- [x] En-tête : date, « Aujourd'hui », avatar
+- [x] Bandeau **Affectations** épinglé (voir BRU-28)
+- [x] Mes Tâches Sur le feu dont l'Engagement est aujourd'hui ou avant, groupées par Statut,
       dans l'ordre **En cours → À faire → Bloqué**
-- [ ] Section distincte **« J'aide sur »** pour les Tâches dont je suis Aidant
-- [ ] `reporté N×` en orange sous le titre quand N > 0
-- [ ] Un cercle à cocher par Tâche ; celui d'une Tâche Bloqué est en pointillés
+- [x] Section distincte **« J'aide sur »** pour les Tâches dont je suis Aidant
+- [x] `reporté N×` en orange sous le titre quand N > 0
+- [x] Un cercle à cocher par Tâche ; celui d'une Tâche Bloqué est en pointillés
 
 ## BRU-19 — Détail d'une Tâche iOS
 
