@@ -57,6 +57,8 @@ export function depuisPostgres(e: unknown): ErreurApi | null {
         "Le Statut n'existe que dans Sur le feu, et y est obligatoire.");
     case "creneau_quart_heure":
       return new ErreurApi("requete_invalide", 422, "Un Créneau tombe sur un quart d'heure : 09:00, 09:15, 09:30 ou 09:45.");
+    case "tache_raison_blocage":
+      return new ErreurApi("requete_invalide", 422, "Une raison de blocage n'a de sens que sur une Tâche Bloquée.");
     case "report_raison_obligatoire":
       return new ErreurApi("raison_obligatoire", 422,
         "Un Report est toujours motivé : la raison ne peut pas être vide.");

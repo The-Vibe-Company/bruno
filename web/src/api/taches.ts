@@ -118,6 +118,9 @@ export async function modifier(ctx: Ctx, id: string, patch: z.infer<typeof C.Mod
     throw new ErreurApi("engagement_par_report", 422,
       "Sur le feu, l'Engagement ne change que par un Report — avec une raison.");
   }
+  if (patch.raisonBlocage !== undefined && courante.statut !== "bloque") {
+    throw new ErreurApi("requete_invalide", 422, "Une raison de blocage n'a de sens que sur une Tâche Bloquée.");
+  }
   return traduire(async () => {
     const { aidantIds, ...champs } = patch;
     if (Object.keys(champs).length > 0) {
@@ -154,6 +157,7 @@ export async function deplacer(ctx: Ctx, id: string, cible: z.infer<typeof C.Dep
         // « À faire » par défaut : une Tâche Sur le feu a toujours un Statut, même si
         // l'appelant ne l'a pas précisé.
         statut: surLeFeu ? (cible.statut ?? "a_faire") : null,
+        raisonBlocage: surLeFeu && cible.statut === "bloque" ? cible.raison! : null,
         ...(surLeFeu ? { assigneId: cible.assigneId, engagement: cible.engagement } : {}),
         ...(cible.bucket === "a_venir" && cible.engagement !== undefined
           ? { engagement: cible.engagement }
@@ -166,10 +170,13 @@ export async function deplacer(ctx: Ctx, id: string, cible: z.infer<typeof C.Dep
   });
 }
 
-export async function changerStatut(ctx: Ctx, id: string, statut: z.infer<typeof C.Statut>) {
+/** Changer de Statut. Vers Bloqué, la raison vient avec ; en sortant, elle s'efface. */
+export async function changerStatut(ctx: Ctx, id: string, entree: z.infer<typeof C.ChangerStatut>) {
   await lire(ctx, id);
   return traduire(async () => {
-    await db.update(tache).set({ statut, updatedAt: new Date() }).where(eq(tache.id, id));
+    await db.update(tache)
+      .set({ statut: entree.statut, raisonBlocage: entree.statut === "bloque" ? entree.raison : null, updatedAt: new Date() })
+      .where(eq(tache.id, id));
     return obtenir(ctx, id);
   });
 }

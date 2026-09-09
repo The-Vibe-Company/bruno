@@ -102,7 +102,7 @@ _Avoid_: Priorité, P0/P1, importance, poids, urgent
 La position d'une Tâche dans l'avancement du travail : **À faire**, **En cours**, **Bloqué**.
 Le Statut n'existe que dans Sur le feu — une Idée ou une Tâche À venir n'en a pas. Terminé
 n'est pas un Statut : c'est un état terminal, et la Tâche quitte le board.
-_Avoid_: État, avancement, colonne, workflow, stage
+_Avoid_: État, avancement, colonne, workflow, stage Bloqué porte toujours une raison — ce qu'on attend, et de qui — lisible sur la carte.
 
 **Terminé**:
 État terminal d'une Tâche qui a été faite. Posé à la main par un Membre, jamais déduit.

@@ -11,7 +11,7 @@ import { SEUIL_SIGNAL } from "@/api/taches";
 import { traine } from "./regles";
 
 export type Nature = "point_du_matin" | "rappel" | "bilan";
-export type TacheDue = { id: string; titre: string; statut: "a_faire" | "en_cours" | "bloque"; engagement: string; reportsCount: number };
+export type TacheDue = { id: string; titre: string; statut: "a_faire" | "en_cours" | "bloque"; engagement: string; reportsCount: number; raisonBlocage?: string | null };
 export type AVenirArrivee = { id: string; titre: string; engagement: string };
 /** `id` désigne la période — c'est elle qu'on ferme d'un bouton quand elle traîne. */
 export type AffectationDuJour = { id: string; nom: string; depuis: string; joursOuverts: number };
@@ -41,7 +41,7 @@ export function composer(nature: Nature, s: Situation): Message | null {
     if (s.affectations.length) lignes.push(`Aujourd'hui : ${s.affectations.map((a) => a.nom).join(", ")}.`);
     if (ouvertes.length) lignes.push(`${pluriel(ouvertes.length, "Tâche engagée", "Tâches engagées")} aujourd'hui${ouvertes.length <= 3 ? " — " + ouvertes.map((t) => t.titre).join(" · ") : ""}.`);
     if (s.aVenirArrivees.length) lignes.push(`${pluriel(s.aVenirArrivees.length, "Tâche À venir arrive", "Tâches À venir arrivent")} : ${s.aVenirArrivees.map((t) => t.titre).join(" · ")} — les passer Sur le feu ?`);
-    if (bloquees.length) lignes.push(`Toujours ${bloquees.length > 1 ? "bloquées" : "bloquée"} : ${bloquees.map((t) => t.titre).join(" · ")}.`);
+    if (bloquees.length) lignes.push(`Toujours ${bloquees.length > 1 ? "bloquées" : "bloquée"} : ${bloquees.map((t) => t.raisonBlocage ? `${t.titre} (${t.raisonBlocage.toLowerCase()})` : t.titre).join(" · ")}.`);
     const trainent = s.affectations.filter(traine);
     for (const a of trainent) lignes.push(`Toujours sur ${a.nom} ? (depuis ${a.joursOuverts} jours)`);
     const signalees = ouvertes.filter((t) => t.reportsCount >= SEUIL_SIGNAL);

@@ -62,3 +62,9 @@ Maquette : `Bruno iOS v2` → écran « Détail d'une Tâche ».
 - [ ] Notes, avec la **transcription brute en italique** sous un filet
 - [ ] Actions : `Terminé` en primaire, `Reporter` et `Abandonner` côte à côte
 - [ ] `Supprimer` dans le menu `···`
+
+## BRU-44 — Bloqué avec une raison · **livré le 9 septembre**
+
+- [x] Bloquer exige une raison (raisons toutes prêtes, ou ses mots) ; elle se lit sur la carte, se
+      change depuis le détail, s'efface en sortant de Bloqué, et le Point du matin la nomme
+- [x] Le Board et le Daily sont plus denses : typo, bandeau, colonnes, cartes, panneau

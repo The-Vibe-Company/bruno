@@ -43,8 +43,8 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
 
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="fait">
-      <header className="flex h-16 flex-none items-center gap-8 border-b border-bord-2 px-8">
-        <h1 className="text-[22px] font-medium tracking-tight">Fait</h1>
+      <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
+        <h1 className="text-[17px] font-medium tracking-tight">Fait</h1>
         <FiltreMembres membres={membres} />
         <div className="flex-1" />
       </header>

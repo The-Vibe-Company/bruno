@@ -114,6 +114,8 @@ export const tache = pgTable("tache", {
   engagement: date("engagement"),
 
   reportsCount: integer("reports_count").notNull().default(0),
+  /** Pourquoi c'est Bloqué — « en attente de réponse »… Obligatoire pour bloquer, effacée en sortant. */
+  raisonBlocage: text("raison_blocage"),
   etatTerminal: etatTerminalEnum("etat_terminal"),
   termineLe: timestamp("termine_le", { withTimezone: true }),
 
@@ -133,6 +135,7 @@ export const tache = pgTable("tache", {
   /** Le Statut n'existe que dans Sur le feu — et y est obligatoire. */
   check("tache_statut_sur_le_feu",
     sql`(${t.bucket} = 'sur_le_feu') = (${t.statut} IS NOT NULL)`),
+  check("tache_raison_blocage", sql`${t.raisonBlocage} IS NULL OR ${t.statut} = 'bloque'`),
 
   /** Terminé et Abandonné datent ; les Tâches vivantes non. */
   check("tache_fin_datee",

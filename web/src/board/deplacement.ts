@@ -8,7 +8,7 @@ export type Statut = "a_faire" | "en_cours" | "bloque";
 export type Colonnes = Record<Statut, string[]>;
 
 export type Mutation =
-  | { type: "statut"; id: string; statut: Statut }
+  | { type: "statut"; id: string; statut: Statut; raison?: string }
   | { type: "rang"; id: string; avantId: string | null; apresId: string | null };
 
 export function colonneDe(colonnes: Colonnes, id: string): Statut | null {

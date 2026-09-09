@@ -33,7 +33,7 @@ export async function situation(spaceId: string, membreId: string, jour: string)
   return {
     jour,
     affectations: affs.map((a) => ({ id: a.id, nom: a.nom, depuis: a.debut, joursOuverts: joursEntre(a.debut, jour) })),
-    engagees: engagees.map((t) => ({ id: t.id, titre: t.titre, statut: t.statut!, engagement: t.engagement!, reportsCount: t.reportsCount })),
+    engagees: engagees.map((t) => ({ id: t.id, titre: t.titre, statut: t.statut!, engagement: t.engagement!, reportsCount: t.reportsCount, raisonBlocage: t.raisonBlocage })),
     aVenirArrivees: aVenir.map((t) => ({ id: t.id, titre: t.titre, engagement: t.engagement! })),
   };
 }

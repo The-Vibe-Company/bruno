@@ -22,6 +22,13 @@
       "when": 1788895162244,
       "tag": "0002_wonderful_adam_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788944741957,
+      "tag": "0003_purple_queen_noir",
+      "breakpoints": true
     }
   ]
 }
