@@ -1,0 +1,23 @@
+tickets/E0-fondations.md
+  s_7ec6903985e0db::t_425a8e05ec4e00 138-156
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_34a2304bb215c9 94-108
+tickets/README.md
+  s_7ec6903985e0db::t_54554c36eebc67 7,12-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "e0079950e3d164a2c5c17193e49100d37cd929e5",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
