@@ -1,2 +1,6 @@
 .bruno-linear-key
 *.key
+
+# iOS : le projet est généré par xcodegen
+ios/Bruno.xcodeproj
+ios/DerivedData
