@@ -1,0 +1,28 @@
+ios/Bruno/Detail/StatutEtEngagement.swift
+  s_7ec6903985e0db::t_4becac597bde56 1-139
+ios/Bruno/Detail/DetailVue.swift
+  s_7ec6903985e0db::t_4becac597bde56 20-21,109,111-119,121,124-139,204-205,212-220,230-240
+  s_7ec6903985e0db::t_8498a506ce5953 206-211
+ios/Bruno/Reseau/Api.swift
+  s_7ec6903985e0db::t_4becac597bde56 87-91
+ios/Bruno/Detail/Patch.swift
+  s_7ec6903985e0db::t_4becac597bde56 11-12,14,22
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_d0fab3461ee452 62-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "1e4dece3c2a607dca95700ef5413c77b06c76477",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
