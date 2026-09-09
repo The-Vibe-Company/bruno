@@ -1,0 +1,49 @@
+ios/Bruno/Theme/Theme.swift
+  s_7ec6903985e0db::t_4019f7f4d229c7 1-23
+ios/Bruno/App/Racine.swift
+  s_7ec6903985e0db::t_020d3448fa60bd 3-4,6-7,9,12-55,57,64,70,72
+  s_7ec6903985e0db::t_4019f7f4d229c7 1-2,5,8,10-11,56,58-63,65-69,71,73-75
+ios/Bruno/Info.plist
+  s_7ec6903985e0db::t_4019f7f4d229c7 1-41
+ios/Bruno/Capture/CaptureVue.swift
+  s_7ec6903985e0db::t_020d3448fa60bd 3-7,9-16,20-26,28-139
+  s_7ec6903985e0db::t_4019f7f4d229c7 1-2,8,17-19,27,140-141
+ios/Bruno/App/BrunoApp.swift
+  s_7ec6903985e0db::t_4019f7f4d229c7 1-4,7-10,16-18
+  s_7ec6903985e0db::t_29a26117264434 5-6,11-15
+ios/Bruno/Capture/Transcripteur.swift
+  s_7ec6903985e0db::t_5a5050025dc841 6-46,48-51,62,67,69,71-75,85-93,95,99,106
+  s_7ec6903985e0db::t_020d3448fa60bd 1-5,47,52-61,63-66,68,70,76-84,94,96-98,100-105,107-116
+ios/Bruno/Capture/FileAttente.swift
+  s_7ec6903985e0db::t_020d3448fa60bd 1-104
+ios/project.yml
+  s_7ec6903985e0db::t_4019f7f4d229c7 1-39
+ios/Bruno/Reseau/Api.swift
+  s_7ec6903985e0db::t_020d3448fa60bd 1-62
+.gitignore
+  s_7ec6903985e0db::t_4019f7f4d229c7 3-6
+docs/adr/0004-transcription.md
+  s_7ec6903985e0db::t_133618924bcd26 1-34
+ios/README.md
+  s_7ec6903985e0db::t_fcb9ba07ab3420 1-21
+tickets/E1-capture.md
+  s_7ec6903985e0db::t_fd04fa42c902ce 6,10-15,17,22-30,32,34,36-37
+tickets/README.md
+  s_7ec6903985e0db::t_0742efbc3c4519 10-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b91cdf030b4a036faf93d6be46203f535c4ea749",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
