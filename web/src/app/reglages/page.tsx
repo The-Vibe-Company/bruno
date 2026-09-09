@@ -22,11 +22,11 @@ export default async function Reglages() {
   const [creneaux, affectations, [moi], jar] = await Promise.all([lister(session), listerAffectations(session), db.select().from(membre).where(eq(membre.id, session.membreId)), cookies()]);
   const theme = lireTheme(jar.get(COOKIE_THEME)?.value);
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} page="reglages">
+    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="reglages">
       <header className="flex h-12 flex-none items-center border-b border-bord-2 px-5"><h1 className="text-[17px] font-medium tracking-tight">Réglages</h1></header>
       <main className="grid flex-1 grid-cols-1 content-start gap-16 px-10 py-8 md:grid-cols-2">
         <Creneaux initiaux={creneaux} />
-        <div className="flex flex-col gap-12"><Affectations initiales={affectations} /><Apparence initial={theme} /><Compte nom={moi.nom} email={moi.email} /></div>
+        <div className="flex flex-col gap-12"><Affectations initiales={affectations} /><Apparence initial={theme} /><Compte nom={moi.nom} email={moi.email} avatar={moi.avatar} /></div>
       </main>
     </Coquille>
   );

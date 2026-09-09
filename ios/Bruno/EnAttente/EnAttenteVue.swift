@@ -119,7 +119,7 @@ private struct CarteATrier: View {
             HStack(spacing: 10) {
                 Text(tache.titre).font(.system(size: 16)).foregroundStyle(Teinte.texte).lineSpacing(2)
                 Spacer(minLength: 0)
-                if let auteur { Initiale(nom: auteur.nom) }
+                if let auteur { Initiale(nom: auteur.nom, avatar: auteur.avatar) }
             }
             if let brute = tache.transcriptionBrute, !brute.isEmpty {
                 Text("« \(brute) »").font(.system(size: 13)).italic().foregroundStyle(Teinte.texteSourd)
@@ -193,7 +193,7 @@ private struct Ligne: View {
                 Text(tache.titre).font(.system(size: 15)).foregroundStyle(Teinte.texte)
                 Spacer(minLength: 0)
                 if let e = tache.engagement { Text(Jours.libelle(e)).font(.system(size: 13)).foregroundStyle(Teinte.texteSourd) }
-                if let assigne { Initiale(nom: assigne.nom, taille: 20) }
+                if let assigne { Initiale(nom: assigne.nom, avatar: assigne.avatar, taille: 20) }
             }
             .padding(.horizontal, 14).padding(.vertical, 11)
             .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 12))

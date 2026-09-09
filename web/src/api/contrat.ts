@@ -111,6 +111,13 @@ export const Creneau = z.object({
 });
 export const PoserCreneau = z.object({ heure: Heure });
 
+/* ------------------------------------------------------------------ moi */
+
+/** Une photo de profil : une petite image en data URL, ou rien. */
+export const ModifierMoi = z.object({
+  avatar: z.string().regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Une image, en data URL").max(200_000, "Trop lourde : 160 px suffisent").nullable(),
+});
+
 /* ------------------------------------------------------------------ les Affectations */
 
 export const Affectation = z.object({ id: uuid, nom: z.string(), couleur: z.string(), actif: z.boolean() });

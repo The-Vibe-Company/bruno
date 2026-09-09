@@ -12,7 +12,7 @@ const accord = (n: number, mot: string) => (n === 0 ? null : `${n} ${mot}${n > 1
  * la semaine puis ce qu'elle a Terminé et Abandonné. Pas de compteur de jours par Affectation,
  * pas de cumul mensuel — hors scope, volontairement.
  */
-export function Semaine({ semaine, membres }: { semaine: Semaine; membres: { id: string; nom: string }[] }) {
+export function Semaine({ semaine, membres }: { semaine: Semaine; membres: { id: string; nom: string; avatar?: string | null }[] }) {
   const terminees = semaine.taches.filter((t) => t.etat === "termine").length;
   const abandonnees = semaine.taches.length - terminees;
   const compte = [accord(terminees, "terminée"), accord(abandonnees, "abandonnée")].filter(Boolean).join(" · ") || "rien encore";
@@ -32,7 +32,7 @@ export function Semaine({ semaine, membres }: { semaine: Semaine; membres: { id:
         {personnes.length === 0 && <p className="text-[15px] text-texte-faible">Rien de fini cette semaine.</p>}
         {personnes.map((p) => (
           <section key={p.id}>
-            <h3 className="flex items-center gap-2 text-[13.5px] text-texte-sourd"><Initiale nom={p.nom} />{p.nom}</h3>
+            <h3 className="flex items-center gap-2 text-[13.5px] text-texte-sourd"><Initiale nom={p.nom} avatar={p.avatar} />{p.nom}</h3>
             <div className="mt-2 flex flex-col gap-1">
               {p.sur.length === 0 && <span className="text-[15px] text-texte-faible">Aucune Affectation</span>}
               {p.sur.map((a) => (

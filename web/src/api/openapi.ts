@@ -15,7 +15,7 @@ const composants = {
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
-  Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence,
+  Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });

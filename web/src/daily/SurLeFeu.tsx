@@ -1,7 +1,7 @@
-import { Initiale, Meta, TEINTE } from "@/board/visuel";
+import { Initiale, Meta, TEINTE, type Personne } from "@/board/visuel";
 import type { Statut } from "@/board/deplacement";
 
-export type TacheDuJour = { id: string; titre: string; statut: Statut; engagement: string | null; reportsCount: number; assigne: { nom: string } | null; raisonBlocage: string | null };
+export type TacheDuJour = { id: string; titre: string; statut: Statut; engagement: string | null; reportsCount: number; assigne: Personne | null; raisonBlocage: string | null };
 
 const STATUTS: Statut[] = ["a_faire", "en_cours", "bloque"];
 const LIBELLE: Record<Statut, string> = { a_faire: "À faire", en_cours: "En cours", bloque: "Bloqué" };
@@ -27,7 +27,7 @@ export function SurLeFeu({ taches }: { taches: TacheDuJour[] }) {
                   <div className="mt-1.5 flex items-center gap-2">
                     <span className={`h-[15px] w-[15px] flex-none rounded-full border-[1.5px] border-texte-tres-faible ${t.statut === "bloque" ? "border-dashed" : ""}`} />
                     <Meta tache={t} />
-                    {t.assigne && <Initiale nom={t.assigne.nom} grande />}
+                    {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} grande />}
                   </div>
                 </article>
               ))}

@@ -18,9 +18,17 @@ export function Reporte({ n }: { n: number }) {
     : <span className="text-accent">reporté {n}×</span>;
 }
 
-export function Initiale({ nom, grande = false }: { nom: string; grande?: boolean }) {
+export type Personne = { nom: string; avatar?: string | null };
+
+/** La pastille d'une personne : sa photo si elle en a une, son initiale sinon. */
+export function Initiale({ nom, avatar, grande = false }: { nom: string; avatar?: string | null; grande?: boolean }) {
+  const taille = grande ? "h-6 w-6 text-[11.5px]" : "h-[18px] w-[18px] text-[10px]";
+  if (avatar) {
+    // eslint-disable-next-line @next/next/no-img-element -- une data URL, pas une image distante
+    return <img src={avatar} alt={nom} className={`inline-block flex-none rounded-full object-cover ${taille}`} />;
+  }
   return (
-    <span className={`inline-flex flex-none items-center justify-center rounded-full bg-bord-faible font-medium text-texte ${grande ? "h-6 w-6 text-[11.5px]" : "h-[18px] w-[18px] text-[10px]"}`}>
+    <span className={`inline-flex flex-none items-center justify-center rounded-full bg-bord-faible font-medium text-texte ${taille}`}>
       {nom.trim().charAt(0).toUpperCase()}
     </span>
   );

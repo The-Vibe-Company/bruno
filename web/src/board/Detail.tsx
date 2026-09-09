@@ -106,9 +106,9 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <div className={ligne}>
             <dt className={libelle}>Assigné</dt>
             <dd className="flex flex-1 items-center gap-2">
-              <Choix valeur={tache.assigneId} onChoisir={assigner} titre="Assigner à" options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} /> }))}>
+              <Choix valeur={tache.assigneId} onChoisir={assigner} titre="Assigner à" options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} avatar={m.avatar} /> }))}>
                 <button aria-label="Assigné" className="-ml-1 flex h-7 items-center gap-2 rounded-md px-1 text-texte hover:bg-surface-2">
-                  <Initiale nom={tache.assigne?.nom ?? "?"} />{tache.assigne?.nom ?? <span className="text-texte-faible">personne</span>}<Chevron />
+                  <Initiale nom={tache.assigne?.nom ?? "?"} avatar={tache.assigne?.avatar} />{tache.assigne?.nom ?? <span className="text-texte-faible">personne</span>}<Chevron />
                 </button>
               </Choix>
             </dd>
@@ -118,14 +118,14 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
             <dd className="flex flex-1 flex-wrap items-center gap-1.5">
               {tache.aidantIds.map((id) => { const m = membres.find((x) => x.id === id); return m && (
                 <span key={id} className="flex h-7 items-center gap-1.5 rounded-full border border-bord bg-surface pl-0.5 pr-1 text-[13px]">
-                  <Initiale nom={m.nom} />{m.nom}
+                  <Initiale nom={m.nom} avatar={m.avatar} />{m.nom}
                   <button onClick={() => onModifier(tache.id, { aidantIds: tache.aidantIds.filter((x) => x !== id) })} aria-label={`Retirer ${m.nom}`} className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full text-texte-faible hover:text-texte">
                     <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 2l6 6M8 2l-6 6" /></svg>
                   </button>
                 </span>
               ); })}
               {candidats.length > 0 && (
-                <Choix valeur={null} onChoisir={(id) => onModifier(tache.id, { aidantIds: [...tache.aidantIds, id] })} titre="Ajouter un Aidant" options={candidats.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} /> }))}>
+                <Choix valeur={null} onChoisir={(id) => onModifier(tache.id, { aidantIds: [...tache.aidantIds, id] })} titre="Ajouter un Aidant" options={candidats.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} avatar={m.avatar} /> }))}>
                   <button aria-label="Ajouter un Aidant" className="flex h-7 w-7 items-center justify-center rounded-full border border-bord-fort text-texte-sourd hover:text-texte">
                     <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 1.5v9M1.5 6h9" /></svg>
                   </button>

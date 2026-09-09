@@ -6,7 +6,7 @@ import { membresActifs } from "@/lib/filtre-membres";
  * Les initiales de chacun — le profil, plus tard — chacune active ou inactive au clic. Le même
  * filtre sur Sur le feu, le Daily et Fait, toujours à droite de la date, porté par l'URL.
  */
-export function FiltreMembres({ membres }: { membres: { id: string; nom: string }[] }) {
+export function FiltreMembres({ membres }: { membres: { id: string; nom: string; avatar?: string | null }[] }) {
   const router = useRouter(); const chemin = usePathname(); const params = useSearchParams();
   const actifs = membresActifs(params.get("membres") ?? undefined, membres);
   const poser = (suivant: Set<string>) => {
@@ -23,8 +23,9 @@ export function FiltreMembres({ membres }: { membres: { id: string; nom: string 
         const actif = actifs.has(m.id);
         return (
           <button key={m.id} aria-pressed={actif} title={`${m.nom} — ⌘-clic : seulement ${m.nom}`} onClick={(e) => (e.metaKey || e.ctrlKey ? seul(m.id) : basculer(m.id))}
-            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-colors ${actif ? "bg-bord-faible text-texte" : "border border-bord-faible text-texte-tres-faible hover:text-texte-sourd"}`}>
-            {m.nom.trim().charAt(0).toUpperCase()}
+            className={`flex h-7 w-7 items-center justify-center overflow-hidden rounded-full text-xs font-medium transition-opacity ${actif ? "bg-bord-faible text-texte" : "border border-bord-faible text-texte-tres-faible opacity-45 hover:opacity-80"}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}
+            {m.avatar ? <img src={m.avatar} alt={m.nom} className="h-full w-full object-cover" /> : m.nom.trim().charAt(0).toUpperCase()}
           </button>
         );
       })}
