@@ -71,6 +71,7 @@ struct DroitEntreeFeuille: View {
     @State private var engagement: Date = .now
     @State private var occupe = false
     @State private var erreur: String?
+    @State private var choixAssigne = false
 
     init(tache: Tache, membres: [Membre], moiId: String?, onConfirmer: @escaping (String, String) async throws -> Void) {
         self.tache = tache; self.membres = membres; self.moiId = moiId; self.onConfirmer = onConfirmer
@@ -84,12 +85,20 @@ struct DroitEntreeFeuille: View {
                 Text(tache.titre).font(.system(size: 22, weight: .semibold)).foregroundStyle(Teinte.texte).lineLimit(2)
             }
             Champ(libelle: "Assigné") {
-                Picker("Assigné", selection: $assigneId) {
-                    ForEach(membres) { m in Text(m.nom).tag(m.id) }
+                Button { choixAssigne = true } label: {
+                    HStack(spacing: 9) {
+                        Initiale(nom: membres.first { $0.id == assigneId }?.nom ?? "?", taille: 24)
+                        Text(membres.first { $0.id == assigneId }?.nom ?? "—").foregroundStyle(Teinte.texte)
+                        Spacer()
+                        if assigneId == moiId { Text("moi").font(.system(size: 13.5)).foregroundStyle(Teinte.texteFaible) }
+                        Image(systemName: "chevron.down").font(.system(size: 11, weight: .semibold)).foregroundStyle(Teinte.texteFaible)
+                    }
+                    .contentShape(Rectangle())
                 }
-                .labelsHidden().tint(Teinte.texte)
-                Spacer()
-                if assigneId == moiId { Text("moi").font(.system(size: 13.5)).foregroundStyle(Teinte.texteFaible) }
+                .buttonStyle(.plain)
+            }
+            .sheet(isPresented: $choixAssigne) {
+                ChoixFeuille(titre: "Assigner à", choix: membres.map { Choix(id: $0.id, libelle: $0.nom, initiale: $0.nom) }, courant: assigneId) { assigneId = $0 }
             }
             Champ(libelle: "Engagement") {
                 Text(Jours.long(Jours.jour(engagement)))

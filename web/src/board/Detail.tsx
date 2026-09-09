@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { libelleJour } from "@/lib/dates";
 import type { Patch } from "./api";
 import type { Membre, TacheCarte } from "./Carte";
+import { Chevron, Choix } from "./Choix";
 import { Initiale, Reporte } from "./visuel";
 import type { Statut } from "./deplacement";
 
@@ -105,12 +106,11 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <div className={ligne}>
             <dt className={libelle}>Assigné</dt>
             <dd className="flex flex-1 items-center gap-2">
-              <Initiale nom={tache.assigne?.nom ?? "?"} />
-              <select value={tache.assigneId ?? ""} onChange={(e) => e.target.value && assigner(e.target.value)} aria-label="Assigné"
-                className="-ml-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-bord-faible focus:border-accent">
-                {!tache.assigneId && <option value="">personne</option>}
-                {membres.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}
-              </select>
+              <Choix valeur={tache.assigneId} onChoisir={assigner} titre="Assigner à" options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} /> }))}>
+                <button aria-label="Assigné" className="-ml-1 flex h-7 items-center gap-2 rounded-md px-1 text-texte hover:bg-surface-2">
+                  <Initiale nom={tache.assigne?.nom ?? "?"} />{tache.assigne?.nom ?? <span className="text-texte-faible">personne</span>}<Chevron />
+                </button>
+              </Choix>
             </dd>
           </div>
           <div className={ligne}>
@@ -125,11 +125,11 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
                 </span>
               ); })}
               {candidats.length > 0 && (
-                <select value="" onChange={(e) => e.target.value && onModifier(tache.id, { aidantIds: [...tache.aidantIds, e.target.value] })} aria-label="Ajouter un Aidant"
-                  className="h-7 w-7 appearance-none rounded-full border border-bord-fort bg-transparent text-center text-texte-sourd outline-none hover:text-texte focus:border-accent">
-                  <option value="">+</option>
-                  {candidats.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}
-                </select>
+                <Choix valeur={null} onChoisir={(id) => onModifier(tache.id, { aidantIds: [...tache.aidantIds, id] })} titre="Ajouter un Aidant" options={candidats.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} /> }))}>
+                  <button aria-label="Ajouter un Aidant" className="flex h-7 w-7 items-center justify-center rounded-full border border-bord-fort text-texte-sourd hover:text-texte">
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 1.5v9M1.5 6h9" /></svg>
+                  </button>
+                </Choix>
               )}
               {candidats.length === 0 && tache.aidantIds.length === 0 && <span className="text-texte-faible">—</span>}
             </dd>
@@ -144,13 +144,12 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <div className={ligne}>
             <dt className={libelle}>Statut</dt>
             <dd className="flex flex-1 items-center gap-2">
-              <span className={`relative flex h-7 items-center gap-1.5 rounded-full border pl-2.5 pr-1.5 text-[13px] font-medium ${PASTILLE[tache.statut]}`}>
-                <span className={`h-[7px] w-[7px] rounded-full ${POINT[tache.statut]}`} />{STATUT[tache.statut]}
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" className="ml-0.5 opacity-70"><path d="M2 3.5l3 3 3-3" /></svg>
-                <select value={tache.statut} onChange={(e) => onStatut(tache, e.target.value as Statut)} aria-label="Statut" className="absolute inset-0 cursor-pointer opacity-0">
-                  <option value="a_faire">À faire</option><option value="en_cours">En cours</option><option value="bloque">Bloqué…</option>
-                </select>
-              </span>
+              <Choix valeur={tache.statut} onChoisir={(s) => onStatut(tache, s as Statut)} titre="Statut"
+                options={(["a_faire", "en_cours", "bloque"] as Statut[]).map((s) => ({ valeur: s, libelle: s === "bloque" ? "Bloqué…" : STATUT[s], pastille: <span className={`h-[7px] w-[7px] rounded-full ${POINT[s]}`} /> }))}>
+                <button aria-label="Statut" className={`flex h-7 items-center gap-1.5 rounded-full border pl-2.5 pr-2 text-[13px] font-medium ${PASTILLE[tache.statut]}`}>
+                  <span className={`h-[7px] w-[7px] rounded-full ${POINT[tache.statut]}`} />{STATUT[tache.statut]}<Chevron />
+                </button>
+              </Choix>
               {tache.statut === "bloque" && (
                 <button onClick={() => onRaison(tache)} className={`truncate text-[13.5px] ${tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}`} title="Changer la raison">{tache.raisonBlocage ?? "raison à préciser"}</button>
               )}

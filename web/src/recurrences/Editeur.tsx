@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { Chevron, Choix } from "@/board/Choix";
 import { Initiale } from "@/board/visuel";
 import { JOURS, libelleEngagement, occurrencesDe, prochaineDate, type Frequence } from "./regle";
 
@@ -55,15 +56,14 @@ export function Editeur({ initial, membres, aujourdhui }: { initial: Brouillon; 
       <div className="grid grid-cols-2 gap-x-10 gap-y-5">
         <label className="flex flex-col gap-1.5"><span className="text-[13px] text-texte-sourd">Titre</span>
           <input value={b.titre} onChange={(e) => setB({ ...b, titre: e.target.value })} placeholder="Post LinkedIn" className={champ} required maxLength={200} /></label>
-        <label className="flex flex-col gap-1.5"><span className="flex justify-between text-[13px] text-texte-sourd">Assigné<span className="text-texte-faible">obligatoire</span></span>
-          <span className="flex items-center gap-2"><Initiale nom={membres.find((m) => m.id === b.assigneId)?.nom ?? "?"} />
-            <select value={b.assigneId} onChange={(e) => setB({ ...b, assigneId: e.target.value })} className={champ} required>
-              {membres.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}
-            </select></span></label>
-        <label className="flex flex-col gap-1.5"><span className="text-[13px] text-texte-sourd">Fréquence</span>
-          <select value={frequence} onChange={(e) => poserFrequence(e.target.value)} className={champ}>
-            {CHOIX_FREQUENCE.map((c) => <option key={c.valeur} value={c.valeur}>{c.libelle}</option>)}
-          </select></label>
+        <div className="flex flex-col gap-1.5"><span className="flex justify-between text-[13px] text-texte-sourd">Assigné<span className="text-texte-faible">obligatoire</span></span>
+          <Choix valeur={b.assigneId} onChoisir={(id) => setB({ ...b, assigneId: id })} options={membres.map((m) => ({ valeur: m.id, libelle: m.nom, pastille: <Initiale nom={m.nom} /> }))}>
+            <button type="button" className={`${champ} flex items-center gap-2 text-left`}><Initiale nom={membres.find((m) => m.id === b.assigneId)?.nom ?? "?"} /><span className="flex-1">{membres.find((m) => m.id === b.assigneId)?.nom ?? "—"}</span><Chevron /></button>
+          </Choix></div>
+        <div className="flex flex-col gap-1.5"><span className="text-[13px] text-texte-sourd">Fréquence</span>
+          <Choix valeur={frequence} onChoisir={poserFrequence} options={CHOIX_FREQUENCE}>
+            <button type="button" className={`${champ} flex items-center gap-2 text-left`}><span className="flex-1">{CHOIX_FREQUENCE.find((c) => c.valeur === frequence)?.libelle}</span><Chevron /></button>
+          </Choix></div>
         <label className="flex flex-col gap-1.5"><span className="flex justify-between text-[13px] text-texte-sourd">Nombre d’occurrences<span className="text-texte-faible">n/N automatique</span></span>
           <input type="number" min={1} max={12} value={b.decalages.length} onChange={(e) => poserNombre(Math.min(12, Math.max(1, Number(e.target.value) || 1)))} className={champ} /></label>
       </div>
