@@ -1,21 +1,34 @@
 import SwiftUI
 
 /**
- Le détail d'une Tâche (BRU-19) : ce qu'elle est, en lecture — et ses trois fins : Terminé en
- primaire, Reporter et Abandonner côte à côte, Supprimer à l'écart dans le menu ···.
+ Le détail d'une Tâche (BRU-19) — et là où on la modifie (BRU-48) : le titre, l'Assigné, les
+ Aidants, les Notes s'éditent sur place et s'enregistrent en quittant le champ. L'Engagement
+ Sur le feu ne bouge que par un Report (invariant 4). Les trois fins : Terminé en primaire,
+ Reporter et Abandonner côte à côte, Supprimer à l'écart dans le menu ···.
  */
 struct DetailVue: View {
-    let tache: Tache
     let membres: [Membre]
     let retour: String
-    /// Après un Terminé ou un Abandonné : l'écran d'en dessous propose d'annuler, six secondes.
     var onFin: ((Tache, String) -> Void)? = nil
     let onChange: () async -> Void
     @Environment(\.dismiss) private var fermer
+    @State private var tache: Tache
+    @State private var titre: String
+    @State private var notes: String
+    @FocusState private var focus: Champ?
     @State private var report = false
     @State private var supprimer = false
     @State private var occupe = false
     @State private var erreur: String?
+
+    enum Champ { case titre, notes }
+
+    init(tache: Tache, membres: [Membre], retour: String, onFin: ((Tache, String) -> Void)? = nil, onChange: @escaping () async -> Void) {
+        self.membres = membres; self.retour = retour; self.onFin = onFin; self.onChange = onChange
+        _tache = State(initialValue: tache)
+        _titre = State(initialValue: tache.titre)
+        _notes = State(initialValue: tache.notes ?? "")
+    }
 
     private func membre(_ id: String?) -> Membre? { membres.first { $0.id == id } }
     private var statut: String {
@@ -27,15 +40,19 @@ struct DetailVue: View {
             Teinte.fond.ignoresSafeArea()
             VStack(spacing: 0) {
                 HStack {
-                    Button { fermer() } label: {
+                    Button { enregistrerTout(); fermer() } label: {
                         HStack(spacing: 6) { Image(systemName: "chevron.left").font(.system(size: 15, weight: .semibold)); Text(retour) }
                             .font(.system(size: 16)).foregroundStyle(Teinte.accent)
                     }
                     Spacer()
-                    Menu {
-                        Button("Supprimer", role: .destructive) { supprimer = true }
-                    } label: {
-                        Text("···").font(.system(size: 22)).foregroundStyle(Teinte.texteSourd).frame(width: 44, height: 32, alignment: .trailing)
+                    if focus != nil {
+                        Button("OK") { focus = nil }.font(.system(size: 16, weight: .medium)).foregroundStyle(Teinte.accent)
+                    } else {
+                        Menu {
+                            Button("Supprimer", role: .destructive) { supprimer = true }
+                        } label: {
+                            Text("···").font(.system(size: 22)).foregroundStyle(Teinte.texteSourd).frame(width: 44, height: 32, alignment: .trailing)
+                        }
                     }
                 }
                 .padding(.horizontal, 20).padding(.top, 6)
@@ -43,7 +60,11 @@ struct DetailVue: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text(tache.titre).font(.system(size: 24, weight: .semibold)).foregroundStyle(Teinte.texte)
+                            TextField("Titre", text: $titre, axis: .vertical)
+                                .font(.system(size: 24, weight: .semibold)).foregroundStyle(Teinte.texte).lineLimit(1...4)
+                                .focused($focus, equals: .titre)
+                                .submitLabel(.done)
+                                .onSubmit { focus = nil }
                             HStack(spacing: 0) {
                                 Text(statut).foregroundStyle(Teinte.texteSourd)
                                 if tache.reportsCount > 0 { Text(" · ").foregroundStyle(Teinte.texteSourd); Text("reporté \(tache.reportsCount)×").foregroundStyle(Teinte.accent) }
@@ -51,13 +72,44 @@ struct DetailVue: View {
                             .font(.system(size: 14))
                         }
                         VStack(spacing: 0) {
-                            champ("Assigné") { if let a = membre(tache.assigneId) { Initiale(nom: a.nom); Text(a.nom) } else { Text("personne").foregroundStyle(Teinte.texteFaible) } }
-                            champ("Aidants") {
-                                let aidants = tache.aidantIds.compactMap { membre($0) }
-                                if aidants.isEmpty { Text("—").foregroundStyle(Teinte.texteFaible) }
-                                ForEach(aidants) { a in Initiale(nom: a.nom); Text(a.nom) }
+                            champ("Assigné") {
+                                Menu {
+                                    ForEach(membres) { m in
+                                        Button { enregistrer(Patch(assigneId: m.id)) } label: {
+                                            if m.id == tache.assigneId { Label(m.nom, systemImage: "checkmark") } else { Text(m.nom) }
+                                        }
+                                    }
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        if let a = membre(tache.assigneId) { Initiale(nom: a.nom); Text(a.nom) } else { Text("personne").foregroundStyle(Teinte.texteFaible) }
+                                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(Teinte.texteFaible)
+                                    }
+                                    .foregroundStyle(Teinte.texte)
+                                }
                             }
-                            champ("Engagement") { Text(tache.engagement.map(Jours.libelle) ?? "—") }
+                            champ("Aidants") {
+                                let candidats = membres.filter { $0.id != tache.assigneId }
+                                if candidats.isEmpty { Text("—").foregroundStyle(Teinte.texteFaible) }
+                                ForEach(candidats) { m in
+                                    let aide = tache.aidantIds.contains(m.id)
+                                    Button {
+                                        enregistrer(Patch(aidantIds: aide ? tache.aidantIds.filter { $0 != m.id } : tache.aidantIds + [m.id]))
+                                    } label: {
+                                        HStack(spacing: 6) { Initiale(nom: m.nom, taille: 20); Text(m.nom).font(.system(size: 14)) }
+                                            .foregroundStyle(aide ? Teinte.texte : Teinte.texteSourd)
+                                            .padding(.leading, 3).padding(.trailing, 10).frame(height: 28)
+                                            .background(aide ? Teinte.accent.opacity(0.14) : .clear, in: Capsule())
+                                            .overlay(Capsule().stroke(aide ? Teinte.accent.opacity(0.5) : Teinte.bordFort))
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            champ("Engagement") {
+                                Text(tache.engagement.map(Jours.libelle) ?? "—")
+                                if tache.engagement != nil, tache.bucket == .surLeFeu {
+                                    Text("· par un Report").font(.system(size: 13)).foregroundStyle(Teinte.texteFaible)
+                                }
+                            }
                             champ("Statut") {
                                 Text(statut)
                                 if tache.statut == .bloque, let r = tache.raisonBlocage { Text("· \(r)").foregroundStyle(Teinte.bloque) }
@@ -70,22 +122,29 @@ struct DetailVue: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Notes").font(.system(size: 14)).foregroundStyle(Teinte.texteSourd)
                             VStack(alignment: .leading, spacing: 12) {
-                                if let notes = tache.notes, !notes.isEmpty { Text(notes).font(.system(size: 15)).foregroundStyle(Teinte.texte).lineSpacing(3) }
-                                else { Text("Aucune note.").font(.system(size: 15)).foregroundStyle(Teinte.texteFaible) }
+                                ZStack(alignment: .topLeading) {
+                                    if notes.isEmpty { Text("Une note, un contexte, un lien…").font(.system(size: 15)).foregroundStyle(Teinte.texteFaible).padding(.top, 8).padding(.leading, 5) }
+                                    TextEditor(text: $notes)
+                                        .font(.system(size: 15)).foregroundStyle(Teinte.texte)
+                                        .scrollContentBackground(.hidden)
+                                        .frame(minHeight: 72)
+                                        .focused($focus, equals: .notes)
+                                }
                                 if let brute = tache.transcriptionBrute, !brute.isEmpty {
                                     Rectangle().fill(Color(hex: 0x262626)).frame(height: 1)
                                     Text("« \(brute) »").font(.system(size: 14)).italic().foregroundStyle(Teinte.texteSourd).lineSpacing(3)
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 14).padding(.vertical, 13)
+                            .padding(.horizontal, 10).padding(.vertical, 8)
                             .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 12))
-                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Teinte.bord))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(focus == .notes ? Teinte.accent : Teinte.bord))
                         }
                         if let erreur { Text(erreur).font(.system(size: 13.5)).foregroundStyle(Teinte.bloque) }
                     }
                     .padding(.horizontal, 20).padding(.top, 16).padding(.bottom, 8)
                 }
+                .scrollDismissesKeyboard(.interactively)
 
                 VStack(spacing: 8) {
                     Button { agir { try await Api.partagee.poster("api/taches/\(tache.id)/terminer"); onFin?(tache, "terminée") } } label: {
@@ -102,6 +161,12 @@ struct DetailVue: View {
                 .overlay(alignment: .top) { Rectangle().fill(Color(hex: 0x262626)).frame(height: 1) }
             }
         }
+        // Quitter un champ, c'est enregistrer ce qu'on y a changé.
+        .onChange(of: focus) { avant, _ in
+            if avant == .titre { enregistrerTitre() }
+            if avant == .notes { enregistrerNotes() }
+        }
+        .onDisappear { enregistrerTout() }
         .sheet(isPresented: $report) {
             ReportFeuille(tache: tache) { raison, jour in
                 try await Api.partagee.poster("api/taches/\(tache.id)/reporter", Report(raison: raison, nouvelEngagement: jour))
@@ -122,6 +187,28 @@ struct DetailVue: View {
 
     private struct Report: Encodable, Sendable { let raison: String; let nouvelEngagement: String }
 
+    private func enregistrerTitre() {
+        let t = titre.trimmingCharacters(in: .whitespacesAndNewlines)
+        if t.isEmpty { titre = tache.titre; return }
+        if t != tache.titre { enregistrer(Patch(titre: t)) }
+    }
+    private func enregistrerNotes() {
+        let n = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+        if n != (tache.notes ?? "") { enregistrer(Patch(notes: .some(n.isEmpty ? nil : n))) }
+    }
+    private func enregistrerTout() { enregistrerTitre(); enregistrerNotes() }
+
+    /// Une modification part tout de suite ; la Tâche revient telle que le serveur la voit.
+    private func enregistrer(_ patch: Patch) {
+        erreur = nil
+        Task {
+            do {
+                tache = try await Api.partagee.modifier("api/taches/\(tache.id)", patch)
+                await onChange()
+            } catch { erreur = error.localizedDescription }
+        }
+    }
+
     private func agir(_ fn: @escaping () async throws -> Void) {
         occupe = true; erreur = nil
         Task {
@@ -136,12 +223,12 @@ struct DetailVue: View {
     }
 
     private func champ<Contenu: View>(_ libelle: String, dernier: Bool = false, @ViewBuilder contenu: () -> Contenu) -> some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
             Text(libelle).font(.system(size: 14)).foregroundStyle(Teinte.texteSourd).frame(width: 96, alignment: .leading)
             HStack(spacing: 8) { contenu() }.font(.system(size: 16)).foregroundStyle(Teinte.texte)
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 14).frame(minHeight: 50)
+        .padding(.horizontal, 14).padding(.vertical, 8).frame(minHeight: 50)
         .overlay(alignment: .bottom) { if !dernier { Rectangle().fill(Color(hex: 0x262626)).frame(height: 1) } }
     }
 }
