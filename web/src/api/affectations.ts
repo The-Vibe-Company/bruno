@@ -1,9 +1,9 @@
 /**
  * Les Affectations — ce à quoi on peut travailler (BRU-26) — et qui est sur quoi (BRU-27).
- * La liste est ouverte ; on désactive, on ne supprime jamais : l'historique ne doit pas se
- * trouer. Une Affectation ne se pose jamais sur une Tâche.
+ * La liste est ouverte ; on désactive — et on ne supprime que ce qui n'a jamais servi : l'historique
+ * ne doit pas se trouer. Une Affectation ne se pose jamais sur une Tâche.
  */
-import { and, asc, desc, eq, gte, isNull, lte, or, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNull, lte, or, sql, type SQL } from "drizzle-orm";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, membre } from "@/db/schema";
 import { instant } from "@/relances/temps";
@@ -31,6 +31,19 @@ export async function activer(ctx: Ctx, id: string, actif: boolean): Promise<Aff
   const [a] = await db.select({ id: affectation.id }).from(affectation).where(and(eq(affectation.id, id), eq(affectation.spaceId, ctx.spaceId)));
   if (!a) throw introuvable("Affectation");
   await db.update(affectation).set({ actif }).where(eq(affectation.id, id));
+  return lister(ctx);
+}
+
+/**
+ * Supprimer — seulement une Affectation qui n'a jamais servi (une faute de frappe, un doublon).
+ * Dès qu'une période la nomme, l'historique en dépend : on désactive, on ne troue pas.
+ */
+export async function supprimer(ctx: Ctx, id: string): Promise<Affectation[]> {
+  const [a] = await db.select({ nom: affectation.nom }).from(affectation).where(and(eq(affectation.id, id), eq(affectation.spaceId, ctx.spaceId)));
+  if (!a) throw introuvable("Affectation");
+  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(affectationMembre).where(eq(affectationMembre.affectationId, id));
+  if (n > 0) throw new ErreurApi("requete_invalide", 422, `« ${a.nom} » a servi : l'historique la nomme. Désactivez-la plutôt.`);
+  await db.delete(affectation).where(eq(affectation.id, id));
   return lister(ctx);
 }
 

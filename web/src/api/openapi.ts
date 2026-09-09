@@ -146,7 +146,8 @@ export function documentOpenApi() {
       },
       "/api/affectations/{id}": {
         parameters: [idTache],
-        patch: { summary: "Désactiver ou réactiver", description: "On ne supprime jamais une Affectation : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
+        patch: { summary: "Désactiver ou réactiver", description: "Le geste normal : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
+        delete: { summary: "Supprimer", description: "Seulement une Affectation qui n'a jamais servi (faute de frappe, doublon). Sinon : 422, désactivez-la.", responses: { 200: { description: "La liste" }, 422: { description: "Elle a servi" } } },
       },
       "/api/recurrences": {
         get: { summary: "Les Récurrences", responses: { 200: { description: "Les règles", content: { "application/json": { schema: { type: "array", items: ref("Recurrence") } } } } } },

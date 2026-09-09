@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk } from "next/font/google";
+import { cookies } from "next/headers";
+import { COOKIE_THEME, lireTheme } from "@/lib/theme";
 import "./globals.css";
 
 /** La police des maquettes. Chargée par Next, servie depuis chez nous. */
@@ -14,9 +16,10 @@ export const metadata: Metadata = {
   description: "La to-do de The Vibe Company",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const theme = lireTheme((await cookies()).get(COOKIE_THEME)?.value);
   return (
-    <html lang="fr" className={`${hanken.variable} h-full`}>
+    <html lang="fr" className={`${hanken.variable} h-full`} data-theme={theme === "systeme" ? undefined : theme}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

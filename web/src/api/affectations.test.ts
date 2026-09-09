@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, membre, space } from "@/db/schema";
-import { activer, ajouter, auJour, enCours, fermer, historique, lister, poser, surLaPeriode } from "./affectations";
+import { activer, ajouter, auJour, enCours, fermer, historique, lister, poser, supprimer, surLaPeriode } from "./affectations";
 import { tache } from "@/db/schema";
 import { instant } from "@/relances/temps";
 
@@ -91,5 +91,16 @@ describe("la liste des Affectations", () => {
   it("ne se pose jamais sur une Tâche : aucune colonne de ce genre", () => {
     const colonnes = Object.keys(tache).map((c) => c.toLowerCase());
     expect(colonnes.filter((c) => c.includes("affectation") || c.includes("client"))).toEqual([]);
+  });
+});
+
+describe("supprimer une Affectation", () => {
+  it("passe pour une faute de frappe jamais servie, se refuse dès que l'historique la nomme", async () => {
+    const ctx = { spaceId };
+    await ajouter(ctx, "jb,b", "#000000");
+    const faute = (await lister(ctx)).find((a) => a.nom === "jb,b")!;
+    expect((await supprimer(ctx, faute.id)).map((a) => a.nom)).not.toContain("jb,b");
+    await expect(supprimer(ctx, monka)).rejects.toMatchObject({ code: "requete_invalide", statut: 422 });
+    expect((await lister(ctx)).map((a) => a.nom)).toContain("MONKA");
   });
 });

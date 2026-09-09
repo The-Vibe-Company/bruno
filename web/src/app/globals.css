@@ -45,7 +45,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  /* Le thème du système — sauf si l'on a choisi le clair. */
+  :root:not([data-theme="clair"]) {
     --fond-page: #060606;
     --fond: #0B0B0B;
     --surface: #161616;
@@ -76,6 +77,39 @@
     --a-faire: var(--accent);
     --a-faire-voile: rgb(242 115 19 / 0.09);
   }
+}
+
+/* Le sombre choisi, quel que soit le système. Les mêmes tokens, à l'identique. */
+:root[data-theme="sombre"] {
+  --fond-page: #060606;
+  --fond: #0B0B0B;
+  --surface: #161616;
+  --surface-2: #121212;
+  --surface-3: #141414;
+
+  --bord: #2A2A2A;
+  --bord-2: #262626;
+  --bord-faible: #2E2E2E;
+  --bord-fort: #333333;
+
+  --texte: #EDEDED;
+  --texte-2: #D8D8D8;
+  --texte-sourd: #B8B8B8;
+  --texte-faible: #8A8A8A;
+  --texte-tres-faible: #4A4A4A;
+
+  --accent: #F27313;
+  --accent-survol: #FF9440;
+  --sur-accent: #0B0B0B;
+  --accent-voile: rgb(242 115 19 / 0.14);
+  --accent-lueur: rgb(242 115 19 / 0.35);
+
+  --en-cours: oklch(0.74 0.13 155);
+  --en-cours-voile: oklch(0.74 0.13 155 / 0.09);
+  --bloque: oklch(0.70 0.16 22);
+  --bloque-voile: oklch(0.70 0.16 22 / 0.09);
+  --a-faire: var(--accent);
+  --a-faire-voile: rgb(242 115 19 / 0.09);
 }
 
 /* Les tokens exposés à Tailwind : `bg-surface`, `text-texte-sourd`, `border-bord`, `text-accent`… */
@@ -111,6 +145,8 @@
 html {
   color-scheme: light dark;
 }
+:root[data-theme="clair"] { color-scheme: light; }
+:root[data-theme="sombre"] { color-scheme: dark; }
 
 /*
  * Tout ce qui se clique montre une main. Le preflight de Tailwind v4 met `cursor: default`
