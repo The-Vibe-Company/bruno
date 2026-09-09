@@ -1,0 +1,42 @@
+ios/Bruno/Reseau/Modeles.swift
+  s_7ec6903985e0db::t_e16aa16cf15555 26-27,30-32
+ios/Bruno/Aujourdhui/Annulation.swift
+  s_7ec6903985e0db::t_e16aa16cf15555 1-40
+ios/Bruno/Aujourdhui/AujourdhuiModele.swift
+  s_7ec6903985e0db::t_e16aa16cf15555 12-13,33,38-40,66-72
+  s_7ec6903985e0db::t_38f55ee1bd374d 41-42
+ios/Bruno/Detail/DetailVue.swift
+  s_7ec6903985e0db::t_e16aa16cf15555 11-12,91,97,111
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_ed6c753097985c 83-91
+web/src/api/openapi.ts
+  s_7ec6903985e0db::t_e16aa16cf15555 165-168
+web/src/api/taches.test.ts
+  s_7ec6903985e0db::t_e16aa16cf15555 257-267
+web/src/app/api/taches/[id]/rouvrir/route.ts
+  s_7ec6903985e0db::t_e16aa16cf15555 1-5
+web/src/board/api.ts
+  s_7ec6903985e0db::t_e16aa16cf15555 27-28
+ios/Bruno/Aujourdhui/AujourdhuiVue.swift
+  s_7ec6903985e0db::t_e16aa16cf15555 13-14,31,43-49,51,126-159
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_e16aa16cf15555 5,54-55,118-126,198-199,205-210,212
+web/src/api/taches.ts
+  s_7ec6903985e0db::t_e16aa16cf15555 222-229
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b4e687ed76bfd15cabed05b0f633557016396ad2",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
