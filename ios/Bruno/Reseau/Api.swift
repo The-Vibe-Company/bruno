@@ -84,6 +84,11 @@ final class Api {
         try await appeler("POST", chemin)
     }
 
+    /// Envoyer, et recevoir l'objet tel que le serveur le rend.
+    func envoyer<T: Decodable & Sendable>(_ chemin: String, _ corps: some Encodable & Sendable) async throws -> T {
+        try JSONDecoder().decode(T.self, from: try await appeler("POST", chemin, corps: corps))
+    }
+
     /// Modifier, et recevoir l'objet tel que le serveur le rend.
     func modifier<T: Decodable & Sendable>(_ chemin: String, _ corps: some Encodable & Sendable) async throws -> T {
         try JSONDecoder().decode(T.self, from: try await appeler("PATCH", chemin, corps: corps))

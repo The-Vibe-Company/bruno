@@ -17,6 +17,8 @@ struct DetailVue: View {
     @State private var notes: String
     @FocusState private var focus: Champ?
     @State private var report = false
+    @State private var blocage = false
+    @State private var engagementFeuille = false
     @State private var supprimer = false
     @State private var occupe = false
     @State private var erreur: String?
@@ -104,15 +106,37 @@ struct DetailVue: View {
                                     .buttonStyle(.plain)
                                 }
                             }
+                            // Sur le feu, l'Engagement ne change que par un Report (invariant 4) : la ligne l'ouvre. Ailleurs, on choisit librement.
                             champ("Engagement") {
-                                Text(tache.engagement.map(Jours.libelle) ?? "—")
-                                if tache.engagement != nil, tache.bucket == .surLeFeu {
-                                    Text("· par un Report").font(.system(size: 13)).foregroundStyle(Teinte.texteFaible)
+                                Button {
+                                    if tache.bucket == .surLeFeu { report = true } else { engagementFeuille = true }
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Text(tache.engagement.map(Jours.libelle) ?? "—")
+                                        if tache.bucket == .surLeFeu, tache.engagement != nil { Text("· par un Report").font(.system(size: 13)).foregroundStyle(Teinte.texteFaible) }
+                                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(Teinte.texteFaible)
+                                    }
+                                    .foregroundStyle(Teinte.texte)
                                 }
+                                .disabled(tache.bucket == .surLeFeu && tache.engagement == nil)
                             }
                             champ("Statut") {
-                                Text(statut)
-                                if tache.statut == .bloque, let r = tache.raisonBlocage { Text("· \(r)").foregroundStyle(Teinte.bloque) }
+                                if tache.bucket == .surLeFeu {
+                                    Menu {
+                                        Button { changerStatut(.aFaire) } label: { tache.statut == .aFaire ? Label("À faire", systemImage: "checkmark") : Label("À faire", systemImage: "") }
+                                        Button { changerStatut(.enCours) } label: { tache.statut == .enCours ? Label("En cours", systemImage: "checkmark") : Label("En cours", systemImage: "") }
+                                        Button { blocage = true } label: { tache.statut == .bloque ? Label("Bloqué — changer la raison", systemImage: "checkmark") : Label("Bloqué…", systemImage: "") }
+                                    } label: {
+                                        HStack(spacing: 8) {
+                                            Text(statut)
+                                            if tache.statut == .bloque, let r = tache.raisonBlocage { Text("· \(r)").foregroundStyle(Teinte.bloque).lineLimit(1) }
+                                            Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(Teinte.texteFaible)
+                                        }
+                                        .foregroundStyle(Teinte.texte)
+                                    }
+                                } else {
+                                    Text(statut)
+                                }
                             }
                             champ("Reports", dernier: true) { Text("\(tache.reportsCount)") }
                         }
@@ -177,6 +201,23 @@ struct DetailVue: View {
                 await onChange(); fermer()
             }
         }
+        .sheet(isPresented: $blocage) {
+            BlocageFeuille(tache: tache) { raison in
+                // Déjà Bloqué : on ne change que la raison. Sinon, on bloque — avec elle.
+                if tache.statut == .bloque {
+                    tache = try await Api.partagee.modifier("api/taches/\(tache.id)", PatchRaison(raisonBlocage: raison))
+                } else {
+                    tache = try await Api.partagee.envoyer("api/taches/\(tache.id)/statut", ChangerStatut(statut: "bloque", raison: raison))
+                }
+                await onChange()
+            }
+        }
+        .sheet(isPresented: $engagementFeuille) {
+            EngagementFeuille(tache: tache) { jour in
+                tache = try await Api.partagee.modifier("api/taches/\(tache.id)", Patch(engagement: .some(jour)))
+                await onChange()
+            }
+        }
         .alert("Supprimer cette Tâche ?", isPresented: $supprimer) {
             Button("Supprimer", role: .destructive) { agir { try await Api.partagee.supprimer("api/taches/\(tache.id)") } }
             Button("Annuler", role: .cancel) {}
@@ -186,6 +227,17 @@ struct DetailVue: View {
     }
 
     private struct Report: Encodable, Sendable { let raison: String; let nouvelEngagement: String }
+    private struct ChangerStatut: Encodable, Sendable { let statut: String; var raison: String? = nil }
+    private struct PatchRaison: Encodable, Sendable { let raisonBlocage: String }
+
+    /// À faire ou En cours, tout de suite ; Bloqué passe par sa raison.
+    private func changerStatut(_ s: Statut) {
+        erreur = nil
+        Task {
+            do { tache = try await Api.partagee.envoyer("api/taches/\(tache.id)/statut", ChangerStatut(statut: s.rawValue)); await onChange() }
+            catch { erreur = error.localizedDescription }
+        }
+    }
 
     private func enregistrerTitre() {
         let t = titre.trimmingCharacters(in: .whitespacesAndNewlines)
