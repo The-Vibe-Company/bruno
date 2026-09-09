@@ -6,6 +6,8 @@ import SwiftUI
  dit où ça va : « Envoyer dans À trier ». L'état du réseau se lit en haut ; il n'arrête rien.
  */
 struct CaptureVue: View {
+    /// Depuis le widget : on enregistre dès l'ouverture, sans un tap de plus.
+    var demarrerToutDeSuite = false
     @Environment(\.dismiss) private var fermer
     @State private var transcripteur = Transcripteur()
     @State private var texte = ""
@@ -25,6 +27,7 @@ struct CaptureVue: View {
                 bas
             }
         }
+        .task { if demarrerToutDeSuite, !transcripteur.enCours { await transcripteur.demarrer(dans: file.dossier) } }
         .onDisappear { transcripteur.oublier() }
     }
 

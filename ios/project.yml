@@ -20,6 +20,13 @@ targets:
     platform: iOS
     sources:
       - path: Bruno
+    dependencies:
+      - target: BrunoWidget
+        embed: true
+    entitlements:
+      path: Bruno/Bruno.entitlements
+      properties:
+        com.apple.security.application-groups: [group.co.thevibecompany.bruno]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.thevibecompany.bruno
@@ -37,3 +44,28 @@ targets:
         # Le serveur de développement tourne sur le Mac, en http.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
+        # bruno://capture — ce que le widget ouvre.
+        CFBundleURLTypes:
+          - CFBundleURLName: co.thevibecompany.bruno
+            CFBundleURLSchemes: [bruno]
+  BrunoWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: BrunoWidget
+      - path: Bruno/Partage/Partage.swift
+    entitlements:
+      path: BrunoWidget/BrunoWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.co.thevibecompany.bruno]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.thevibecompany.bruno.widget
+        TARGETED_DEVICE_FAMILY: "1"
+        INFOPLIST_KEY_CFBundleDisplayName: Bruno
+    info:
+      path: BrunoWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Bruno
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension

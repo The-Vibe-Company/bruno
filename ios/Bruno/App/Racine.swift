@@ -5,6 +5,7 @@ import SwiftUI
 struct Racine: View {
     @State private var onglet: Onglet = .aujourdhui
     @State private var capture = false
+    @State private var toutDeSuite = false
 
     enum Onglet { case aujourdhui, enAttente }
 
@@ -19,7 +20,13 @@ struct Racine: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             barre
         }
-        .fullScreenCover(isPresented: $capture) { CaptureVue() }
+        .fullScreenCover(isPresented: $capture, onDismiss: { toutDeSuite = false }) { CaptureVue(demarrerToutDeSuite: toutDeSuite) }
+        // Le widget ouvre `bruno://capture` : la Capture, micro déjà chaud.
+        .onOpenURL { url in
+            guard url.scheme == Partage.schema, url.host == "capture" else { return }
+            toutDeSuite = true
+            capture = true
+        }
     }
 
     private var barre: some View {

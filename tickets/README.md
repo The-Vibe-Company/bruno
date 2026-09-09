@@ -7,9 +7,9 @@ qui doit être vérifié en relecture, pas seulement « ça marche ».
 ## État au 8 septembre 2026
 
 **Le web est complet** : E0, E2, E3, E4, E5 (sauf le push), E6, E7, E8, et l'Enrichissement
-(BRU-9) sont livrés et en prod. **L'iOS a commencé le 9 septembre** (`ios/`, SwiftUI) : la Capture
-(BRU-6), la file hors ligne (BRU-7) et la transcription (BRU-8) tournent dans le simulateur.
-Restent BRU-10, 12, 18, 19, 25 et les volets iOS de BRU-13 et BRU-28 — et trois choses d'Antoine : un compte Apple
+(BRU-9) sont livrés et en prod. **L'iOS est livré dans le simulateur le 9 septembre** (`ios/`, SwiftUI) : Capture, file hors
+ligne, transcription, En attente, droit d'entrée, Aujourd'hui, bandeau Affectation, Détail et
+Report, widget. **Reste BRU-25 (le push)** — et trois choses d'Antoine : un compte Apple
 Developer (Team ID, signature, TestFlight), un identifiant OAuth Google *iOS*, et une clé APNs.
 Et une quatrième, côté web : `ANTHROPIC_API_KEY` dans Vercel pour allumer l'Enrichissement.
 
