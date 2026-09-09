@@ -1,0 +1,89 @@
+web/src/api/taches.test.ts
+  s_7ec6903985e0db::t_1795190bb84b66 162,257-277
+  s_7ec6903985e0db::t_4e28ca1292f3ba 13,278-280
+web/src/board/Blocage.tsx
+  s_7ec6903985e0db::t_1795190bb84b66 4
+  s_7ec6903985e0db::t_93efe43a81b364 1-3,5-50
+web/src/board/DroitEntree.tsx
+  s_7ec6903985e0db::t_1795190bb84b66 5
+  s_7ec6903985e0db::t_7f8a37aed03bb7 19,25,27,32-34,65-75,78
+web/src/db/seed.ts
+  s_7ec6903985e0db::t_198c40b55abc35 102-103
+web/src/board/raisons-blocage.ts
+  s_7ec6903985e0db::t_1795190bb84b66 1-2
+web/src/board/Kanban.tsx
+  s_7ec6903985e0db::t_1795190bb84b66 145
+  s_7ec6903985e0db::t_5eb464ff19a807 5-6,14,47-49,69-77,86-99,129,131,156,173,175
+web/drizzle/0003_purple_queen_noir.sql
+  s_7ec6903985e0db::t_9970535d094aed 1-2
+web/drizzle/meta/0003_snapshot.json
+  s_7ec6903985e0db::t_613277b600a24c 1-1150
+web/drizzle/meta/_journal.json
+  s_7ec6903985e0db::t_34685357438cb9 25-31
+web/src/api/contrat.ts
+  s_7ec6903985e0db::t_d59eb1f629a658 32,55-56,70-71,77-81
+web/src/api/erreurs.ts
+  s_7ec6903985e0db::t_9bd53713f303af 60-61
+web/src/api/taches.ts
+  s_7ec6903985e0db::t_06410118c6b027 121-123,160,173-174,177-179
+web/src/app/api/taches/[id]/statut/route.ts
+  s_7ec6903985e0db::t_94d6e0e4219bc3 5
+web/src/app/daily/page.tsx
+  s_7ec6903985e0db::t_cb70e999d1e2e4 47,52-54,60
+web/src/app/fait/page.tsx
+  s_7ec6903985e0db::t_48656898a6aa34 46-47
+web/src/app/page.tsx
+  s_7ec6903985e0db::t_e5e72f74735a21 41,51-53
+web/src/app/recurrences/page.tsx
+  s_7ec6903985e0db::t_6b1975b2e961a6 33-35
+web/src/app/reglages/page.tsx
+  s_7ec6903985e0db::t_ebf79e138233b8 26
+web/src/board/Affectations.tsx
+  s_7ec6903985e0db::t_6bafcc58072898 23-24,35,37-40,44-46,48,93
+web/src/board/Carte.tsx
+  s_7ec6903985e0db::t_9b6b12914dc508 11,20-26,30,36,52,56,61-62,68,71
+web/src/board/Colonne.tsx
+  s_7ec6903985e0db::t_e3c5af1072647a 15-17,20,23
+web/src/board/Detail.tsx
+  s_7ec6903985e0db::t_82d9c2327e9550 16,19,86-88
+web/src/board/EnAttente.tsx
+  s_7ec6903985e0db::t_a9e1ecfc5f27ce 41-43,46-50,53,100-102,105,107-108,113-115,119
+web/src/board/api.ts
+  s_7ec6903985e0db::t_d9d58ec5c74883 15,20,27-31
+web/src/board/deplacement.ts
+  s_7ec6903985e0db::t_ce1640d7f17d09 11
+web/src/daily/Hier.tsx
+  s_7ec6903985e0db::t_89acdb187a0a6e 11-14,16-18,20,22,24,30,32-34
+web/src/daily/Sante.tsx
+  s_7ec6903985e0db::t_d06d95d0f9a999 6,15-16
+web/src/daily/SurLeFeu.tsx
+  s_7ec6903985e0db::t_4ff8a9fdaa5983 1,5,19-22,24,26-31
+web/src/db/schema.ts
+  s_7ec6903985e0db::t_b7bcf55a71c885 117-118,138
+web/src/relances/composer.test.ts
+  s_7ec6903985e0db::t_d07c9d7f5934e5 20,27
+web/src/relances/composer.ts
+  s_7ec6903985e0db::t_8a00906c9e0944 14,44
+web/src/relances/moteur.ts
+  s_7ec6903985e0db::t_052bbdf5354a4b 36
+CONTEXT.md
+  s_7ec6903985e0db::t_eeb6e96d22180a 105
+tickets/E3-sur-le-feu.md
+  s_7ec6903985e0db::t_6f17cbedc7520f 65-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "693ae2f24142f78668eb106a3b2b0ba9fa447651",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
