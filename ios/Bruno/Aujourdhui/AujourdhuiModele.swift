@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import WidgetKit
 
 /// Ce qu'Aujourd'hui sait : mes Tâches Sur le feu qui sont dues, celles où j'aide, et sur quoi je suis.
 @MainActor
@@ -36,10 +37,21 @@ final class AujourdhuiModele {
             quiEstSurQuoi = try await sur
             self.choix = try await choix.filter(\.actif)
             erreur = nil
+            partagerAuWidget()
         } catch {
             erreur = "Le serveur ne répond pas — ce qu'on voit peut dater."
         }
         chargeUneFois = true
+    }
+
+    /// Les chiffres du widget : mes Engagements du jour, et ce qu'il y a à trier — on les lui pousse à chaque chargement.
+    private func partagerAuWidget() {
+        Task {
+            let aTrier: [Tache] = (try? await Api.partagee.obtenir("api/taches?bucket=a_trier")) ?? []
+            let engagements = [Statut.enCours, .aFaire, .bloque].reduce(0) { $0 + miennes($1).count }
+            let resume = Partage.Resume(engagementsAujourdhui: engagements, aTrier: aTrier.count, jour: Jours.aujourdhui())
+            if Partage.lire() != resume { Partage.ecrire(resume); WidgetCenter.shared.reloadAllTimelines() }
+        }
     }
 
     func terminer(_ t: Tache) async throws {

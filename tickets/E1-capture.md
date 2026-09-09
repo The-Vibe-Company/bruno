@@ -51,10 +51,16 @@ morte et le pilier 1 avec.
 pour une Capture (À trier). Sans `ANTHROPIC_API_KEY`, rien ne se passe et rien ne casse. À poser
 dans Vercel pour l'activer en prod.*
 
-## BRU-10 — Widget écran d'accueil · **bloqué par BRU-34**
+## BRU-10 — Widget écran d'accueil · **livré le 9 septembre, avec une limite d'iOS**
 
 Le meilleur levier du pilier 1 : supprimer les trois secondes d'ouverture d'app.
 
-- [ ] Un tap sur le widget démarre l'enregistrement, sans ouvrir l'app
-- [ ] Fonctionne écran verrouillé
-- [ ] Même garantie de non-échec que BRU-7
+- [x] Un tap sur le widget ouvre Bruno **directement en enregistrement** — le micro est chaud
+      quand l'écran apparaît. *Un widget ne peut pas enregistrer lui-même : iOS ne donne pas le
+      micro à un widget, même interactif. C'est l'app qui s'ouvre, tout de suite, en écoutant.*
+- [x] Widget d'écran verrouillé (cercle) : un tap déverrouille et ouvre Bruno en enregistrement
+- [x] Même garantie de non-échec que BRU-7 — c'est le même chemin
+- [x] Deux tailles d'écran d'accueil : `Bruno · Capturer` et `Capturer une idée · 3 engagements
+      aujourd'hui · 1 à trier` (les chiffres viennent de l'app, par le groupe d'apps). Les états
+      *Enregistrement* et *Envoyé* de la maquette supposaient un micro dans le widget : ils
+      n'existent pas
