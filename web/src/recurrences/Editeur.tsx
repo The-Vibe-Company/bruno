@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Initiale } from "@/board/Carte";
+import { Initiale } from "@/board/visuel";
 import { JOURS, libelleEngagement, occurrencesDe, prochaineDate, type Frequence } from "./regle";
 
 export type Membre = { id: string; nom: string };

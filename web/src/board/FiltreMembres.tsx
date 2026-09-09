@@ -9,19 +9,20 @@ import { membresActifs } from "@/lib/filtre-membres";
 export function FiltreMembres({ membres }: { membres: { id: string; nom: string }[] }) {
   const router = useRouter(); const chemin = usePathname(); const params = useSearchParams();
   const actifs = membresActifs(params.get("membres") ?? undefined, membres);
-  const basculer = (id: string) => {
-    const suivant = new Set(actifs);
-    if (suivant.has(id)) suivant.delete(id); else suivant.add(id);
+  const poser = (suivant: Set<string>) => {
     const p = new URLSearchParams(params.toString());
     if (suivant.size === 0 || suivant.size === membres.length) p.delete("membres"); else p.set("membres", [...suivant].join(","));
     router.replace(p.size ? `${chemin}?${p}` : chemin);
   };
+  /** Un clic bascule ; ⌘-clic (ou Ctrl) garde celui-là seul. */
+  const basculer = (id: string) => { const s = new Set(actifs); if (s.has(id)) s.delete(id); else s.add(id); poser(s); };
+  const seul = (id: string) => poser(new Set([id]));
   return (
     <div role="group" aria-label="Membres" className="flex items-center gap-1.5">
       {membres.map((m) => {
         const actif = actifs.has(m.id);
         return (
-          <button key={m.id} aria-pressed={actif} title={m.nom} onClick={() => basculer(m.id)}
+          <button key={m.id} aria-pressed={actif} title={`${m.nom} — ⌘-clic : seulement ${m.nom}`} onClick={(e) => (e.metaKey || e.ctrlKey ? seul(m.id) : basculer(m.id))}
             className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-colors ${actif ? "bg-bord-faible text-texte" : "border border-bord-faible text-texte-tres-faible hover:text-texte-sourd"}`}>
             {m.nom.trim().charAt(0).toUpperCase()}
           </button>

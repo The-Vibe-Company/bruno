@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { lister } from "@/api/recurrences";
 import { sessionCourante } from "@/auth/serveur";
-import { Initiale } from "@/board/Carte";
+import { Initiale } from "@/board/visuel";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
 import { Editeur, type Brouillon } from "@/recurrences/Editeur";

@@ -24,9 +24,10 @@ export type Destination =
 /** Changer de Bucket. Vers Sur le feu, le droit d'entrée est exigé — par le contrat, puis par la base. */
 export const deplacerBucket = (id: string, destination: Destination) => poster(`/api/taches/${id}/bucket`, destination);
 export const abandonner = (id: string) => poster(`/api/taches/${id}/abandonner`);
-/** Changer la raison d'une Tâche déjà Bloquée. */
-export async function modifierRaison(id: string, raison: string) {
-  const r = await fetch(`/api/taches/${id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ raisonBlocage: raison }) });
+export type Patch = { titre?: string; notes?: string | null; assigneId?: string; aidantIds?: string[]; raisonBlocage?: string };
+/** Modifier ce qui se modifie librement : titre, Notes, Assigné, Aidants, raison du blocage. Jamais l'Engagement Sur le feu. */
+export async function modifierTache(id: string, patch: Patch) {
+  const r = await fetch(`/api/taches/${id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(patch) });
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message ?? `Erreur ${r.status}`);
 }
 /** Le seul chemin qui déplace un Engagement Sur le feu — et il exige une raison (invariant 4). */

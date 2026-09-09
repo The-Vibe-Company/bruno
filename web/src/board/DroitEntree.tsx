@@ -3,7 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { aujourdhui, libelleJour, libelleLong } from "@/lib/dates";
 import { RAISONS_BLOCAGE } from "./raisons-blocage";
-import { Initiale } from "./Carte";
+import { Initiale } from "./visuel";
 import type { Statut } from "./deplacement";
 
 export type Membre = { id: string; nom: string };

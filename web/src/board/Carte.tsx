@@ -1,45 +1,50 @@
 "use client";
+import * as Popover from "@radix-ui/react-popover";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { libelleJour } from "@/lib/dates";
+import { useState } from "react";
 import type { Statut } from "./deplacement";
+import { Initiale, Meta, TEINTE } from "./visuel";
 
+export type Membre = { id: string; nom: string };
 export type TacheCarte = {
   id: string; titre: string; statut: Statut; engagement: string | null;
-  reportsCount: number; assigne: { nom: string } | null;
-  aidants: { nom: string }[]; notes: string | null; transcriptionBrute: string | null;
+  reportsCount: number; assigneId: string | null; assigne: { nom: string } | null;
+  aidantIds: string[]; aidants: { nom: string }[]; notes: string | null; transcriptionBrute: string | null;
   raisonBlocage: string | null;
 };
 
-export const TEINTE: Record<Statut, string> = {
-  a_faire: "bg-a-faire-voile border-accent/35",
-  en_cours: "bg-en-cours-voile border-en-cours/35",
-  bloque: "bg-bloque-voile border-bloque/35",
-};
-
-/** Pourquoi c'est Bloqué, lisible sur la carte — c'est ce qui distingue une colonne Bloqué d'un parking. */
-export function Raison({ raison }: { raison: string | null }) {
-  return raison
-    ? <p className="mt-1 flex items-center gap-1.5 text-[12px] text-bloque"><span aria-hidden className="inline-block h-[3px] w-[3px] rounded-full bg-bloque" />{raison}</p>
-    : <p className="mt-1 text-[12px] italic text-texte-faible">raison à préciser</p>;
-}
-
-/** « reporté N× » — et à partir de trois, un badge : c'est un signal, jamais une sanction (règle 12). */
-export function Reporte({ n }: { n: number }) {
-  return n >= 3
-    ? <span className="rounded border border-accent/50 bg-accent-voile px-1 py-px text-[11px] font-medium text-accent">reporté {n}×</span>
-    : <span className="text-accent">reporté {n}×</span>;
-}
-
-export function Initiale({ nom }: { nom: string }) {
+/** L'Assigné, en grand : un clic, et on le change — sans ouvrir la carte, sans la glisser. */
+function Assigne({ tache, membres, onAssigner }: { tache: TacheCarte; membres: Membre[]; onAssigner: (id: string, membreId: string) => void }) {
+  const [ouvert, setOuvert] = useState(false);
   return (
-    <span className="inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-full bg-bord-faible text-[10px] font-medium text-texte">
-      {nom.trim().charAt(0).toUpperCase()}
-    </span>
+    <Popover.Root open={ouvert} onOpenChange={setOuvert}>
+      <Popover.Trigger asChild>
+        <button aria-label={`Assigné : ${tache.assigne?.nom ?? "personne"} — changer`} onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}
+          className="rounded-full ring-offset-2 ring-offset-fond hover:ring-2 hover:ring-bord-fort">
+          <Initiale nom={tache.assigne?.nom ?? "?"} grande />
+        </button>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content align="end" sideOffset={6} onPointerDown={(e) => e.stopPropagation()} className="z-40 w-48 overflow-hidden rounded-lg border border-bord-fort bg-surface py-1 shadow-xl outline-none">
+          <div className="px-3 pb-1 pt-1.5 text-[12px] text-texte-sourd">Assigner à</div>
+          {membres.map((m) => (
+            <button key={m.id} onClick={(e) => { e.stopPropagation(); setOuvert(false); if (m.id !== tache.assigneId) onAssigner(tache.id, m.id); }}
+              className="flex h-9 w-full items-center gap-2.5 px-3 text-left text-[13.5px] hover:bg-surface-2">
+              <Initiale nom={m.nom} />{m.nom}
+              {m.id === tache.assigneId && <span className="ml-auto text-accent">✓</span>}
+            </button>
+          ))}
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
-export function Carte({ tache, onTerminer, onOuvrir, fantome }: { tache: TacheCarte; onTerminer?: (id: string) => void; onOuvrir?: (id: string) => void; fantome?: boolean }) {
+export function Carte({ tache, membres = [], onTerminer, onOuvrir, onAssigner, fantome }: {
+  tache: TacheCarte; membres?: Membre[]; onTerminer?: (id: string) => void; onOuvrir?: (id: string) => void;
+  onAssigner?: (id: string, membreId: string) => void; fantome?: boolean;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tache.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
   return (
@@ -52,27 +57,20 @@ export function Carte({ tache, onTerminer, onOuvrir, fantome }: { tache: TacheCa
       className={`rounded-lg border px-3 pt-2.5 pb-2 cursor-grab active:cursor-grabbing select-none transition-shadow
         ${TEINTE[tache.statut]} ${isDragging && !fantome ? "opacity-30" : ""} ${fantome ? "shadow-2xl" : ""}`}
     >
-      <div className="flex items-start gap-2">
-        <div className="text-[13.5px] leading-snug">{tache.titre}</div>
-        <span aria-hidden className="ml-auto mt-1 grid flex-none grid-cols-2 gap-[3px] opacity-55">
-          {Array.from({ length: 6 }).map((_, i) => <span key={i} className="h-[3px] w-[3px] rounded-full bg-texte-faible" />)}
-        </span>
-      </div>
-      {tache.statut === "bloque" && <Raison raison={tache.raisonBlocage} />}
+      <div className="line-clamp-2 text-[13.5px] leading-snug">{tache.titre}</div>
       <div className="mt-1.5 flex items-center gap-2">
         <button
           type="button"
           aria-label="Terminé"
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={() => onTerminer?.(tache.id)}
+          onClick={(e) => { e.stopPropagation(); onTerminer?.(tache.id); }}
           className={`h-[15px] w-[15px] flex-none rounded-full border-[1.5px] border-texte-tres-faible hover:border-accent
             ${tache.statut === "bloque" ? "border-dashed" : ""}`}
         />
-        <span className="flex-1 text-[12px] text-texte-sourd">
-          {tache.engagement ? libelleJour(tache.engagement) : "—"}
-          {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
-        </span>
-        {tache.assigne && <Initiale nom={tache.assigne.nom} />}
+        <Meta tache={tache} />
+        {tache.assigne && (onAssigner && membres.length > 0
+          ? <Assigne tache={tache} membres={membres} onAssigner={onAssigner} />
+          : <Initiale nom={tache.assigne.nom} grande />)}
       </div>
     </div>
   );

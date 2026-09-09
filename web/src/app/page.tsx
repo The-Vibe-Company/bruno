@@ -36,8 +36,8 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
   const actifs = membresActifs(filtre, membres);
   const cartes: TacheCarte[] = taches.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
-    reportsCount: t.reportsCount, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
-    aidants: t.aidantIds.map((id) => ({ nom: nomDe.get(id) ?? "?" })),
+    reportsCount: t.reportsCount, assigneId: t.assigneId, assigne: t.assigneId ? { nom: nomDe.get(t.assigneId) ?? "?" } : null,
+    aidantIds: t.aidantIds, aidants: t.aidantIds.map((id) => ({ nom: nomDe.get(id) ?? "?" })),
     notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
   }));
   const enAttente: TacheAttente[] = [...aTrier, ...aVenir, ...idees].map((t) => ({
