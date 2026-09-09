@@ -1,0 +1,42 @@
+ios/Bruno/Info.plist
+  s_7ec6903985e0db::t_45e48babe2eca0 21-31
+ios/Bruno/Aujourdhui/AujourdhuiModele.swift
+  s_7ec6903985e0db::t_45e48babe2eca0 3,40,47-54
+  s_7ec6903985e0db::t_a10129bec1c137 55-56
+ios/BrunoWidget/BrunoWidget.entitlements
+  s_7ec6903985e0db::t_45e48babe2eca0 1-10
+ios/Bruno/Bruno.entitlements
+  s_7ec6903985e0db::t_45e48babe2eca0 1-10
+ios/BrunoWidget/BrunoWidget.swift
+  s_7ec6903985e0db::t_45e48babe2eca0 1-95
+ios/project.yml
+  s_7ec6903985e0db::t_45e48babe2eca0 23-29,47-71
+ios/BrunoWidget/Info.plist
+  s_7ec6903985e0db::t_45e48babe2eca0 1-29
+ios/Bruno/Partage/Partage.swift
+  s_7ec6903985e0db::t_45e48babe2eca0 1-25
+ios/Bruno/Capture/CaptureVue.swift
+  s_7ec6903985e0db::t_45e48babe2eca0 9-10,30
+ios/Bruno/App/Racine.swift
+  s_7ec6903985e0db::t_45e48babe2eca0 8,23-29
+tickets/E1-capture.md
+  s_7ec6903985e0db::t_78c1814d01562a 54,58-66
+tickets/README.md
+  s_7ec6903985e0db::t_d897622ce1d56c 10-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "27bfe06623b661c22bb7e7baa262d11de1634719",
+  "prompts": {},
+  "sessions": {
+    "s_7ec6903985e0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d64f6ff-4a11-45bf-9492-7fdf97b7efbe",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
