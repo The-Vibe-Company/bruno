@@ -3,9 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { AffectationsMembre, Sur } from "@/api/affectations";
-import { aujourdhui, joursEntre, libelleJour } from "@/lib/dates";
-import { traine } from "@/relances/regles";
-import { Initiale } from "./Carte";
+import { Initiale } from "./visuel";
 
 export type Choix = { id: string; nom: string; couleur: string };
 
@@ -44,9 +42,6 @@ function Lignes({ sur, choisir = false }: { sur: Sur[]; choisir?: boolean }) {
         <span key={a.id} className="flex items-center gap-2">
           <span className="h-[14px] w-[3px]" style={{ background: a.couleur }} />
           <span className="truncate text-[14.5px] font-medium leading-none tracking-tight">{a.nom}</span>
-          {traine({ joursOuverts: joursEntre(a.depuis, aujourdhui()) }) && (
-            <span className="text-[11.5px] text-texte-sourd">toujours dessus ? · depuis le {libelleJour(a.depuis)}</span>
-          )}
         </span>
       ))}
     </span>

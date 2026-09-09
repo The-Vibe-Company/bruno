@@ -1,6 +1,5 @@
-import { Initiale, Raison, Reporte, TEINTE } from "@/board/Carte";
+import { Initiale, Meta, TEINTE } from "@/board/visuel";
 import type { Statut } from "@/board/deplacement";
-import { libelleJour } from "@/lib/dates";
 
 export type TacheDuJour = { id: string; titre: string; statut: Statut; engagement: string | null; reportsCount: number; assigne: { nom: string } | null; raisonBlocage: string | null };
 
@@ -24,15 +23,11 @@ export function SurLeFeu({ taches }: { taches: TacheDuJour[] }) {
             <div className="flex flex-col gap-2 pt-2">
               {liste.map((t) => (
                 <article key={t.id} className={`rounded-lg border px-3 pt-2.5 pb-2 ${TEINTE[t.statut]}`}>
-                  <div className="text-[13.5px] leading-snug">{t.titre}</div>
-                  {t.statut === "bloque" && <Raison raison={t.raisonBlocage} />}
+                  <div className="line-clamp-2 text-[13.5px] leading-snug">{t.titre}</div>
                   <div className="mt-1.5 flex items-center gap-2">
                     <span className={`h-[15px] w-[15px] flex-none rounded-full border-[1.5px] border-texte-tres-faible ${t.statut === "bloque" ? "border-dashed" : ""}`} />
-                    <span className="flex-1 text-[12px] text-texte-sourd">
-                      {t.engagement ? libelleJour(t.engagement) : "—"}
-                      {t.reportsCount > 0 && <> · <Reporte n={t.reportsCount} /></>}
-                    </span>
-                    {t.assigne && <Initiale nom={t.assigne.nom} />}
+                    <Meta tache={t} />
+                    {t.assigne && <Initiale nom={t.assigne.nom} grande />}
                   </div>
                 </article>
               ))}

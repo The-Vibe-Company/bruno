@@ -68,3 +68,10 @@ Maquette : `Bruno iOS v2` → écran « Détail d'une Tâche ».
 - [x] Bloquer exige une raison (raisons toutes prêtes, ou ses mots) ; elle se lit sur la carte, se
       change depuis le détail, s'efface en sortant de Bloqué, et le Point du matin la nomme
 - [x] Le Board et le Daily sont plus denses : typo, bandeau, colonnes, cartes, panneau
+
+## BRU-45 — Cartes épurées, Assigné en un clic, détail modifiable · **livré le 9 septembre**
+
+- [x] Plus de poignée sur les cartes ; l'avatar de l'Assigné grandit et se clique pour changer d'Assigné
+- [x] Même hauteur pour toutes les cartes : la raison du blocage tient sur la ligne du bas
+- [x] Le détail se modifie : titre, Assigné, Aidants, Notes — l'Engagement Sur le feu reste au Report
+- [x] Le Daily garde le code couleur ; ⌘-clic sur le filtre par Membre garde seulement celui-là

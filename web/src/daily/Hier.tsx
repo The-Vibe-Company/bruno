@@ -1,5 +1,5 @@
 import type { AffectationsMembre } from "@/api/affectations";
-import { Initiale } from "@/board/Carte";
+import { Initiale } from "@/board/visuel";
 import { libelleLong } from "@/lib/dates";
 
 export type TacheFinie = { id: string; titre: string; etat: "termine" | "abandonne"; assigne: { nom: string } | null };

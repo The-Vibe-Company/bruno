@@ -2,7 +2,7 @@
 import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { abandonner, appliquer, deplacerBucket, modifierRaison, reporter, supprimer, terminer } from "./api";
+import { abandonner, appliquer, deplacerBucket, modifierTache, reporter, supprimer, terminer, type Patch } from "./api";
 import { Blocage, type DemandeBlocage } from "./Blocage";
 import { Detail } from "./Detail";
 import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
@@ -86,7 +86,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   async function bloquer(id: string, raison: string) {
     if (demandeBlocage?.mode === "modifier") {
       setErreur(null);
-      try { await modifierRaison(id, raison); } catch (e) { setErreur((e as Error).message); }
+      try { await modifierTache(id, { raisonBlocage: raison }); } catch (e) { setErreur((e as Error).message); }
       setDemandeBlocage(null); rafraichir(); return;
     }
     const mutations = mutationsEnAttente.map((m) => (m.type === "statut" ? { ...m, raison } : m));
@@ -104,6 +104,11 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
     rafraichir();
   };
   const onTerminer = action(terminer);
+  async function modifier(id: string, patch: Patch) {
+    setErreur(null);
+    try { await modifierTache(id, patch); } catch (e) { setErreur((e as Error).message); }
+    rafraichir();
+  }
 
   const carte = (id: string, statut: Statut): TacheCarte => ({ ...parId.get(id)!, statut });
 
@@ -142,7 +147,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       collisionDetection={collision}
       onDragStart={({ active }: DragStartEvent) => {
         const id = String(active.id); const a = attenteParId.get(id);
-        setActif(parId.get(id) ?? (a ? { id: a.id, titre: a.titre, statut: "a_faire", engagement: a.engagement, reportsCount: 0, assigne: a.assigne, aidants: [], notes: null, transcriptionBrute: a.transcriptionBrute, raisonBlocage: null } : null));
+        setActif(parId.get(id) ?? (a ? { id: a.id, titre: a.titre, statut: "a_faire", engagement: a.engagement, reportsCount: 0, assigne: a.assigne, aidants: [], aidantIds: [], assigneId: null, notes: null, transcriptionBrute: a.transcriptionBrute, raisonBlocage: null } : null));
       }}
       onDragEnd={finDeGlisser}
       onDragCancel={() => setActif(null)}
@@ -155,7 +160,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       <div className="flex min-h-0 flex-1">
         <div className="grid min-h-0 flex-1 grid-cols-3 gap-4 px-5 pb-5 pt-4">
           {STATUTS.map((s) => (
-            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} onTerminer={onTerminer} onOuvrir={setOuverteId} />
+            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })} />
           ))}
         </div>
         <EnAttente taches={enAttente} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} />
@@ -165,6 +170,8 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       <DragOverlay>{actif ? <Carte tache={actif} fantome /> : null}</DragOverlay>
       <Detail
         tache={ouverteId ? (() => { const t = parId.get(ouverteId); return t ? carte(ouverteId, colonneDe(colonnes, ouverteId) ?? t.statut) : null; })() : null}
+        membres={membres}
+        onModifier={modifier}
         onFermer={() => setOuverteId(null)}
         onTerminer={action(terminer)}
         onAbandonner={action(abandonner)}

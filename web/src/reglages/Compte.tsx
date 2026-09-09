@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Initiale } from "@/board/Carte";
+import { Initiale } from "@/board/visuel";
 
 export function Compte({ nom, email }: { nom: string; email: string }) {
   const router = useRouter();

@@ -3,7 +3,7 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { useDraggable } from "@dnd-kit/core";
 import { useState } from "react";
 import { libelleJour } from "@/lib/dates";
-import { Initiale } from "./Carte";
+import { Initiale } from "./visuel";
 import { poserReplie, useReplie } from "./replie";
 
 export type TacheAttente = {
@@ -25,7 +25,7 @@ function Icone({ bucket }: { bucket: Bucket }) {
 function Bascule({ replie, onClick }: { replie: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} aria-label={replie ? "Déplier En attente" : "Replier En attente"} className="flex h-8 w-8 items-center justify-center rounded-md text-texte-sourd hover:bg-surface-2 hover:text-texte">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className={replie ? "rotate-180" : ""}><path d="M4 2l5 5-5 5" /><path d="M10 2v10" /></svg>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1.5" y="2" width="11" height="10" rx="1.5" /><path d={replie ? "M5 2v10" : "M9 2v10"} /></svg>
     </button>
   );
 }
@@ -83,7 +83,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir }: {
   // Replié : un rail, trois onglets — l'icône et le nombre. Un clic déplie sur la section voulue.
   if (replie) {
     return (
-      <aside className="flex w-14 flex-none flex-col items-center gap-1 border-l border-bord-faible bg-surface-3 py-4">
+      <aside className="flex w-14 flex-none flex-col items-center gap-1 border-l border-bord-faible bg-surface-3 pb-4 pt-[11px]">
         <Bascule replie onClick={() => poserReplie(false)} />
         {BUCKETS.map((b) => (
           <button key={b} onClick={() => { setOuverts((o) => ({ ...o, [b]: true })); poserReplie(false); }} aria-label={`${LIBELLE[b]} · ${par(b).length}`} title={LIBELLE[b]}
@@ -98,7 +98,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir }: {
 
   return (
     <aside className="flex w-[320px] flex-none flex-col border-l border-bord-faible bg-surface-3">
-      <header className="flex h-12 flex-none items-center pl-5 pr-3"><h2 className="flex-1 text-[17px] font-medium tracking-tight">En attente</h2><Bascule replie={false} onClick={() => poserReplie(true)} /></header>
+      <header className="flex h-[54px] flex-none items-center pl-5 pr-3"><h2 className="flex-1 text-[15px] font-medium tracking-tight">En attente</h2><Bascule replie={false} onClick={() => poserReplie(true)} /></header>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-4">
         {BUCKETS.map((b) => (
           <section key={b}>

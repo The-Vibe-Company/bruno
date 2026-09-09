@@ -53,5 +53,5 @@ Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se
 
 *Fait : le Point du matin porte `aFermer` — les périodes qui traînent, avec leur nom — pour que
 le client mette un bouton « je ne suis plus dessus » (`POST /api/affectations/en-cours/{id}/fin`).
-Le bouton lui-même vit dans la notification iOS, qui attend l'app (BRU-25). En attendant, le
-Board montre la même ligne discrète sur ma case : `MONKA · toujours dessus ? · depuis le 20 août`.*
+Le bouton lui-même vit dans la notification iOS, qui attend l'app (BRU-25). Le Board n'affiche
+rien : Antoine a retiré la ligne « toujours dessus ? » du bandeau le 9 septembre.*
