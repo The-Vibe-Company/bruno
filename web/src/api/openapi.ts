@@ -162,6 +162,10 @@ export function documentOpenApi() {
         put: { summary: "Modifier une règle", description: "Sans effet sur les Tâches déjà fabriquées (règle 20).", requestBody: corps("PoserRecurrence"), responses: { 200: { description: "La règle" } } },
         delete: { summary: "Supprimer une règle", description: "Les Tâches nées de la règle restent.", responses: { 204: { description: "Supprimée" } } },
       },
+      "/api/taches/{id}/rouvrir": {
+        parameters: [idTache],
+        post: { summary: "Rouvrir une Tâche finie", description: "Un Terminé ou un Abandonné de trop : la fin s'efface, Bucket, Statut et Engagement sont restés.", responses: { 200: { description: "La Tâche, rouverte" }, 409: { description: "Pas de fin à annuler" } } },
+      },
       "/api/taches/{id}/reports": {
         parameters: [idTache],
         get: { summary: "L'historique des Reports", responses: { 200: { description: "Les Reports, du plus récent au plus ancien" } } },
