@@ -124,6 +124,9 @@ export function documentOpenApi() {
         patch: { summary: "Déplacer un Créneau", description: "Les natures sont recalculées.", requestBody: corps("PoserCreneau"), responses: { 200: { description: "Les Créneaux" } } },
         delete: { summary: "Retirer un Créneau", description: "Refusé sous trois : le Point du matin, au moins un Rappel, le Bilan.", responses: { 200: { description: "Les Créneaux" }, 422: { description: "Minimum de trois" } } },
       },
+      "/api/membres": {
+        get: { summary: "Les Membres actifs", responses: { 200: { description: "id et nom", content: { "application/json": { schema: { type: "array", items: { type: "object", properties: { id: { type: "string", format: "uuid" }, nom: { type: "string" } } } } } } } } },
+      },
       "/api/affectations": {
         get: { summary: "Les Affectations", description: "Ce à quoi on peut travailler, désactivées comprises.",
           responses: { 200: { description: "La liste", content: { "application/json": { schema: { type: "array", items: ref("Affectation") } } } } } },

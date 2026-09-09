@@ -31,7 +31,12 @@ final class Api {
         conf.httpShouldSetCookies = true
         conf.timeoutIntervalForRequest = 15
         conf.waitsForConnectivity = false
-        session = URLSession(configuration: conf)
+        session = URLSession(configuration: conf, delegate: SansRedirection(), delegateQueue: nil)
+    }
+
+    /// On ne suit jamais une redirection : le cookie de la connexion dev est posé sur la 302, le reste ne nous regarde pas.
+    private final class SansRedirection: NSObject, URLSessionTaskDelegate, Sendable {
+        func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest) async -> URLRequest? { nil }
     }
 
     /// Une session, une fois. En dev, `/api/auth/dev` pose le cookie — jamais en production.
@@ -45,12 +50,18 @@ final class Api {
         connecte = true
     }
 
-    func poster(_ chemin: String, _ corps: some Encodable & Sendable) async throws {
+    /// Une requête, n'importe laquelle. Le corps est encodé en JSON ; la réponse est rendue brute.
+    @discardableResult
+    private func appeler(_ methode: String, _ chemin: String, corps: (any Encodable & Sendable)? = nil) async throws -> Data {
         try await connecter()
-        var requete = URLRequest(url: base.appending(path: chemin))
-        requete.httpMethod = "POST"
-        requete.setValue("application/json", forHTTPHeaderField: "content-type")
-        requete.httpBody = try JSONEncoder().encode(corps)
+        // `chemin` peut porter une requête (`api/taches?bucket=a_trier`) : on le résout contre la base, on ne l'encode pas.
+        guard let url = URL(string: chemin, relativeTo: base)?.absoluteURL else { throw Erreur(statut: 0, message: "Chemin invalide : \(chemin)") }
+        var requete = URLRequest(url: url)
+        requete.httpMethod = methode
+        if let corps {
+            requete.setValue("application/json", forHTTPHeaderField: "content-type")
+            requete.httpBody = try JSONEncoder().encode(corps)
+        }
         let (donnees, reponse) = try await session.data(for: requete)
         let statut = (reponse as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(statut) else {
@@ -58,5 +69,22 @@ final class Api {
             let message = (try? JSONDecoder().decode(Refus.self, from: donnees))?.message ?? "Erreur \(statut)"
             throw Erreur(statut: statut, message: message)
         }
+        return donnees
+    }
+
+    func obtenir<T: Decodable & Sendable>(_ chemin: String) async throws -> T {
+        try JSONDecoder().decode(T.self, from: try await appeler("GET", chemin))
+    }
+
+    func poster(_ chemin: String, _ corps: some Encodable & Sendable) async throws {
+        try await appeler("POST", chemin, corps: corps)
+    }
+
+    func poster(_ chemin: String) async throws {
+        try await appeler("POST", chemin)
+    }
+
+    func supprimer(_ chemin: String) async throws {
+        try await appeler("DELETE", chemin)
     }
 }

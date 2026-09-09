@@ -13,7 +13,7 @@ struct Racine: View {
             Group {
                 switch onglet {
                 case .aujourdhui: Bientot(titre: "Aujourd'hui", sous: "Les Affectations du jour, les Engagements, la Relance.")
-                case .enAttente: Bientot(titre: "En attente", sous: "À trier, À venir, Idées.")
+                case .enAttente: EnAttenteVue()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
