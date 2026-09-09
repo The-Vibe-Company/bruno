@@ -11,19 +11,22 @@
       `sur_le_feu` même si on le demande, testé
 - [x] Sortir de `Sur le feu` **conserve** Assigné et Engagement *(règle 7)* — testé dans BRU-3
 
-## BRU-12 — Écran « En attente » iOS
+## BRU-12 — Écran « En attente » iOS · **livré le 9 septembre**
 
 Maquette : `Bruno iOS v2` → écran « En attente ».
 
-- [ ] Trois sections : `À trier` (dépliée par défaut, avec son compteur en orange),
+- [x] Trois sections : `À trier` (dépliée par défaut, avec son compteur en orange),
       `À venir` et `Idées` (repliées, avec leur compteur)
-- [ ] Chaque carte À trier montre le titre nettoyé, l'avatar de l'auteur, et la **transcription
+- [x] Chaque carte À trier montre le titre nettoyé, l'avatar de l'auteur, et la **transcription
       brute en italique** dessous
-- [ ] Trois boutons de destination sur la carte : `Sur le feu` · `À venir` · `Idées`,
+- [x] Trois boutons de destination sur la carte : `Sur le feu` · `À venir` · `Idées`,
       plus une croix pour supprimer
-- [ ] **Pas de réorganisation du Rang au doigt** — le tri oui, le réordonnancement non
+- [x] **Pas de réorganisation du Rang au doigt** — le tri oui, le réordonnancement non
 
-## BRU-13 — Le formulaire du droit d'entrée · **invariant 2** · **web livré, iOS à venir**
+*Une carte s'ouvre d'un tap et montre ses trois destinations et la croix. Les Captures encore sur
+le disque (BRU-7) apparaissent en tête d'À trier, en pointillé : « en attente d'envoi ».*
+
+## BRU-13 — Le formulaire du droit d'entrée · **invariant 2** · **web et iOS livrés**
 
 Le seul verrou dur de Bruno. Côté web, livré avec BRU-14 (maquette v3) ; côté iOS, avec BRU-12.
 
@@ -34,7 +37,7 @@ Le seul verrou dur de Bruno. Côté web, livré avec BRU-14 (maquette v3) ; côt
       l'ouvre (avec le Statut de la colonne visée), et l'API refuse sans Assigné ni Engagement
 - [x] Ni blocage sec ni valeur par défaut silencieuse : on voit toujours à quoi on s'engage
 - [x] **Test** : tenter la transition par l'API sans Assigné → rejet (BRU-3), et en base (BRU-2)
-- [ ] ⏳ La feuille iOS — avec BRU-12
+- [x] La feuille iOS — livrée avec BRU-12 le 9 septembre
 
 ## BRU-14 — Panneau latéral du Board web · **livré**
 
