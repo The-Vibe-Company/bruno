@@ -1,5 +1,5 @@
 "use client";
-import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragOverEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { abandonner, appliquer, deplacerBucket, modifierTache, reporter, supprimer, terminer, type Patch } from "./api";
@@ -11,7 +11,7 @@ import { PourQuand, type DemandeAVenir } from "./PourQuand";
 import { Report, type DemandeReport } from "./Report";
 import { Carte, type TacheCarte } from "./Carte";
 import { Colonne } from "./Colonne";
-import { colonneDe, colonneVisee, deplacer, type Colonnes, type Mutation, type Statut } from "./deplacement";
+import { colonneDe, colonneVisee, deposer, mutationsDe, survoler, type Colonnes, type Mutation, type Statut } from "./deplacement";
 
 const STATUTS: Statut[] = ["a_faire", "en_cours", "bloque"];
 
@@ -40,6 +40,8 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   const [base, setBase] = useState(initiales);
   if (base !== initiales) { setBase(initiales); setColonnes(initiales); }
   const [actif, setActif] = useState<TacheCarte | null>(null);
+  // Les colonnes au départ du glisser : c'est contre elles qu'on calcule ce qui a changé, et vers elles qu'on revient si ça tourne mal.
+  const [origine, setOrigine] = useState<Colonnes>(initiales);
   const [ouverteId, setOuverteId] = useState<string | null>(null);
   const [demande, setDemande] = useState<Demande>(null);
   const [demandeAVenir, setDemandeAVenir] = useState<DemandeAVenir>(null);
@@ -53,6 +55,13 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
 
   const rafraichir = () => demarrer(() => router.refresh());
 
+  /** Pendant le glisser : la carte entre dans la colonne survolée, on voit où elle va atterrir. */
+  function survol({ active, over }: DragOverEvent) {
+    if (!over || attenteParId.has(String(active.id))) return;
+    const suivantes = survoler(colonnes, String(active.id), String(over.id));
+    if (suivantes !== colonnes) setColonnes(suivantes);
+  }
+
   async function finDeGlisser({ active, over }: DragEndEvent) {
     setActif(null);
     const venue = attenteParId.get(String(active.id));
@@ -62,10 +71,11 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       if (statut) setDemande({ id: venue.id, titre: venue.titre, statut });
       return;
     }
-    if (!over || active.id === over.id) return;
-    const { mutations, colonnes: suivantes } = deplacer(colonnes, String(active.id), String(over.id));
-    if (mutations.length === 0) return;
-    setColonnes(suivantes);
+    if (!over) { setColonnes(origine); return; }
+    const finales = deposer(colonnes, String(active.id), String(over.id));
+    const mutations = mutationsDe(origine, finales, String(active.id));
+    if (mutations.length === 0) { setColonnes(origine); return; }
+    setColonnes(finales);
     if (mutations.some((m) => m.type === "statut" && m.statut === "bloque")) {
       const t = parId.get(String(active.id));
       setMutationsEnAttente(mutations);
@@ -79,7 +89,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       for (const m of mutations) await appliquer(m);
     } catch (e) {
       setErreur((e as Error).message);
-      setColonnes(initiales);
+      setColonnes(origine);
     }
     rafraichir();
   }
@@ -94,7 +104,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
     await envoyer(mutations);
   }
   function annulerBlocage() {
-    if (demandeBlocage?.mode === "bloquer") setColonnes(initiales);
+    if (demandeBlocage?.mode === "bloquer") setColonnes(origine);
     setDemandeBlocage(null); setMutationsEnAttente([]);
   }
 
@@ -147,10 +157,12 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       collisionDetection={collision}
       onDragStart={({ active }: DragStartEvent) => {
         const id = String(active.id); const a = attenteParId.get(id);
+        setOrigine(colonnes);
         setActif(parId.get(id) ?? (a ? { id: a.id, titre: a.titre, statut: "a_faire", engagement: a.engagement, reportsCount: 0, assigne: a.assigne, aidants: [], aidantIds: [], assigneId: null, notes: null, transcriptionBrute: a.transcriptionBrute, raisonBlocage: null } : null));
       }}
+      onDragOver={survol}
       onDragEnd={finDeGlisser}
-      onDragCancel={() => setActif(null)}
+      onDragCancel={() => { setActif(null); setColonnes(origine); }}
     >
       {erreur && (
         <p role="alert" className="mx-8 mt-3 rounded-lg border border-bloque/40 bg-bloque-voile px-3 py-2 text-sm">

@@ -75,3 +75,8 @@ Maquette : `Bruno iOS v2` → écran « Détail d'une Tâche ».
 - [x] Même hauteur pour toutes les cartes : la raison du blocage tient sur la ligne du bas
 - [x] Le détail se modifie : titre, Assigné, Aidants, Notes — l'Engagement Sur le feu reste au Report
 - [x] Le Daily garde le code couleur ; ⌘-clic sur le filtre par Membre garde seulement celui-là
+
+## BRU-46 — Aperçu du glisser entre colonnes, bandeau sur une ligne · **livré le 9 septembre**
+
+- [x] Vers une autre colonne, la carte entre pendant le glisser, à la hauteur où elle atterrira
+- [x] Le bandeau Affectations tient sur une ligne, avec depuis quand en petit (j · sem. · mois)

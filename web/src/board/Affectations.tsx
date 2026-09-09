@@ -3,6 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { AffectationsMembre, Sur } from "@/api/affectations";
+import { libelleDuree } from "@/lib/dates";
 import { Initiale } from "./visuel";
 
 export type Choix = { id: string; nom: string; couleur: string };
@@ -18,8 +19,8 @@ export function Affectations({ membres, moiId, choix, lectureSeule = false }: { 
   return (
     <div className="grid flex-none border-b border-bord-2" style={{ gridTemplateColumns: `repeat(${Math.max(membres.length, 1)}, minmax(0, 1fr))` }}>
       {membres.map((m, i) => (
-        <div key={m.membreId} className={`flex h-[54px] min-w-0 flex-col justify-center gap-1 px-5 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
-          <span className="flex items-center gap-1.5 text-[11.5px] text-texte-sourd"><Initiale nom={m.nom} />{m.nom}</span>
+        <div key={m.membreId} className={`flex h-10 min-w-0 items-center gap-3 overflow-hidden px-5 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
+          <span className="flex flex-none items-center gap-1.5 text-[12px] text-texte-sourd"><Initiale nom={m.nom} />{m.nom}</span>
           {lectureSeule ? <Lignes sur={m.affectations} /> : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} sur={m.affectations} choix={choix} />}
         </div>
       ))}
@@ -30,7 +31,7 @@ export function Affectations({ membres, moiId, choix, lectureSeule = false }: { 
 /** Les Affectations d'une personne, côte à côte — jamais l'une sous l'autre. */
 function Lignes({ sur, choisir = false }: { sur: Sur[]; choisir?: boolean }) {
   return (
-    <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-0.5">
+    <span className="flex min-w-0 flex-nowrap items-center gap-x-4">
       {sur.length === 0 && (
         <span className="flex items-center gap-2">
           <span className="h-[14px] w-[3px] border border-dashed border-texte-tres-faible" />
@@ -42,6 +43,7 @@ function Lignes({ sur, choisir = false }: { sur: Sur[]; choisir?: boolean }) {
         <span key={a.id} className="flex items-center gap-2">
           <span className="h-[14px] w-[3px]" style={{ background: a.couleur }} />
           <span className="truncate text-[14.5px] font-medium leading-none tracking-tight">{a.nom}</span>
+          <span className="text-[11px] text-texte-faible">{libelleDuree(a.depuis)}</span>
         </span>
       ))}
     </span>

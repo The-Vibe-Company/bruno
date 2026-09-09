@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { colonneVisee, deplacer, type Colonnes } from "./deplacement";
+import { colonneVisee, deplacer, deposer, mutationsDe, survoler, type Colonnes } from "./deplacement";
 
 const base = (): Colonnes => ({ a_faire: ["a", "b", "c"], en_cours: ["d"], bloque: [] });
 
@@ -42,6 +42,31 @@ describe("ce qu'un glisser veut dire", () => {
       { type: "statut", id: "d", statut: "bloque" },
       { type: "rang", id: "d", avantId: null, apresId: null },
     ]);
+  });
+});
+
+describe("pendant le glisser, on voit où la carte va atterrir", () => {
+  it("survoler une carte d'une autre colonne y fait entrer la carte, à sa hauteur", () => {
+    const c = survoler(base(), "a", "d");
+    expect(c.en_cours).toEqual(["a", "d"]);
+    expect(c.a_faire).toEqual(["b", "c"]);
+  });
+
+  it("survoler une colonne vide y fait entrer la carte ; sa propre colonne ne change rien", () => {
+    expect(survoler(base(), "a", "bloque").bloque).toEqual(["a"]);
+    const b = base();
+    expect(survoler(b, "a", "c")).toBe(b);
+  });
+
+  it("au lâcher, ce qui compte est le départ et l'arrivée — pas les colonnes traversées", () => {
+    let c = survoler(base(), "a", "bloque"); // passe par Bloqué…
+    c = survoler(c, "a", "d");               // …puis finit sur En cours, au-dessus de d
+    expect(mutationsDe(base(), c, "a")).toEqual([
+      { type: "statut", id: "a", statut: "en_cours" },
+      { type: "rang", id: "a", avantId: null, apresId: "d" },
+    ]);
+    const retour = survoler(c, "a", "b"); // et revient chez elle
+    expect(mutationsDe(base(), deposer(retour, "a", "b"), "a")).toEqual([{ type: "rang", id: "a", avantId: "b", apresId: "c" }]);
   });
 });
 

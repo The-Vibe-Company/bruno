@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { demain, dimancheDe, jourOuvrePrecedent, libelleJour, libelleLong, libelleReport, libelleSemaine, lundiDe, lundiProchain, veille } from "./dates";
+import { demain, dimancheDe, jourOuvrePrecedent, libelleDuree, libelleJour, libelleLong, libelleReport, libelleSemaine, lundiDe, lundiProchain, veille } from "./dates";
 
 describe("le nom d'un jour", () => {
   const ref = "2026-09-08";
@@ -51,5 +51,14 @@ describe("la semaine, pour Fait", () => {
     expect(dimancheDe("2026-09-07")).toBe("2026-09-13");
     expect(libelleSemaine("2026-09-07")).toBe("Semaine du 7 septembre");
     expect(libelleSemaine("2026-08-31")).toBe("Semaine du 31 août");
+  });
+});
+
+describe("depuis quand on est dessus", () => {
+  it("compte en jours, puis en semaines, puis en mois", () => {
+    expect(libelleDuree("2026-09-08", "2026-09-08")).toBe("aujourd'hui");
+    expect(libelleDuree("2026-09-06", "2026-09-08")).toBe("2 j");
+    expect(libelleDuree("2026-08-25", "2026-09-08")).toBe("2 sem.");
+    expect(libelleDuree("2026-07-01", "2026-09-08")).toBe("2 mois");
   });
 });
