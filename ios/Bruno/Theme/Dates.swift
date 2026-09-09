@@ -23,6 +23,12 @@ enum Jours {
         }
     }
 
+    /// « depuis aujourd'hui », « depuis hier », « depuis le 4 sept. »
+    static func depuis(_ jour: String) -> String {
+        let l = libelle(jour)
+        return ["aujourd'hui", "hier", "demain"].contains(l) ? "depuis \(l)" : "depuis le \(l)"
+    }
+
     /// « lundi 7 septembre »
     static func long(_ jour: String) -> String {
         guard let d = date(jour) else { return jour }
