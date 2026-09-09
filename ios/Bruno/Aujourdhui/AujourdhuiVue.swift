@@ -8,6 +8,7 @@ import SwiftUI
 struct AujourdhuiVue: View {
     @State private var modele = AujourdhuiModele()
     @State private var choisir = false
+    @State private var ouverte: Tache?
     @State private var erreurAction: String?
 
     var body: some View {
@@ -36,6 +37,9 @@ struct AujourdhuiVue: View {
             }
         }
         .task { await modele.charger() }
+        .fullScreenCover(item: $ouverte) { t in
+            DetailVue(tache: t, membres: modele.membres, retour: "Aujourd'hui") { await modele.charger() }
+        }
         .sheet(isPresented: $choisir) {
             AffectationFeuille(choix: modele.choix, dessus: Set(modele.mesAffectations.map(\.affectationId))) { ids in try await modele.poser(affectationIds: ids) }
         }
@@ -109,7 +113,7 @@ struct AujourdhuiVue: View {
                 .padding(.bottom, 8)
                 .overlay(alignment: .bottom) { Rectangle().fill(couleur).frame(height: 1) }
                 ForEach(taches) { t in
-                    LigneTache(tache: t, couleur: couleur) { agir { try await modele.terminer(t) } }
+                    LigneTache(tache: t, couleur: couleur, onTerminer: { agir { try await modele.terminer(t) } }, onOuvrir: { ouverte = t })
                 }
             }
         }
@@ -125,14 +129,18 @@ struct AujourdhuiVue: View {
             .padding(.bottom, 8)
             .overlay(alignment: .bottom) { Rectangle().fill(Color(hex: 0x2E2E2E)).frame(height: 1) }
             ForEach(modele.aideSur) { t in
-                HStack(spacing: 12) {
-                    Text(t.titre).font(.system(size: 16)).foregroundStyle(Color(hex: 0xD8D8D8))
-                    Spacer(minLength: 0)
-                    if let a = modele.membre(t.assigneId) { Initiale(nom: a.nom) }
+                Button { ouverte = t } label: {
+                    HStack(spacing: 12) {
+                        Text(t.titre).font(.system(size: 16)).foregroundStyle(Color(hex: 0xD8D8D8))
+                        Spacer(minLength: 0)
+                        if let a = modele.membre(t.assigneId) { Initiale(nom: a.nom) }
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 11)
+                    .background(Color(hex: 0x121212), in: RoundedRectangle(cornerRadius: 12))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: 0x262626)))
+                    .contentShape(RoundedRectangle(cornerRadius: 12))
                 }
-                .padding(.horizontal, 14).padding(.vertical, 11)
-                .background(Color(hex: 0x121212), in: RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: 0x262626)))
+                .buttonStyle(.plain)
             }
         }
     }
@@ -143,6 +151,7 @@ struct LigneTache: View {
     let tache: Tache
     let couleur: Color
     let onTerminer: () -> Void
+    var onOuvrir: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 12) {
@@ -151,11 +160,17 @@ struct LigneTache: View {
                     .frame(width: 22, height: 22)
             }
             .accessibilityLabel("Terminé")
-            VStack(alignment: .leading, spacing: 3) {
-                Text(tache.titre).font(.system(size: 16)).foregroundStyle(tache.statut == .bloque ? Color(hex: 0xD8D8D8) : Teinte.texte)
-                sousTitre
+            Button(action: onOuvrir) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(tache.titre).font(.system(size: 16)).foregroundStyle(tache.statut == .bloque ? Color(hex: 0xD8D8D8) : Teinte.texte)
+                        sousTitre
+                    }
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
             }
-            Spacer(minLength: 0)
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 14).padding(.vertical, 11)
         .background(couleur.opacity(0.09), in: RoundedRectangle(cornerRadius: 12))
