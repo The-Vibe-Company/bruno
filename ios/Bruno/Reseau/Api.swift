@@ -24,7 +24,7 @@ final class Api {
         #if DEBUG
         base = URL(string: "http://localhost:3001")!
         #else
-        base = URL(string: (Bundle.main.infoDictionary?["BrunoApiUrl"] as? String) ?? "https://bruno-the-vibe-company.vercel.app")!
+        base = URL(string: (Bundle.main.infoDictionary?["BrunoApiUrl"] as? String) ?? "https://bruno.thevibecompany.co")!
         #endif
         let conf = URLSessionConfiguration.default
         conf.httpCookieStorage = .shared

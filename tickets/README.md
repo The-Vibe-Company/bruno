@@ -14,6 +14,8 @@ une raison, cartes épurées, Rouvrir, la fiche façon Notion, le sélecteur mai
 **Reste BRU-25 (le push)** — et trois choses d'Antoine : un compte Apple
 Developer (Team ID, signature, TestFlight), un identifiant OAuth Google *iOS*, et une clé APNs.
 Et une quatrième, côté web : `ANTHROPIC_API_KEY` dans Vercel pour allumer l'Enrichissement.
+**La prod vit sur `https://bruno.thevibecompany.co` depuis le 11 septembre** (avant, elle était vide :
+voir BRU-42).
 
 ## Ordre de livraison
 

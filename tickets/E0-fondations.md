@@ -59,6 +59,12 @@ les problèmes d'intégration à la fin.
       actif** sur `/api/cron/relances` : la condition ouverte de l'ADR 0001 est un fait
 - [x] Un premier déploiement en production réussi — `bruno-the-vibe-company.vercel.app`,
       derrière Deployment Protection, ce qui est le bon réglage pour un outil interne
+- [x] **11 septembre : `https://bruno.thevibecompany.co`** (CNAME chez Cloudflare, compte de Stan).
+      Au passage, une vraie faute trouvée : le projet Vercel n'avait **pas de dossier racine**, donc
+      chaque déploiement Git construisait la racine du repo — vide — en 163 ms, et la prod était un
+      404 depuis la liaison du repo, caché derrière la connexion Vercel. Réglé : dossier racine `web`,
+      framework Next.js, et le `package-lock.json` vide de la racine retiré. Leçon : un build Vercel
+      qui « réussit » en moins d'une seconde n'a rien construit
 
 ## BRU-3 — API Tâches
 
