@@ -1,0 +1,23 @@
+ios/Bruno/Reseau/Api.swift
+  s_09427aeab13931::t_8bd840193f4e96 27
+tickets/E0-fondations.md
+  s_09427aeab13931::t_6ae0b38f967748 62-67
+tickets/README.md
+  s_09427aeab13931::t_343423467f1728 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a9696374608676c9f54eac72c09095c248957dd5",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
