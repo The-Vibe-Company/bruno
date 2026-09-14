@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { lister, terminees } from "@/api/taches";
 import { enCours, lister as listerAffectations } from "@/api/affectations";
 import { Affectations } from "@/board/Affectations";
-import { Recherche } from "@/board/Filtres";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import type { TacheAttente, TacheFinie } from "@/board/EnAttente";
@@ -19,14 +18,14 @@ import { Coquille } from "./Coquille";
 export const dynamic = "force-dynamic";
 
 /** Le Board : Sur le feu en kanban. La colonne latérale (À trier, À venir, Idées) arrive avec BRU-14. */
-export default async function Board({ searchParams }: { searchParams: Promise<{ q?: string; membres?: string }> }) {
+export default async function Board({ searchParams }: { searchParams: Promise<{ membres?: string }> }) {
   const session = await sessionCourante();
   if (!session) redirect("/api/auth/google");
-  const { q, membres: filtre } = await searchParams;
+  const { membres: filtre } = await searchParams;
 
   const { jour } = instant();
   const [taches, aTrier, aVenir, idees, finiesRecemment, membres, affectations, choix] = await Promise.all([
-    lister(session, { bucket: "sur_le_feu", inclureTerminees: false, q: q?.trim() || undefined }),
+    lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
     lister(session, { bucket: "a_trier", inclureTerminees: false }),
     lister(session, { bucket: "a_venir", inclureTerminees: false }),
     lister(session, { bucket: "idees", inclureTerminees: false }),
@@ -73,7 +72,6 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         <span className="text-[13px] text-texte-sourd">{libelleLong()}</span>
         <FiltreMembres membres={membres} />
         <div className="flex-1" />
-        <Recherche />
       </header>
       <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} />
       <main className="flex min-h-0 flex-1 flex-col">

@@ -106,3 +106,11 @@ Un doigt qui glisse sur « Terminé » n'efface rien.
       les Aidants se choisissent un par un depuis « + »
 - [x] Le Statut se change depuis la fiche, Bloqué avec sa raison
 
+## BRU-64 — La recherche s'en va · **livré le 14 septembre**
+
+Antoine : « enlève aussi le "Rechercher", il sert à rien ». À trois sur un board qui tient à
+l'écran, on lit, on ne cherche pas.
+
+- [x] Le champ quitte l'en-tête du Board. Le filtre par Membre reste : lui sert
+- [x] Le filtre `q` de `GET /api/taches` reste — il est au contrat, testé, et ne coûte rien
+
