@@ -77,9 +77,31 @@ async function parMembre(ctx: Ctx, quand: SQL | undefined): Promise<Affectations
 /** Qui est sur quoi, maintenant. */
 export const enCours = (ctx: Ctx) => parMembre(ctx, isNull(affectationMembre.fin));
 
-/** Qui a été sur quoi entre deux jours — une semaine, pour Fait. */
-export const surLaPeriode = (ctx: Ctx, du: string, au: string) =>
-  parMembre(ctx, and(lte(affectationMembre.debut, au), or(isNull(affectationMembre.fin), gte(affectationMembre.fin, du))));
+/**
+ * Qui a été sur quoi entre deux jours — une semaine, pour Fait. Une Affectation quittée puis
+ * reprise dans la même période ne se lit qu'une fois : ce qui compte ici, c'est sur quoi la
+ * personne était, pas en combien de fois. La période retenue va du premier début à la dernière
+ * fin — encore en cours si l'un des passages l'est.
+ */
+export async function surLaPeriode(ctx: Ctx, du: string, au: string): Promise<AffectationsMembre[]> {
+  const par = await parMembre(ctx, and(lte(affectationMembre.debut, au), or(isNull(affectationMembre.fin), gte(affectationMembre.fin, du))));
+  return par.map((m) => ({ ...m, affectations: fondre(m.affectations) }));
+}
+
+/** Plusieurs passages sur la même Affectation n'en font qu'un. */
+export function fondre(sur: Sur[]): Sur[] {
+  const par = new Map<string, Sur>();
+  for (const a of sur) {
+    const deja = par.get(a.affectationId);
+    if (!deja) { par.set(a.affectationId, a); continue; }
+    par.set(a.affectationId, {
+      ...deja,
+      depuis: a.depuis < deja.depuis ? a.depuis : deja.depuis,
+      jusqu: deja.jusqu === null || a.jusqu === null ? null : (a.jusqu > deja.jusqu ? a.jusqu : deja.jusqu),
+    });
+  }
+  return [...par.values()];
+}
 
 /** Qui était sur quoi un jour donné — la veille, pour le Daily. */
 export const auJour = (ctx: Ctx, jour: string) => surLaPeriode(ctx, jour, jour);
