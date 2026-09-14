@@ -1,0 +1,24 @@
+web/src/api/taches.ts
+  s_09427aeab13931::t_0a16d0c17865e1 70-72
+  s_09427aeab13931::t_97e8a3e367f0eb 5
+web/src/board/Kanban.tsx
+  s_09427aeab13931::t_2da809dbca3c60 28-40,44-58,158-166,173-175,241,280
+tickets/E9-design.md
+  s_09427aeab13931::t_d199a38995c65c 75-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "aa87f5f42bc4b39b43ee3b0f5e6176568c3a0fb6",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
