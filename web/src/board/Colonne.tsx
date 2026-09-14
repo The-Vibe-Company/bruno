@@ -20,7 +20,7 @@ export function Colonne({ statut, taches, membres, onTerminer, onOuvrir, onAssig
         <span className="text-xs text-texte-sourd">{taches.length}</span>
       </header>
       <SortableContext id={statut} items={taches.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-        <div ref={setNodeRef} className={`flex min-h-24 flex-1 flex-col gap-2 pt-2 rounded-b-lg transition-colors ${isOver ? "bg-surface-2" : ""}`}>
+        <div ref={setNodeRef} className={`flex min-h-24 flex-1 flex-col gap-2 overflow-y-auto pt-2 rounded-b-lg transition-colors ${isOver ? "bg-surface-2" : ""}`}>
           {taches.map((t) => <Carte key={t.id} tache={t} membres={membres} onTerminer={onTerminer} onOuvrir={onOuvrir} onAssigner={onAssigner} />)}
         </div>
       </SortableContext>

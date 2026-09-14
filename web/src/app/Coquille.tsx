@@ -14,7 +14,7 @@ const ENTREES: { page: Page; href: string; libelle: string; icone: ReactNode }[]
 
 export function Coquille({ children, initiale, avatar, page = "board" }: { children: ReactNode; initiale: string; avatar?: string | null; page?: Page }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-dvh overflow-hidden">
       <aside className="flex w-14 flex-none flex-col items-center gap-1.5 border-r border-bord-2 py-4">
         <Link href="/" aria-label="Bruno" className="mb-5 flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-accent text-[19px] font-semibold leading-none tracking-tighter text-sur-accent">
           B<span className="ml-px mt-2 inline-block h-1 w-1 rounded-full bg-sur-accent" />
@@ -30,7 +30,7 @@ export function Coquille({ children, initiale, avatar, page = "board" }: { child
           {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initiale}
         </Link>
       </aside>
-      <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
     </div>
   );
 }
