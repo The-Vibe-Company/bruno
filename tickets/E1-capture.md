@@ -64,3 +64,13 @@ Le meilleur levier du pilier 1 : supprimer les trois secondes d'ouverture d'app.
       aujourd'hui · 1 à trier` (les chiffres viennent de l'app, par le groupe d'apps). Les états
       *Enregistrement* et *Envoyé* de la maquette supposaient un micro dans le widget : ils
       n'existent pas
+
+## BRU-55 — Ajouter une Tâche depuis le web · **livré le 14 septembre**
+
+Antoine, le 14 septembre : « on peut pas ajouter une tâche sur Bruno web ! ». La Capture était
+pensée pour l'iPhone ; le web n'avait aucun champ.
+
+- [x] En haut du panneau En attente, un champ « Une tâche, une idée… ⏎ » : Entrée crée la Tâche,
+      elle atterrit À trier comme une Capture, Échap vide le champ
+- [x] Rail replié : un « + » déplie le panneau avec le champ prêt
+
