@@ -1,0 +1,21 @@
+web/src/app/page.tsx
+  s_09427aeab13931::t_a3a5994fd5547f 21,24,28
+tickets/E3-sur-le-feu.md
+  s_09427aeab13931::t_f952005bb7452a 109-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b61be5b28d3fb93421c4e24c2ff28509d561ddd8",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
