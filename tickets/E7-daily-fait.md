@@ -70,3 +70,14 @@ Il peut mettre les skills qu'il a codé (le lien skillpack des skills). »
 - [x] Une semaine, une page blanche : rien ne se traîne d'une semaine à l'autre
 - [x] Table `sujet` (migration 0005), `GET/POST /api/sujets`, `DELETE /api/sujets/{id}`, 6 tests
 
+## BRU-63 — Fait : les colonnes s'alignent · **livré le 14 septembre**
+
+Antoine : « les Tâches d'Antoine, comme il y a eu 2 Affectations, commencent plus bas que celles
+de Victor qui n'en a pas eu ».
+
+- [x] Les trois colonnes partagent leurs lignes (grille en `subgrid`) : le nom, les Affectations,
+      les Tâches commencent à la même hauteur quel qu'en soit le nombre
+- [x] Les Affectations se posent sur une ligne qui passe à la ligne, plus l'une sous l'autre
+- [x] Chaque Tâche porte la pastille du Board — pleine si Terminé, pointillée si Abandonné — au
+      lieu du mot en bout de ligne ; « Rien de fini » quand il n'y a rien
+

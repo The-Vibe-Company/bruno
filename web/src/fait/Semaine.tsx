@@ -16,6 +16,7 @@ export function Semaine({ semaine, membres, onOuvrir }: { semaine: Semaine; memb
   const terminees = semaine.taches.filter((t) => t.etat === "termine").length;
   const abandonnees = semaine.taches.length - terminees;
   const compte = [accord(terminees, "terminée"), accord(abandonnees, "abandonnée")].filter(Boolean).join(" · ") || "rien encore";
+  const colonnes = Math.min(Math.max(membres.length, 1), 3);
   const personnes = membres
     .map((m) => ({ ...m, taches: semaine.taches.filter((t) => t.assigneId === m.id), sur: semaine.affectations.find((a) => a.membreId === m.id)?.affectations ?? [] }))
     .filter((p) => p.taches.length > 0 || p.sur.length > 0);
@@ -28,23 +29,35 @@ export function Semaine({ semaine, membres, onOuvrir }: { semaine: Semaine; memb
         <span className="flex-1" />
         <span className="text-sm text-texte-sourd">{compte}</span>
       </summary>
-      <div className="grid gap-x-10 gap-y-6 pb-6 pl-6" style={{ gridTemplateColumns: `repeat(${Math.min(Math.max(personnes.length, 1), 3)}, minmax(0, 1fr))` }}>
+      <div className="grid gap-x-10 gap-y-8 pb-6 pl-6"
+        style={{
+          gridTemplateColumns: `repeat(${colonnes}, minmax(0, 1fr))`,
+          // Trois lignes par personne — le nom, les Affectations, les Tâches — partagées par
+          // toutes les colonnes : sans ça, deux Affectations chez l'un décalent ses Tâches vers
+          // le bas et plus rien ne s'aligne.
+          gridTemplateRows: `repeat(${Math.ceil(Math.max(personnes.length, 1) / colonnes) * 3}, auto)`,
+        }}>
         {personnes.length === 0 && <p className="text-[15px] text-texte-faible">Rien de fini cette semaine.</p>}
         {personnes.map((p) => (
-          <section key={p.id}>
+          <section key={p.id} className="row-span-3 grid grid-rows-subgrid">
             <h3 className="flex items-center gap-2 text-[13.5px] text-texte-sourd"><Initiale nom={p.nom} avatar={p.avatar} />{p.nom}</h3>
-            <div className="mt-2 flex flex-col gap-1">
+            <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 self-start">
               {p.sur.length === 0 && <span className="text-[15px] text-texte-faible">Aucune Affectation</span>}
               {p.sur.map((a) => (
-                <span key={a.id} className="flex items-center gap-2.5"><span className="h-[18px] w-1" style={{ background: a.couleur }} /><span className="text-lg font-medium leading-none tracking-tight">{a.nom}</span></span>
+                <span key={a.id} className="flex items-center gap-2.5">
+                  <span className="h-[18px] w-1 flex-none" style={{ background: a.couleur }} />
+                  <span className="text-lg font-medium leading-none tracking-tight">{a.nom}</span>
+                </span>
               ))}
             </div>
-            <ul className="mt-3">
+            <ul className="mt-3 self-start">
+              {p.taches.length === 0 && <li className="border-t border-bord-2 py-2.5 text-[14px] text-texte-faible">Rien de fini</li>}
               {p.taches.map((t) => (
                 <li key={t.id} className="flex items-center gap-3 border-t border-bord-2 py-2.5">
-                  <button onClick={() => onOuvrir(t.id)} className={`flex-1 text-left text-[15.5px] hover:text-accent ${t.etat === "abandonne" ? "text-texte-sourd" : ""}`}>{t.titre}</button>
-                  <span className="text-[13px] text-texte-faible">{libelleJour(t.jour)}</span>
-                  <span className={`w-[76px] text-right text-[13px] ${t.etat === "termine" ? "text-accent" : "text-texte-faible"}`}>{t.etat === "termine" ? "Terminé" : "Abandonné"}</span>
+                  <span title={t.etat === "termine" ? "Terminé" : "Abandonné"}
+                    className={`h-[15px] w-[15px] flex-none rounded-full border-[1.5px] ${t.etat === "termine" ? "border-accent bg-accent-voile" : "border-dashed border-texte-tres-faible"}`} />
+                  <button onClick={() => onOuvrir(t.id)} className={`min-w-0 flex-1 truncate text-left text-[15.5px] hover:text-accent ${t.etat === "abandonne" ? "text-texte-sourd" : ""}`}>{t.titre}</button>
+                  <span className="flex-none text-[13px] text-texte-faible">{libelleJour(t.jour)}</span>
                 </li>
               ))}
             </ul>
