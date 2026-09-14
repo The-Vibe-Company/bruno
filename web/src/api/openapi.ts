@@ -16,7 +16,7 @@ const composants = {
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
-  Sujet: C.Sujet, PoserSujet: C.PoserSujet, FiltreSujets: C.FiltreSujets,
+  Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -166,7 +166,7 @@ export function documentOpenApi() {
       "/api/sujets": {
         get: {
           summary: "Les Sujets d'une semaine",
-          description: "Ce dont chacun veut parler au Weekly. Rien à cocher : la semaine suivante repart d'une page blanche.",
+          description: "Ce dont on parle au Weekly, rangé en trois encarts : skills, projects, wins. Rien à cocher : la semaine suivante repart d'une page blanche.",
           parameters: [{ name: "lundi", in: "query", required: true, schema: { type: "string", format: "date" } }],
           responses: { 200: { description: "Les Sujets", content: { "application/json": { schema: { type: "array", items: ref("Sujet") } } } } },
         },
@@ -179,6 +179,7 @@ export function documentOpenApi() {
       },
       "/api/sujets/{id}": {
         parameters: [idTache],
+        patch: { summary: "Changer à qui il est, ou ce qu'il dit", requestBody: corps("ModifierSujet"), responses: { 200: { description: "Le Sujet", content: { "application/json": { schema: ref("Sujet") } } } } },
         delete: { summary: "Retirer un Sujet", responses: { 204: { description: "Retiré" } } },
       },
       "/api/taches/{id}/rouvrir": {

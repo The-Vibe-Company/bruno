@@ -262,11 +262,15 @@ export const recurrence = pgTable("recurrence", {
  * une semaine (son lundi), écrit par n'importe qui — comme les Affectations, on ne verrouille
  * pas qui touche à quoi. Rien de plus qu'une ligne de texte : les liens y vivent en clair.
  */
+export const rubriqueEnum = pgEnum("rubrique", ["skills", "projects", "wins"]);
+
 export const sujet = pgTable("sujet", {
   id: uuid("id").primaryKey().defaultRandom(),
   spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
   /** Le lundi de la semaine concernée — la même clé que les semaines de Fait. */
   lundi: date("lundi").notNull(),
+  /** Dans quel encart il se range : les skills, les projets, les victoires. */
+  rubrique: rubriqueEnum("rubrique").notNull().default("projects"),
   /** De qui on parle. Un Membre parti emporte ses Sujets : ils ne valent que pour la réunion. */
   membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
   texte: text("texte").notNull(),
@@ -274,6 +278,6 @@ export const sujet = pgTable("sujet", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   check("sujet_texte_non_vide", sql`length(btrim(${t.texte})) > 0`),
-  index("sujet_semaine").on(t.spaceId, t.lundi),
+  index("sujet_semaine").on(t.spaceId, t.lundi, t.rubrique),
 ]);
 

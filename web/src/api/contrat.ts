@@ -158,9 +158,12 @@ export const PoserRecurrence = z.object({
 
 /* ------------------------------------------------------------------ le Weekly */
 
+export const Rubrique = z.enum(["skills", "projects", "wins"]);
+
 export const Sujet = z.object({
   id: uuid,
   lundi: jour,
+  rubrique: Rubrique,
   membreId: uuid,
   texte: z.string(),
   auteur: z.string().nullable(),
@@ -170,7 +173,14 @@ export const Sujet = z.object({
 export const FiltreSujets = z.object({ lundi: jour });
 export const PoserSujet = z.object({
   lundi: jour,
+  rubrique: Rubrique,
   membreId: uuid,
   texte: z.string().trim().min(1, "Un Sujet sans texte n'en est pas un").max(500),
+});
+
+/** Ce qui se change sur un Sujet posé : à qui il est, ce qu'il dit. */
+export const ModifierSujet = z.object({
+  membreId: uuid.optional(),
+  texte: z.string().trim().min(1).max(500).optional(),
 });
 

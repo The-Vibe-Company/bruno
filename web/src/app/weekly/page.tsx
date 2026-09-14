@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { surLaPeriode } from "@/api/affectations";
+import { lister as listerAffectations, surLaPeriode } from "@/api/affectations";
+import { Affectations } from "@/board/Affectations";
 import { lister } from "@/api/sujets";
 import { sessionCourante } from "@/auth/serveur";
 import { db } from "@/db/client";
@@ -23,10 +24,11 @@ export default async function Weekly() {
   const { jour } = instant();
   const lundi = lundiDe(jour);
 
-  const [affectations, sujets, membres] = await Promise.all([
+  const [affectations, sujets, membres, choix] = await Promise.all([
     surLaPeriode(session, lundi, dimancheDe(lundi)),
     lister(session, lundi),
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    listerAffectations(session),
   ]);
 
   return (
@@ -37,8 +39,12 @@ export default async function Weekly() {
         <div className="flex-1" />
         <span className="text-[12.5px] text-texte-faible">Un lien collé devient cliquable — un skill, par exemple.</span>
       </header>
+      {/* Qui est sur quoi, comme sur le Board : la réunion commence par là. */}
+      <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} />
       <main className="min-h-0 flex-1 overflow-y-auto px-10 py-7">
-        <Sujets lundi={lundi} membres={membres} affectations={affectations} initiaux={sujets} moiId={session.membreId} />
+        <div className="mx-auto max-w-[900px]">
+          <Sujets lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} />
+        </div>
       </main>
     </Coquille>
   );

@@ -186,15 +186,16 @@ _Avoid_: Standup, réunion, dashboard, tableau de bord
 
 **Weekly**:
 La réunion de la semaine, et son écran. Comme le Daily, il rappelle l'Affectation de chacun —
-mais il porte une chose à lui : les **Sujets**. Une semaine, une page blanche : rien ne se
+mais il porte une chose à lui : trois encarts repliables, *Skills of the week*, *Projects of the
+week*, *Wins of the week*, remplis de **Sujets**. Une semaine, une page blanche : rien ne se
 traîne d'une semaine à l'autre.
 _Avoid_: Rétro, rétrospective, bilan hebdo, points divers
 
 **Sujet**:
-Ce dont quelqu'un veut parler au Weekly : une ligne de texte, rattachée à un Membre et à une
-semaine. N'importe qui écrit sur la liste de n'importe qui — c'est une réunion, pas un dossier
-personnel. Un lien collé dedans devient cliquable : c'est comme ça qu'on montre un skill. Un
-Sujet n'est pas une Tâche : rien à assigner, rien à terminer, rien à reporter.
+Une ligne dans un encart du Weekly : un texte, la personne dont il relève, et sa **Rubrique**
+(skills, projects, wins). N'importe qui écrit sur la liste de n'importe qui — c'est une réunion,
+pas un dossier personnel. Un lien collé dedans devient cliquable : c'est comme ça qu'on montre
+un skill. Un Sujet n'est pas une Tâche : rien à terminer, rien à reporter.
 _Avoid_: Point, item, ticket, ordre du jour, todo de réunion
 
 ### La capture

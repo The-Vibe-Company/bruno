@@ -43,6 +43,13 @@
       "when": 1789407064200,
       "tag": "0005_weekly",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789411712795,
+      "tag": "0006_rubriques",
+      "breakpoints": true
     }
   ]
 }
