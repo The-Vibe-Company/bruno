@@ -71,11 +71,31 @@ function CarteATrier({ t, onDestination, onSupprimer }: { t: TacheAttente; onDes
   );
 }
 
-export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir }: {
+/** Une Tâche tapée ici va À trier, comme une Capture : un titre, Entrée, et on la range après. */
+function Capture({ onCreer, autoFocus }: { onCreer: (titre: string) => Promise<void>; autoFocus?: boolean }) {
+  const [titre, setTitre] = useState("");
+  const [occupe, setOccupe] = useState(false);
+  async function valider() {
+    const t = titre.trim();
+    if (!t || occupe) return;
+    setOccupe(true);
+    try { await onCreer(t); setTitre(""); } finally { setOccupe(false); }
+  }
+  return (
+    <input value={titre} onChange={(e) => setTitre(e.target.value)} autoFocus={autoFocus} aria-label="Nouvelle tâche" placeholder="Une tâche, une idée… ⏎"
+      onKeyDown={(e) => { if (e.key === "Enter") valider(); if (e.key === "Escape") setTitre(""); }}
+      className="mx-4 mb-2 h-9 flex-none rounded-lg border border-bord-fort bg-fond px-3 text-[13.5px] outline-none placeholder:text-texte-faible focus:border-accent" />
+  );
+}
+
+export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCreer }: {
   taches: TacheAttente[];
   onDestination: (t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") => void;
   onSupprimer: (id: string) => void; onOuvrir: (id: string) => void;
+  onCreer: (titre: string) => Promise<void>;
 }) {
+  // Depuis le rail replié, « + » déplie le panneau avec le champ déjà prêt.
+  const [focusCapture, setFocusCapture] = useState(false);
   const [ouverts, setOuverts] = useState<Record<Bucket, boolean>>({ a_trier: true, a_venir: false, idees: false });
   const replie = useReplie();
   const par = (b: Bucket) => taches.filter((t) => t.bucket === b);
@@ -85,6 +105,10 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir }: {
     return (
       <aside className="flex w-14 flex-none flex-col items-center gap-1 border-l border-bord-faible bg-surface-3 pb-4 pt-[11px]">
         <Bascule replie onClick={() => poserReplie(false)} />
+        <button onClick={() => { setOuverts((o) => ({ ...o, a_trier: true })); setFocusCapture(true); poserReplie(false); }} aria-label="Nouvelle tâche" title="Nouvelle tâche"
+          className="mt-1 flex h-8 w-8 items-center justify-center rounded-md text-accent hover:bg-surface-2">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"><path d="M8 2.5v11M2.5 8h11" /></svg>
+        </button>
         {BUCKETS.map((b) => (
           <button key={b} onClick={() => { setOuverts((o) => ({ ...o, [b]: true })); poserReplie(false); }} aria-label={`${LIBELLE[b]} · ${par(b).length}`} title={LIBELLE[b]}
             className="mt-2 flex w-12 flex-col items-center gap-1 rounded-md py-2 text-texte-sourd hover:bg-surface-2 hover:text-texte">
@@ -99,6 +123,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir }: {
   return (
     <aside className="flex w-[320px] flex-none flex-col border-l border-bord-faible bg-surface-3">
       <header className="flex h-[54px] flex-none items-center pl-5 pr-3"><h2 className="flex-1 text-[15px] font-medium tracking-tight">En attente</h2><Bascule replie={false} onClick={() => poserReplie(true)} /></header>
+      <Capture onCreer={onCreer} autoFocus={focusCapture} />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-4">
         {BUCKETS.map((b) => (
           <section key={b}>

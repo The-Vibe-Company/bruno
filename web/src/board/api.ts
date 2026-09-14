@@ -26,6 +26,9 @@ export const deplacerBucket = (id: string, destination: Destination) => poster(`
 export const abandonner = (id: string) => poster(`/api/taches/${id}/abandonner`);
 /** Un Terminé ou un Abandonné de trop : la fin s'efface, tout le reste est resté. */
 export const rouvrir = (id: string) => poster(`/api/taches/${id}/rouvrir`);
+/** Une Tâche tapée sur le web : elle atterrit À trier, comme une Capture. */
+export const creerTache = (titre: string) => poster("/api/taches", { titre });
+
 export type Patch = { titre?: string; notes?: string | null; assigneId?: string; aidantIds?: string[]; raisonBlocage?: string };
 /** Modifier ce qui se modifie librement : titre, Notes, Assigné, Aidants, raison du blocage. Jamais l'Engagement Sur le feu. */
 export async function modifierTache(id: string, patch: Patch) {
