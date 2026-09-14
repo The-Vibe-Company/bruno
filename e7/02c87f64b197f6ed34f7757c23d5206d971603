@@ -1,0 +1,25 @@
+web/src/board/api.ts
+  s_09427aeab13931::t_380663a475efba 29-31
+web/src/board/EnAttente.tsx
+  s_09427aeab13931::t_380663a475efba 74-91,95,97-98,108-111,126
+web/src/board/Kanban.tsx
+  s_09427aeab13931::t_380663a475efba 5,188
+tickets/E1-capture.md
+  s_09427aeab13931::t_9dbcb92658d254 67-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e702c87f64b197f6ed34f7757c23d5206d971603",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
