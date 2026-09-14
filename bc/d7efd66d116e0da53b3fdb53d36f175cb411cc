@@ -1,0 +1,25 @@
+web/src/app/globals.css
+  s_09427aeab13931::t_d9b7671864cd19 188-193
+web/src/app/(bruno)/weekly/page.tsx
+  s_09427aeab13931::t_d9b7671864cd19 16-17,31
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_339ac9f23e4135 66-67
+tickets/E9-design.md
+  s_09427aeab13931::t_ef38a48b1eb987 72-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bcd7efd66d116e0da53b3fdb53d36f175cb411cc",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
