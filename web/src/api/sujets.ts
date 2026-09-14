@@ -13,14 +13,15 @@ import { introuvable } from "./erreurs";
 import { traduire } from "./erreurs";
 
 type Ctx = { spaceId: string; membreId: string };
-export type SujetLu = { id: string; lundi: string; membreId: string; texte: string; auteur: string | null; createdAt: string };
+export type Rubrique = z.infer<typeof C.Rubrique>;
+export type SujetLu = { id: string; lundi: string; rubrique: Rubrique; membreId: string; texte: string; auteur: string | null; createdAt: string };
 
 const colonnes = {
-  id: sujet.id, lundi: sujet.lundi, membreId: sujet.membreId, texte: sujet.texte,
+  id: sujet.id, lundi: sujet.lundi, rubrique: sujet.rubrique, membreId: sujet.membreId, texte: sujet.texte,
   auteur: membre.nom, createdAt: sujet.createdAt,
 };
 
-const lu = (l: { id: string; lundi: string; membreId: string; texte: string; auteur: string | null; createdAt: Date }): SujetLu =>
+const lu = (l: { id: string; lundi: string; rubrique: Rubrique; membreId: string; texte: string; auteur: string | null; createdAt: Date }): SujetLu =>
   ({ ...l, createdAt: l.createdAt.toISOString() });
 
 /** Les Sujets d'une semaine, du plus ancien au plus récent : l'ordre où on les a posés. */
@@ -38,11 +39,30 @@ export async function poser(ctx: Ctx, entree: z.infer<typeof C.PoserSujet>): Pro
       .where(and(eq(membre.id, entree.membreId), eq(membre.spaceId, ctx.spaceId), eq(membre.actif, true)));
     if (!m) throw introuvable("Membre");
     const [cree] = await db.insert(sujet)
-      .values({ spaceId: ctx.spaceId, lundi: entree.lundi, membreId: entree.membreId, texte: entree.texte, creeParId: ctx.membreId })
+      .values({ spaceId: ctx.spaceId, lundi: entree.lundi, rubrique: entree.rubrique, membreId: entree.membreId, texte: entree.texte, creeParId: ctx.membreId })
       .returning({ id: sujet.id });
     const [ligne] = await db.select(colonnes).from(sujet)
       .leftJoin(membre, eq(membre.id, sujet.creeParId))
       .where(eq(sujet.id, cree.id));
+    return lu(ligne);
+  });
+}
+
+/** Changer à qui il est, ou ce qu'il dit. */
+export async function modifier(ctx: Ctx, id: string, patch: z.infer<typeof C.ModifierSujet>): Promise<SujetLu> {
+  return traduire(async () => {
+    if (patch.membreId) {
+      const [m] = await db.select({ id: membre.id }).from(membre)
+        .where(and(eq(membre.id, patch.membreId), eq(membre.spaceId, ctx.spaceId), eq(membre.actif, true)));
+      if (!m) throw introuvable("Membre");
+    }
+    if (Object.keys(patch).length > 0) {
+      await db.update(sujet).set(patch).where(and(eq(sujet.id, id), eq(sujet.spaceId, ctx.spaceId)));
+    }
+    const [ligne] = await db.select(colonnes).from(sujet)
+      .leftJoin(membre, eq(membre.id, sujet.creeParId))
+      .where(and(eq(sujet.id, id), eq(sujet.spaceId, ctx.spaceId)));
+    if (!ligne) throw introuvable("Sujet");
     return lu(ligne);
   });
 }
