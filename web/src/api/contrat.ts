@@ -155,3 +155,22 @@ export const PoserRecurrence = z.object({
     .refine((d) => d[0] === 0, "La première occurrence tombe le jour même")
     .refine((d) => d.every((x, i) => i === 0 || x > d[i - 1]), "Les Engagements s'échelonnent dans l'ordre"),
 });
+
+/* ------------------------------------------------------------------ le Weekly */
+
+export const Sujet = z.object({
+  id: uuid,
+  lundi: jour,
+  membreId: uuid,
+  texte: z.string(),
+  auteur: z.string().nullable(),
+  createdAt: z.string(),
+});
+
+export const FiltreSujets = z.object({ lundi: jour });
+export const PoserSujet = z.object({
+  lundi: jour,
+  membreId: uuid,
+  texte: z.string().trim().min(1, "Un Sujet sans texte n'en est pas un").max(500),
+});
+
