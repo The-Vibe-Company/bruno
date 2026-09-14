@@ -56,3 +56,17 @@ nombre de Reports et tout ».
 - [x] Ni Statut ni Report sur une Tâche finie : ils n'ont plus de sens
 - [x] Les Aidants suivent la Tâche jusqu'au bout — `terminees()` les rend désormais
 
+## BRU-62 — Le Weekly · **livré le 14 septembre**
+
+Antoine : « je veux aussi un autre onglet en dessous de Daily qui s'appelle Weekly, et qui
+rappelle les Affectations de chacun. Ça permet à chacun d'ajouter les sujets dont il veut parler.
+Il peut mettre les skills qu'il a codé (le lien skillpack des skills). »
+
+- [x] Un onglet **Weekly** sous Daily : une colonne par Membre, son Affectation de la semaine
+      en tête (fondue, cf. BRU-60)
+- [x] Des **Sujets** : une ligne de texte, Entrée pour poser, ✕ pour retirer. N'importe qui écrit
+      sur la liste de n'importe qui — c'est une réunion, pas un dossier personnel
+- [x] **Un lien collé devient cliquable** : c'est comme ça qu'on montre un skill
+- [x] Une semaine, une page blanche : rien ne se traîne d'une semaine à l'autre
+- [x] Table `sujet` (migration 0005), `GET/POST /api/sujets`, `DELETE /api/sujets/{id}`, 6 tests
+

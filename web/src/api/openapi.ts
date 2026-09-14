@@ -16,6 +16,7 @@ const composants = {
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
+  Sujet: C.Sujet, PoserSujet: C.PoserSujet, FiltreSujets: C.FiltreSujets,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -161,6 +162,24 @@ export function documentOpenApi() {
         get: { summary: "Une règle", responses: { 200: { description: "La règle", content: { "application/json": { schema: ref("Recurrence") } } } } },
         put: { summary: "Modifier une règle", description: "Sans effet sur les Tâches déjà fabriquées (règle 20).", requestBody: corps("PoserRecurrence"), responses: { 200: { description: "La règle" } } },
         delete: { summary: "Supprimer une règle", description: "Les Tâches nées de la règle restent.", responses: { 204: { description: "Supprimée" } } },
+      },
+      "/api/sujets": {
+        get: {
+          summary: "Les Sujets d'une semaine",
+          description: "Ce dont chacun veut parler au Weekly. Rien à cocher : la semaine suivante repart d'une page blanche.",
+          parameters: [{ name: "lundi", in: "query", required: true, schema: { type: "string", format: "date" } }],
+          responses: { 200: { description: "Les Sujets", content: { "application/json": { schema: { type: "array", items: ref("Sujet") } } } } },
+        },
+        post: {
+          summary: "Poser un Sujet",
+          description: "Sur sa liste ou celle d'un autre — c'est une réunion, pas un dossier personnel.",
+          requestBody: corps("PoserSujet"),
+          responses: { 200: { description: "Le Sujet", content: { "application/json": { schema: ref("Sujet") } } } },
+        },
+      },
+      "/api/sujets/{id}": {
+        parameters: [idTache],
+        delete: { summary: "Retirer un Sujet", responses: { 204: { description: "Retiré" } } },
       },
       "/api/taches/{id}/rouvrir": {
         parameters: [idTache],

@@ -36,6 +36,13 @@
       "when": 1788960091147,
       "tag": "0004_colorful_darwin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789407064200,
+      "tag": "0005_weekly",
+      "breakpoints": true
     }
   ]
 }

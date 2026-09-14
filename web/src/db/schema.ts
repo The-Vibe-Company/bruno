@@ -256,3 +256,24 @@ export const recurrence = pgTable("recurrence", {
   check("recurrence_decalages_alignes",
     sql`array_length(${t.decalages}, 1) = ${t.occurrences} AND ${t.decalages}[1] = 0`),
 ]);
+
+/**
+ * Un Sujet du Weekly : ce dont quelqu'un veut parler cette semaine. Rattaché à un Membre et à
+ * une semaine (son lundi), écrit par n'importe qui — comme les Affectations, on ne verrouille
+ * pas qui touche à quoi. Rien de plus qu'une ligne de texte : les liens y vivent en clair.
+ */
+export const sujet = pgTable("sujet", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  /** Le lundi de la semaine concernée — la même clé que les semaines de Fait. */
+  lundi: date("lundi").notNull(),
+  /** De qui on parle. Un Membre parti emporte ses Sujets : ils ne valent que pour la réunion. */
+  membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
+  texte: text("texte").notNull(),
+  creeParId: uuid("cree_par_id").references(() => membre.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  check("sujet_texte_non_vide", sql`length(btrim(${t.texte})) > 0`),
+  index("sujet_semaine").on(t.spaceId, t.lundi),
+]);
+

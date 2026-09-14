@@ -184,6 +184,19 @@ Membre : son Affectation du jour, ce qu'il a Sur le feu aujourd'hui, ce qui est 
 seule et n'introduit aucune donnée qui n'existe déjà ailleurs.
 _Avoid_: Standup, réunion, dashboard, tableau de bord
 
+**Weekly**:
+La réunion de la semaine, et son écran. Comme le Daily, il rappelle l'Affectation de chacun —
+mais il porte une chose à lui : les **Sujets**. Une semaine, une page blanche : rien ne se
+traîne d'une semaine à l'autre.
+_Avoid_: Rétro, rétrospective, bilan hebdo, points divers
+
+**Sujet**:
+Ce dont quelqu'un veut parler au Weekly : une ligne de texte, rattachée à un Membre et à une
+semaine. N'importe qui écrit sur la liste de n'importe qui — c'est une réunion, pas un dossier
+personnel. Un lien collé dedans devient cliquable : c'est comme ça qu'on montre un skill. Un
+Sujet n'est pas une Tâche : rien à assigner, rien à terminer, rien à reporter.
+_Avoid_: Point, item, ticket, ordre du jour, todo de réunion
+
 ### La capture
 
 **Capture**:
