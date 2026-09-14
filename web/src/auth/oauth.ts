@@ -30,10 +30,10 @@ export function debutAutorisation(request: Request) {
   url.searchParams.set("state", etat);
   // Ne proposer que les comptes du domaine : le refus survient avant même l'écran de choix.
   url.searchParams.set("hd", process.env.BRUNO_DOMAINE ?? "thevibecompany.co");
-  // Après une déconnexion (`?choisir=1`), Google doit proposer le choix du compte — sinon, avec
-  // un seul compte ouvert, il reconnecte le même sans rien demander. Le retour automatique
-  // d'une session expirée, lui, reste silencieux.
-  if (new URL(request.url).searchParams.has("choisir")) url.searchParams.set("prompt", "select_account");
+  // Toujours repasser par l'écran de Google. Sans ça, avec un seul compte ouvert dans le
+  // navigateur, Google reconnecte le même sans rien montrer — et se déconnecter ne sert à rien
+  // (Antoine, 14 septembre). Un clic de plus à chaque connexion, et chacun voit qui il est.
+  url.searchParams.set("prompt", "select_account");
   const cookie = `${COOKIE_ETAT}=${etat}; ${ATTRIBUTS_ETAT}; Max-Age=${VALIDITE_ETAT_S}`;
   return { url: url.toString(), cookie };
 }
