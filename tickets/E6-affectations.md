@@ -56,3 +56,13 @@ Les Réglages ne s'en occupent pas volontairement : ça se change là où ça se
 le client mette un bouton « je ne suis plus dessus » (`POST /api/affectations/en-cours/{id}/fin`).
 Le bouton lui-même vit dans la notification iOS, qui attend l'app (BRU-25). Le Board n'affiche
 rien : Antoine a retiré la ligne « toujours dessus ? » du bandeau le 9 septembre.*
+
+## BRU-57 — Le bandeau se change en un clic · **livré le 14 septembre**
+
+Antoine : « c'est pas beau, laisse juste le Annuler, pas besoin de confirmer ». Le bouton portait
+une phrase entière — « Stan Girard n'est plus dessus » — qui passait à la ligne.
+
+- [x] Cocher, c'est commencer aujourd'hui ; décocher, c'est ne plus être dessus. Rien à confirmer :
+      la coche bouge tout de suite, le serveur suit, et si ça rate elle revient
+- [x] Il ne reste qu'un « Fermer », discret, en bas à droite
+
