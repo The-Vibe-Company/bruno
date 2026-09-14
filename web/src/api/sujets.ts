@@ -4,7 +4,7 @@
  * réunion, pas un dossier personnel. Rien à cocher, rien à faire avancer : la semaine suivante
  * repart d'une page blanche.
  */
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import type { z } from "zod";
 import * as C from "./contrat";
 import { db } from "@/db/client";
@@ -31,6 +31,13 @@ export async function lister(ctx: Ctx, lundi: string): Promise<SujetLu[]> {
     .where(and(eq(sujet.spaceId, ctx.spaceId), eq(sujet.lundi, lundi)))
     .orderBy(asc(sujet.createdAt));
   return lignes.map(lu);
+}
+
+/** Combien de Sujets par semaine : le menu de gauche s'en sert pour dire lesquelles ont servi. */
+export async function parSemaine(ctx: Ctx): Promise<Record<string, number>> {
+  const lignes = await db.select({ lundi: sujet.lundi, combien: sql<number>`count(*)::int` })
+    .from(sujet).where(eq(sujet.spaceId, ctx.spaceId)).groupBy(sujet.lundi);
+  return Object.fromEntries(lignes.map((l) => [l.lundi, l.combien]));
 }
 
 export async function poser(ctx: Ctx, entree: z.infer<typeof C.PoserSujet>): Promise<SujetLu> {

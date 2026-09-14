@@ -76,5 +76,10 @@ export function lundiDe(jour: string): string {
 export const dimancheDe = (lundi: string): string => decale(6, lundi);
 /** « Semaine du 1 septembre ». */
 export function libelleSemaine(lundi: string): string {
-  return "Semaine du " + new Date(lundi + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "UTC" });
+  return "Semaine du " + libelleDate(lundi);
+}
+
+/** « 14 septembre » — le jour et son mois, sans l'année ni le jour de la semaine. */
+export function libelleDate(jour: string): string {
+  return new Date(jour + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "UTC" });
 }
