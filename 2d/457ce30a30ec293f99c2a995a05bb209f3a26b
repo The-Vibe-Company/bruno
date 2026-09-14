@@ -1,0 +1,32 @@
+web/src/app/page.tsx
+  s_09427aeab13931::t_599efeeba823fc 45-50
+web/src/board/Kanban.tsx
+  s_09427aeab13931::t_e3d381a14a8663 211
+  s_09427aeab13931::t_6f87e11a4a32d7 7,143-149,209,222,230
+web/src/board/api.ts
+  s_09427aeab13931::t_f1fb0e8278536d 36-37
+web/src/board/EnAttente.tsx
+  s_09427aeab13931::t_f1fb0e8278536d 7,11-13,42,47,129,133
+web/src/board/Detail.tsx
+  s_09427aeab13931::t_8f7354ec8e5cc5 4,68-81,83
+  s_09427aeab13931::t_f1fb0e8278536d 16-20,22,24-25,48-50,93,120,161-176,179,183,198,228
+  s_09427aeab13931::t_e656dd60c98592 82
+tickets/E2-buckets-tri.md
+  s_09427aeab13931::t_d7623de9100769 57-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2d457ce30a30ec293f99c2a995a05bb209f3a26b",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
