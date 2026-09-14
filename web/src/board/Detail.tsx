@@ -1,7 +1,7 @@
 "use client";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { libelleJour } from "@/lib/dates";
 import type { Patch } from "./api";
 import type { Membre, TacheCarte } from "./Carte";
@@ -13,11 +13,16 @@ const STATUT: Record<Statut, string> = { a_faire: "À faire", en_cours: "En cour
 const PASTILLE: Record<Statut, string> = { a_faire: "border-accent/40 bg-a-faire-voile text-texte", en_cours: "border-en-cours/40 bg-en-cours-voile text-texte", bloque: "border-bloque/40 bg-bloque-voile text-texte" };
 const POINT: Record<Statut, string> = { a_faire: "bg-accent", en_cours: "bg-en-cours", bloque: "bg-bloque" };
 
+/** Une Tâche telle que la fiche la montre — Sur le feu ou non : sans Statut, une Idée en a une aussi. */
+export type TacheFiche = Omit<TacheCarte, "statut"> & { statut: Statut | null; bucket: "sur_le_feu" | "a_trier" | "a_venir" | "idees" };
+
+const BUCKET: Record<TacheFiche["bucket"], string> = { sur_le_feu: "Sur le feu", a_trier: "À trier", a_venir: "À venir", idees: "Idées" };
+
 type Props = {
-  tache: TacheCarte | null; membres: Membre[]; onFermer: () => void;
+  tache: TacheFiche | null; membres: Membre[]; onFermer: () => void;
   onTerminer: (id: string) => Promise<void>; onAbandonner: (id: string) => Promise<void>; onSupprimer: (id: string) => Promise<void>;
-  onReporter: (t: TacheCarte) => void; onRaison: (t: TacheCarte) => void; onModifier: (id: string, patch: Patch) => Promise<void>;
-  onStatut: (t: TacheCarte, statut: Statut) => void;
+  onReporter: (t: TacheFiche) => void; onRaison: (t: TacheFiche) => void; onModifier: (id: string, patch: Patch) => Promise<void>;
+  onStatut: (t: TacheFiche, statut: Statut) => void;
 };
 
 /**
@@ -40,7 +45,9 @@ export function Detail(props: Props) {
   );
 }
 
-function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut }: Props & { tache: TacheCarte }) {
+function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut }: Props & { tache: TacheFiche }) {
+  // Hors Sur le feu, il n'y a ni Statut ni Report : l'Engagement se pose et se retire librement.
+  const surLeFeu = tache.bucket === "sur_le_feu";
   const [occupe, setOccupe] = useState(false);
   const [titre, setTitre] = useState(tache.titre);
   const [notes, setNotes] = useState(tache.notes ?? "");
@@ -58,8 +65,22 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
     setOccupe(true);
     try { await fn(tache.id); onFermer(); } finally { setOccupe(false); }
   };
-  const poserTitre = () => { const t = titre.trim(); if (t && t !== tache.titre) onModifier(tache.id, { titre: t }); else setTitre(tache.titre); };
-  const poserNotes = () => { const n = notes.trim(); if (n !== (tache.notes ?? "")) onModifier(tache.id, { notes: n || null }); };
+  // Ce qui est déjà parti au serveur : on ne renvoie pas deux fois la même chose, et on n'oublie
+  // rien non plus. Sans ça, Échap fermait la fiche et la note tapée était perdue.
+  const posees = useRef({ titre: tache.titre, notes: tache.notes ?? "" });
+  const poserTitre = () => {
+    const t = titre.trim();
+    if (t && t !== posees.current.titre) { posees.current.titre = t; onModifier(tache.id, { titre: t }); }
+    else if (!t) setTitre(posees.current.titre);
+  };
+  const poserNotes = () => {
+    const n = notes.trim();
+    if (n !== posees.current.notes) { posees.current.notes = n; onModifier(tache.id, { notes: n || null }); }
+  };
+  // À la fermeture — Échap, clic à côté, croix — on pose ce qui n'a pas encore été posé.
+  const sauver = useRef(() => {});
+  useEffect(() => { sauver.current = () => { poserTitre(); poserNotes(); }; });
+  useEffect(() => () => sauver.current(), []);
   /** Changer d'Assigné ne touche pas aux Aidants — sauf que le nouvel Assigné, s'il aidait, cesse d'aider. */
   const assigner = (assigneId: string) => onModifier(tache.id, { assigneId, ...(tache.aidantIds.includes(assigneId) ? { aidantIds: tache.aidantIds.filter((x) => x !== assigneId) } : {}) });
   const candidats = membres.filter((m) => m.id !== tache.assigneId && !tache.aidantIds.includes(m.id));
@@ -69,7 +90,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
   return (
     <>
       <header className="flex items-center justify-between px-6 pt-5 pb-3">
-        <span className="text-[13px] text-texte-sourd">Sur le feu · {STATUT[tache.statut]}</span>
+        <span className="text-[13px] text-texte-sourd">{BUCKET[tache.bucket]}{surLeFeu && tache.statut ? ` · ${STATUT[tache.statut]}` : ""}</span>
         <AlertDialog.Root>
           <AlertDialog.Trigger asChild>
             <button className="text-[13px] text-texte-sourd hover:text-bloque" disabled={occupe}>Supprimer</button>
@@ -96,7 +117,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <input value={titre} onChange={(e) => setTitre(e.target.value)} onBlur={poserTitre} onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { setTitre(tache.titre); e.currentTarget.blur(); } }}
             aria-label="Titre" className="-mx-1 w-[calc(100%+0.5rem)] rounded-md border border-transparent bg-transparent px-1 text-2xl font-semibold leading-tight tracking-tight outline-none hover:border-bord-faible focus:border-accent" />
           <p className="mt-1.5 text-sm text-texte-sourd">
-            Sur le feu
+            {BUCKET[tache.bucket]}
             {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
           </p>
         </div>
@@ -137,14 +158,29 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <div className={ligne}>
             <dt className={libelle}>Engagement</dt>
             <dd className="flex flex-1 items-center gap-2">
-              {tache.engagement ? libelleJour(tache.engagement) : "—"}
-              {tache.engagement && <button onClick={() => onReporter(tache)} className="text-[12.5px] text-texte-sourd hover:text-texte">par un Report</button>}
+              {surLeFeu ? (
+                <>
+                  {tache.engagement ? libelleJour(tache.engagement) : "—"}
+                  {tache.engagement && <button onClick={() => onReporter(tache)} className="text-[12.5px] text-texte-sourd hover:text-texte">par un Report</button>}
+                </>
+              ) : (
+                <>
+                  <span className="relative flex h-7 items-center gap-1.5 rounded-md px-1 hover:bg-surface-2">
+                    <span className={tache.engagement ? "" : "text-texte-faible"}>{tache.engagement ? libelleJour(tache.engagement) : "quand ?"}</span>
+                    <Chevron />
+                    <input type="date" value={tache.engagement ?? ""} onChange={(e) => onModifier(tache.id, { engagement: e.target.value || null })} aria-label="Engagement"
+                      className="absolute inset-0 cursor-pointer opacity-0 [color-scheme:dark]" />
+                  </span>
+                  {tache.engagement && <button onClick={() => onModifier(tache.id, { engagement: null })} className="text-[12.5px] text-texte-sourd hover:text-texte">retirer</button>}
+                </>
+              )}
             </dd>
           </div>
+          {surLeFeu && tache.statut && (<>
           <div className={ligne}>
             <dt className={libelle}>Statut</dt>
             <dd className="flex flex-1 items-center gap-2">
-              <Choix valeur={tache.statut} onChoisir={(s) => onStatut(tache, s as Statut)} titre="Statut"
+              <Choix valeur={tache.statut} onChoisir={(v) => onStatut(tache, v as Statut)} titre="Statut"
                 options={(["a_faire", "en_cours", "bloque"] as Statut[]).map((s) => ({ valeur: s, libelle: s === "bloque" ? "Bloqué…" : STATUT[s], pastille: <span className={`h-[7px] w-[7px] rounded-full ${POINT[s]}`} /> }))}>
                 <button aria-label="Statut" className={`flex h-7 items-center gap-1.5 rounded-full border pl-2.5 pr-2 text-[13px] font-medium ${PASTILLE[tache.statut]}`}>
                   <span className={`h-[7px] w-[7px] rounded-full ${POINT[tache.statut]}`} />{STATUT[tache.statut]}<Chevron />
@@ -159,6 +195,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
             <dt className={libelle}>Reports</dt>
             <dd className="flex-1">{tache.reportsCount}</dd>
           </div>
+          </>)}
         </dl>
 
         <hr className="border-bord-2" />
@@ -188,7 +225,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
       <footer className="flex flex-col gap-2 border-t border-bord-faible px-6 pt-4 pb-6">
         <button onClick={agir(onTerminer)} disabled={occupe} className="h-[46px] rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Terminé</button>
         <div className="flex gap-2">
-          <button onClick={() => onReporter(tache)} disabled={occupe || !tache.engagement} title={tache.engagement ? undefined : "Rien à reporter : cette Tâche n’a pas d’Engagement"} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-50">Reporter</button>
+          {surLeFeu && <button onClick={() => onReporter(tache)} disabled={occupe || !tache.engagement} title={tache.engagement ? undefined : "Rien à reporter : cette Tâche n’a pas d’Engagement"} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-50">Reporter</button>}
           <button onClick={agir(onAbandonner)} disabled={occupe} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-60">Abandonner</button>
         </div>
       </footer>

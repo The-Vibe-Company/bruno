@@ -42,9 +42,12 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
   }));
   const enAttente: TacheAttente[] = [...aTrier, ...aVenir, ...idees].map((t) => ({
-    id: t.id, titre: t.titre, bucket: t.bucket as TacheAttente["bucket"], transcriptionBrute: t.transcriptionBrute,
-    engagement: t.engagement, auteur: t.creeParId ? personne(t.creeParId) : null,
-    assigne: t.assigneId ? personne(t.assigneId) : null,
+    id: t.id, titre: t.titre, bucket: t.bucket as TacheAttente["bucket"], statut: t.statut,
+    engagement: t.engagement, reportsCount: t.reportsCount,
+    assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
+    aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+    auteur: t.creeParId ? personne(t.creeParId) : null,
   }));
 
   return (

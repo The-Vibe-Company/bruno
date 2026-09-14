@@ -54,3 +54,18 @@ Maquette : `Bruno Web v2` → écran « Board », colonne de droite.
 - [x] Recherche texte et filtre par Assigné, portés par l'URL. **Rien d'autre**
 - [x] Tout ce qui se clique montre une main : règle globale dans les tokens (le preflight de
       Tailwind v4 met `cursor: default` sur les boutons) — audit : 31 éléments, 0 fautif
+
+## BRU-56 — La fiche s'ouvre aussi hors Sur le feu · **livré le 14 septembre**
+
+Antoine : « quand je clique sur une Idée, je veux avoir la possibilité d'ajouter des notes pour
+avoir plus de contexte ». Le clic ne faisait rien : la fiche ne savait montrer qu'une Tâche
+Sur le feu.
+
+- [x] Un clic sur une Tâche du panneau — À trier, À venir, Idées — ouvre la même fiche : titre,
+      Assigné, Aidants, **Notes**, et les fins
+- [x] Hors Sur le feu, pas de Statut ni de Report ; **l'Engagement se pose et se retire librement**
+      (invariant 4 : le Report ne verrouille que Sur le feu)
+- [x] Une Tâche qui porte des notes le montre dans la liste, par une petite icône
+- [x] Corrigé au passage : Échap fermait la fiche et **perdait la note tapée** — ce qui n'est pas
+      encore parti au serveur s'enregistre à la fermeture, quelle qu'elle soit
+

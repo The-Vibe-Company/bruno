@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, useTransition } from "react";
 import { abandonner, appliquer, creerTache, deplacerBucket, modifierTache, reporter, rouvrir, supprimer, terminer, type Patch } from "./api";
 import { Blocage, type DemandeBlocage } from "./Blocage";
-import { Detail } from "./Detail";
+import { Detail, type TacheFiche } from "./Detail";
 import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
 import { EnAttente, type TacheAttente } from "./EnAttente";
 import { PourQuand, type DemandeAVenir } from "./PourQuand";
@@ -140,6 +140,13 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   }
 
   const carte = (id: string, statut: Statut): TacheCarte => ({ ...parId.get(id)!, statut });
+  /** La Tâche ouverte, d'où qu'elle vienne : une colonne Sur le feu, ou une pile du panneau. */
+  function fiche(id: string): TacheFiche | null {
+    const t = parId.get(id);
+    if (t) return { ...t, statut: colonneDe(colonnes, id) ?? t.statut, bucket: "sur_le_feu" };
+    const a = attenteParId.get(id);
+    return a ? { ...a, bucket: a.bucket } : null;
+  }
 
   async function destination(t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") {
     if (b === "sur_le_feu") { setDemande({ id: t.id, titre: t.titre, statut: "a_faire" }); return; }
@@ -199,9 +206,9 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
               onNouvelle={() => setDemande({ id: "", titre: "", statut: s })} />
           ))}
         </div>
-        <EnAttente taches={attendues} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} onCreer={(bucket, titre) => {
+        <EnAttente taches={attendues} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={setOuverteId} onCreer={(bucket, titre) => {
           setErreur(null);
-          setProvisoires((p) => [...p, { id: `provisoire-${crypto.randomUUID()}`, titre, bucket, transcriptionBrute: null, engagement: null, auteur: null, assigne: null, provisoire: true }]);
+          setProvisoires((p) => [...p, { id: `provisoire-${crypto.randomUUID()}`, titre, bucket, provisoire: true, statut: null, engagement: null, reportsCount: 0, assigneId: null, assigne: null, aidantIds: [], aidants: [], notes: null, transcriptionBrute: null, raisonBlocage: null, auteur: null }]);
           enVol.current += 1;
           creerTache(titre, bucket)
             .catch((e) => { setErreur((e as Error).message); setProvisoires([]); })
@@ -212,7 +219,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       <PourQuand demande={demandeAVenir} onConfirmer={passerAVenir} onAnnuler={() => setDemandeAVenir(null)} />
       <DragOverlay>{actif ? <Carte tache={actif} fantome /> : null}</DragOverlay>
       <Detail
-        tache={ouverteId ? (() => { const t = parId.get(ouverteId); return t ? carte(ouverteId, colonneDe(colonnes, ouverteId) ?? t.statut) : null; })() : null}
+        tache={ouverteId ? fiche(ouverteId) : null}
         membres={membres}
         onModifier={modifier}
         onFermer={() => setOuverteId(null)}
@@ -220,6 +227,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         onAbandonner={onAbandonner}
         onSupprimer={action(supprimer)}
         onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })}
+        // Le Statut et la raison du blocage n'existent que Sur le feu : ailleurs, la fiche ne les montre pas.
         onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}
         onStatut={(t, statut) => {
           if (statut === t.statut) return;
