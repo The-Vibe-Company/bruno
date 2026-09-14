@@ -25,10 +25,37 @@ const collision: CollisionDetection = (args) => {
   return sous.length > 0 ? sous : closestCorners(args);
 };
 
+/** Ce qu'un patch change à l'écran — les identifiants deviennent des noms et des photos. */
+function retoucheVisible(patch: Patch, membres: Membre[]): Partial<TacheCarte> {
+  const qui = (id: string) => { const m = membres.find((x) => x.id === id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
+  return {
+    ...(patch.titre !== undefined ? { titre: patch.titre } : {}),
+    ...(patch.notes !== undefined ? { notes: patch.notes } : {}),
+    ...(patch.raisonBlocage !== undefined ? { raisonBlocage: patch.raisonBlocage } : {}),
+    ...(patch.engagement !== undefined ? { engagement: patch.engagement } : {}),
+    ...(patch.assigneId !== undefined ? { assigneId: patch.assigneId, assigne: qui(patch.assigneId) } : {}),
+    ...(patch.aidantIds !== undefined ? { aidantIds: patch.aidantIds, aidants: patch.aidantIds.map(qui) } : {}),
+  };
+}
+
 export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: TacheCarte[]; enAttente: TacheAttente[]; finies: TacheFinie[]; membres: Membre[]; moiId: string }) {
   const router = useRouter();
   const [, demarrer] = useTransition();
-  const parId = useMemo(() => new Map(taches.map((t) => [t.id, t])), [taches]);
+  /**
+   * Ce qu'on vient de changer, avant que le serveur réponde. Chaque geste part au serveur et
+   * s'affiche tout de suite : sans ça, changer d'Assigné demandait deux allers-retours (l'appel,
+   * puis le rendu) avant que la pastille bouge — et depuis Paris, le serveur est à Washington.
+   * Le prochain rendu venu du serveur les remplace, comme pour les colonnes.
+   */
+  const [retouches, setRetouches] = useState<Map<string, Partial<TacheCarte>>>(new Map());
+  const [parties, setParties] = useState<Set<string>>(new Set());
+  const [baseTaches, setBaseTaches] = useState(taches);
+  if (baseTaches !== taches) { setBaseTaches(taches); setRetouches(new Map()); setParties(new Set()); }
+  const parId = useMemo(() => {
+    const m = new Map(taches.map((t) => [t.id, t]));
+    for (const [id, patch] of retouches) { const t = m.get(id); if (t) m.set(id, { ...t, ...patch }); }
+    return m;
+  }, [taches, retouches]);
   const initiales = useMemo<Colonnes>(() => ({
     a_faire: taches.filter((t) => t.statut === "a_faire").map((t) => t.id),
     en_cours: taches.filter((t) => t.statut === "en_cours").map((t) => t.id),
@@ -128,15 +155,24 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
   const finir = (fn: (id: string) => Promise<void>, libelle: string) => async (id: string) => {
     const titre = parId.get(id)?.titre ?? "";
     setErreur(null);
-    try { await fn(id); setDerniereFin({ id, titre, libelle }); setTimeout(() => setDerniereFin((d) => (d?.id === id ? null : d)), 6000); }
-    catch (e) { setErreur((e as Error).message); }
+    // La carte s'en va tout de suite, le toast avec ; si le serveur refuse, elle revient.
+    setParties((p) => new Set(p).add(id));
+    setDerniereFin({ id, titre, libelle });
+    setTimeout(() => setDerniereFin((d) => (d?.id === id ? null : d)), 6000);
+    try { await fn(id); }
+    catch (e) {
+      setErreur((e as Error).message); setDerniereFin(null);
+      setParties((p) => { const n = new Set(p); n.delete(id); return n; });
+    }
     rafraichir();
   };
   const onTerminer = finir(terminer, "terminée");
   const onAbandonner = finir(abandonner, "abandonnée");
   async function modifier(id: string, patch: Patch) {
     setErreur(null);
-    try { await modifierTache(id, patch); } catch (e) { setErreur((e as Error).message); }
+    setRetouches((r) => new Map(r).set(id, { ...r.get(id), ...retoucheVisible(patch, membres) }));
+    try { await modifierTache(id, patch); }
+    catch (e) { setErreur((e as Error).message); setRetouches((r) => { const n = new Map(r); n.delete(id); return n; }); }
     rafraichir();
   }
 
@@ -202,7 +238,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
       <div className="flex min-h-0 flex-1">
         <div className="grid min-h-0 flex-1 grid-cols-3 gap-4 px-5 pb-5 pt-4">
           {STATUTS.map((s) => (
-            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })}
+            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id) && !parties.has(id)).map((id) => carte(id, s))} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })}
               onNouvelle={() => setDemande({ id: "", titre: "", statut: s })} />
           ))}
         </div>
@@ -241,7 +277,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
       {derniereFin && (
         <div role="status" className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-bord-fort bg-surface px-4 py-2.5 text-sm shadow-2xl">
           <span>« {derniereFin.titre} » {derniereFin.libelle}</span>
-          <button onClick={() => { const id = derniereFin.id; setDerniereFin(null); action(rouvrir)(id); }} className="font-medium text-accent">Annuler</button>
+          <button onClick={() => { const id = derniereFin.id; setDerniereFin(null); setParties((p) => { const n = new Set(p); n.delete(id); return n; }); action(rouvrir)(id); }} className="font-medium text-accent">Annuler</button>
         </div>
       )}
       <Report demande={demandeReport} onReporter={reporterTache}
