@@ -1,0 +1,48 @@
+web/src/db/schema.ts
+  s_09427aeab13931::t_e8a778bb6365f0 259-279
+web/src/app/api/sujets/[id]/route.ts
+  s_09427aeab13931::t_b26de96af2577e 1-4
+web/src/api/openapi.ts
+  s_09427aeab13931::t_b26de96af2577e 19
+  s_09427aeab13931::t_73d21dbaf4865c 166-183
+web/src/api/contrat.ts
+  s_09427aeab13931::t_e8a778bb6365f0 158-176
+web/src/app/weekly/page.tsx
+  s_09427aeab13931::t_182558bb5f36c9 1-45
+web/src/api/sujets.test.ts
+  s_09427aeab13931::t_6547071c5790e7 1-57
+web/src/api/sujets.ts
+  s_09427aeab13931::t_ef9fabb9edaa50 1-56
+web/src/app/api/sujets/route.ts
+  s_09427aeab13931::t_b26de96af2577e 1-8
+web/drizzle/0005_weekly.sql
+  s_09427aeab13931::t_4e28780b813a7d 1-15
+web/src/app/Coquille.tsx
+  s_09427aeab13931::t_d95ae93e9e06de 5,9-10
+web/src/weekly/Sujets.tsx
+  s_09427aeab13931::t_9859d20162c77c 1-134
+CONTEXT.md
+  s_09427aeab13931::t_748f816a08c075 187-199
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_748f816a08c075 48-61
+web/drizzle/meta/0005_snapshot.json
+  s_09427aeab13931::t_eaaa06d9b9d155 1-1280
+web/drizzle/meta/_journal.json
+  s_09427aeab13931::t_b44ab24fa5b56c 39-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "113764b2a9bd3cc5245753a8848b4732d81e5b43",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
