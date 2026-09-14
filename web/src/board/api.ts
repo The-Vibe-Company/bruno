@@ -33,8 +33,8 @@ export async function creerTache(titre: string, bucket: "a_trier" | "a_venir" | 
   return r.json();
 }
 
-export type Patch = { titre?: string; notes?: string | null; assigneId?: string; aidantIds?: string[]; raisonBlocage?: string };
-/** Modifier ce qui se modifie librement : titre, Notes, Assigné, Aidants, raison du blocage. Jamais l'Engagement Sur le feu. */
+export type Patch = { titre?: string; notes?: string | null; assigneId?: string; aidantIds?: string[]; raisonBlocage?: string; engagement?: string | null };
+/** Modifier ce qui se modifie librement : titre, Notes, Assigné, Aidants, raison du blocage — et l'Engagement, hors Sur le feu. */
 export async function modifierTache(id: string, patch: Patch) {
   const r = await fetch(`/api/taches/${id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(patch) });
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message ?? `Erreur ${r.status}`);
