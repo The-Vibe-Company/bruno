@@ -1,16 +1,17 @@
 import { redirect } from "next/navigation";
-import { lister } from "@/api/taches";
+import { lister, terminees } from "@/api/taches";
 import { enCours, lister as listerAffectations } from "@/api/affectations";
 import { Affectations } from "@/board/Affectations";
 import { Recherche } from "@/board/Filtres";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
-import type { TacheAttente } from "@/board/EnAttente";
+import type { TacheAttente, TacheFinie } from "@/board/EnAttente";
 import { sessionCourante } from "@/auth/serveur";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { libelleLong } from "@/lib/dates";
+import { jourOuvrePrecedent, libelleLong } from "@/lib/dates";
+import { instant } from "@/relances/temps";
 import { Kanban } from "@/board/Kanban";
 import type { TacheCarte } from "@/board/Carte";
 import { Coquille } from "./Coquille";
@@ -23,11 +24,15 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
   if (!session) redirect("/api/auth/google");
   const { q, membres: filtre } = await searchParams;
 
-  const [taches, aTrier, aVenir, idees, membres, affectations, choix] = await Promise.all([
+  const { jour } = instant();
+  const [taches, aTrier, aVenir, idees, finiesRecemment, membres, affectations, choix] = await Promise.all([
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false, q: q?.trim() || undefined }),
     lister(session, { bucket: "a_trier", inclureTerminees: false }),
     lister(session, { bucket: "a_venir", inclureTerminees: false }),
     lister(session, { bucket: "idees", inclureTerminees: false }),
+    // Les Tâches finies depuis le dernier jour ouvré : cochée par erreur ce matin, elle se
+    // rattrape ce soir — bien après le « Annuler » de six secondes.
+    terminees(session, jourOuvrePrecedent(jour), jour),
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
     enCours(session),
     listerAffectations(session),
@@ -50,6 +55,10 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     auteur: t.creeParId ? personne(t.creeParId) : null,
   }));
 
+  const finies: TacheFinie[] = finiesRecemment
+    .filter((t) => t.assigneId && actifs.has(t.assigneId))
+    .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigne: t.assigneId ? personne(t.assigneId) : null }));
+
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar}>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
@@ -61,7 +70,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       </header>
       <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} />
       <main className="flex min-h-0 flex-1 flex-col">
-        <Kanban taches={cartes} enAttente={enAttente} membres={membres} moiId={session.membreId} />
+        <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />
       </main>
     </Coquille>
   );
