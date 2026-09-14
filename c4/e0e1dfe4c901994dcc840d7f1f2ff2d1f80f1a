@@ -1,0 +1,23 @@
+web/src/app/(bruno)/weekly/page.tsx
+  s_09427aeab13931::t_550c0ee48bf397 20-22,46
+  s_09427aeab13931::t_1562c976be4ea4 10,47-51,54,56,58-59,64-68,73-82
+  s_09427aeab13931::t_3744507fbe9668 83-84
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_dc0f34aa9c4695 66-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c4e0e1dfe4c901994dcc840d7f1f2ff2d1f80f1a",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
