@@ -14,15 +14,23 @@ const PASTILLE: Record<Statut, string> = { a_faire: "border-accent/40 bg-a-faire
 const POINT: Record<Statut, string> = { a_faire: "bg-accent", en_cours: "bg-en-cours", bloque: "bg-bloque" };
 
 /** Une Tâche telle que la fiche la montre — Sur le feu ou non : sans Statut, une Idée en a une aussi. */
-export type TacheFiche = Omit<TacheCarte, "statut"> & { statut: Statut | null; bucket: "sur_le_feu" | "a_trier" | "a_venir" | "idees" };
+export type TacheFiche = Omit<TacheCarte, "statut"> & {
+  statut: Statut | null;
+  bucket: "sur_le_feu" | "a_trier" | "a_venir" | "idees";
+  /** Finie : elle a quitté le Board, mais elle garde ses Notes, ses Aidants et ses Reports. */
+  fin?: { etat: "termine" | "abandonne"; jour: string } | null;
+};
 
 const BUCKET: Record<TacheFiche["bucket"], string> = { sur_le_feu: "Sur le feu", a_trier: "À trier", a_venir: "À venir", idees: "Idées" };
 
 type Props = {
   tache: TacheFiche | null; membres: Membre[]; onFermer: () => void;
   onTerminer: (id: string) => Promise<void>; onAbandonner: (id: string) => Promise<void>; onSupprimer: (id: string) => Promise<void>;
-  onReporter: (t: TacheFiche) => void; onRaison: (t: TacheFiche) => void; onModifier: (id: string, patch: Patch) => Promise<void>;
-  onStatut: (t: TacheFiche, statut: Statut) => void;
+  onModifier: (id: string, patch: Patch) => Promise<void>;
+  /** Sur le feu seulement — une Tâche finie ou rangée ailleurs n'a ni Report ni Statut. */
+  onReporter?: (t: TacheFiche) => void; onRaison?: (t: TacheFiche) => void; onStatut?: (t: TacheFiche, statut: Statut) => void;
+  /** Une Tâche finie : la seule action qui lui reste. */
+  onRouvrir?: (id: string) => Promise<void>;
 };
 
 /**
@@ -45,9 +53,11 @@ export function Detail(props: Props) {
   );
 }
 
-function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut }: Props & { tache: TacheFiche }) {
+function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut, onRouvrir }: Props & { tache: TacheFiche }) {
   // Hors Sur le feu, il n'y a ni Statut ni Report : l'Engagement se pose et se retire librement.
-  const surLeFeu = tache.bucket === "sur_le_feu";
+  // Finie, il ne reste qu'à lire — et à rouvrir si c'était une erreur.
+  const finie = !!tache.fin;
+  const surLeFeu = tache.bucket === "sur_le_feu" && !finie;
   const [occupe, setOccupe] = useState(false);
   const [titre, setTitre] = useState(tache.titre);
   const [notes, setNotes] = useState(tache.notes ?? "");
@@ -90,7 +100,9 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
   return (
     <>
       <header className="flex items-center justify-between px-6 pt-5 pb-3">
-        <span className="text-[13px] text-texte-sourd">{BUCKET[tache.bucket]}{surLeFeu && tache.statut ? ` · ${STATUT[tache.statut]}` : ""}</span>
+        <span className="text-[13px] text-texte-sourd">
+          {tache.fin ? `${tache.fin.etat === "termine" ? "Terminé" : "Abandonné"} · ${libelleJour(tache.fin.jour)}` : `${BUCKET[tache.bucket]}${surLeFeu && tache.statut ? ` · ${STATUT[tache.statut]}` : ""}`}
+        </span>
         <AlertDialog.Root>
           <AlertDialog.Trigger asChild>
             <button className="text-[13px] text-texte-sourd hover:text-bloque" disabled={occupe}>Supprimer</button>
@@ -117,7 +129,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <input value={titre} onChange={(e) => setTitre(e.target.value)} onBlur={poserTitre} onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { setTitre(tache.titre); e.currentTarget.blur(); } }}
             aria-label="Titre" className="-mx-1 w-[calc(100%+0.5rem)] rounded-md border border-transparent bg-transparent px-1 text-2xl font-semibold leading-tight tracking-tight outline-none hover:border-bord-faible focus:border-accent" />
           <p className="mt-1.5 text-sm text-texte-sourd">
-            {BUCKET[tache.bucket]}
+            {tache.fin ? (tache.fin.etat === "termine" ? "Terminé" : "Abandonné") : BUCKET[tache.bucket]}
             {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
           </p>
         </div>
@@ -158,10 +170,12 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <div className={ligne}>
             <dt className={libelle}>Engagement</dt>
             <dd className="flex flex-1 items-center gap-2">
-              {surLeFeu ? (
+              {finie ? (
+                <>{tache.engagement ? libelleJour(tache.engagement) : "—"}</>
+              ) : surLeFeu ? (
                 <>
                   {tache.engagement ? libelleJour(tache.engagement) : "—"}
-                  {tache.engagement && <button onClick={() => onReporter(tache)} className="text-[12.5px] text-texte-sourd hover:text-texte">par un Report</button>}
+                  {tache.engagement && <button onClick={() => onReporter?.(tache)} className="text-[12.5px] text-texte-sourd hover:text-texte">par un Report</button>}
                 </>
               ) : (
                 <>
@@ -176,21 +190,21 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
               )}
             </dd>
           </div>
-          {surLeFeu && tache.statut && (<>
-          <div className={ligne}>
+          {(surLeFeu || finie) && (<>
+          {surLeFeu && tache.statut && <div className={ligne}>
             <dt className={libelle}>Statut</dt>
             <dd className="flex flex-1 items-center gap-2">
-              <Choix valeur={tache.statut} onChoisir={(v) => onStatut(tache, v as Statut)} titre="Statut"
+              <Choix valeur={tache.statut} onChoisir={(v) => onStatut?.(tache, v as Statut)} titre="Statut"
                 options={(["a_faire", "en_cours", "bloque"] as Statut[]).map((s) => ({ valeur: s, libelle: s === "bloque" ? "Bloqué…" : STATUT[s], pastille: <span className={`h-[7px] w-[7px] rounded-full ${POINT[s]}`} /> }))}>
                 <button aria-label="Statut" className={`flex h-7 items-center gap-1.5 rounded-full border pl-2.5 pr-2 text-[13px] font-medium ${PASTILLE[tache.statut]}`}>
                   <span className={`h-[7px] w-[7px] rounded-full ${POINT[tache.statut]}`} />{STATUT[tache.statut]}<Chevron />
                 </button>
               </Choix>
               {tache.statut === "bloque" && (
-                <button onClick={() => onRaison(tache)} className={`truncate text-[13.5px] ${tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}`} title="Changer la raison">{tache.raisonBlocage ?? "raison à préciser"}</button>
+                <button onClick={() => onRaison?.(tache)} className={`truncate text-[13.5px] ${tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}`} title="Changer la raison">{tache.raisonBlocage ?? "raison à préciser"}</button>
               )}
             </dd>
-          </div>
+          </div>}
           <div className={ligne}>
             <dt className={libelle}>Reports</dt>
             <dd className="flex-1">{tache.reportsCount}</dd>
@@ -223,11 +237,17 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
       </div>
 
       <footer className="flex flex-col gap-2 border-t border-bord-faible px-6 pt-4 pb-6">
-        <button onClick={agir(onTerminer)} disabled={occupe} className="h-[46px] rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Terminé</button>
-        <div className="flex gap-2">
-          {surLeFeu && <button onClick={() => onReporter(tache)} disabled={occupe || !tache.engagement} title={tache.engagement ? undefined : "Rien à reporter : cette Tâche n’a pas d’Engagement"} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-50">Reporter</button>}
-          <button onClick={agir(onAbandonner)} disabled={occupe} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-60">Abandonner</button>
-        </div>
+        {finie ? (
+          <button onClick={agir(onRouvrir ?? (async () => {}))} disabled={occupe || !onRouvrir} className="h-[46px] rounded-lg border border-bord-fort text-[14.5px] font-medium disabled:opacity-60">Rouvrir</button>
+        ) : (
+          <>
+            <button onClick={agir(onTerminer)} disabled={occupe} className="h-[46px] rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Terminé</button>
+            <div className="flex gap-2">
+              {surLeFeu && <button onClick={() => onReporter?.(tache)} disabled={occupe || !tache.engagement} title={tache.engagement ? undefined : "Rien à reporter : cette Tâche n’a pas d’Engagement"} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-50">Reporter</button>}
+              <button onClick={agir(onAbandonner)} disabled={occupe} className="h-[42px] flex-1 rounded-lg border border-bord-fort text-[14.5px] disabled:opacity-60">Abandonner</button>
+            </div>
+          </>
+        )}
       </footer>
     </>
   );

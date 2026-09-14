@@ -45,3 +45,14 @@ Une Tâche cochée disparaissait, avec pour seul recours un « Annuler » de six
 - [x] « Tout voir » mène à Fait, où l'historique complet vit
 - [x] Le rail replié montre la pastille Fait et son compte
 
+## BRU-61 — La fiche d'une Tâche faite · **livré le 14 septembre**
+
+Antoine : « j'aimerais pouvoir cliquer sur une tâche faite pour voir les notes, les Aidants, le
+nombre de Reports et tout ».
+
+- [x] Un clic sur une Tâche finie ouvre la même fiche : Notes, Assigné, Aidants, Engagement,
+      Reports — depuis la section Fait du Board comme depuis la page Fait
+- [x] L'en-tête dit « Terminé · 8 sept. » ou « Abandonné · … » ; le pied n'offre que **Rouvrir**
+- [x] Ni Statut ni Report sur une Tâche finie : ils n'ont plus de sens
+- [x] Les Aidants suivent la Tâche jusqu'au bout — `terminees()` les rend désormais
+

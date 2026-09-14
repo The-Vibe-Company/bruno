@@ -7,7 +7,9 @@ import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
-import { Semaine, type Semaine as SemaineFaite } from "@/fait/Semaine";
+import type { TacheFiche } from "@/board/Detail";
+import { Historique } from "@/fait/Historique";
+import type { Semaine as SemaineFaite } from "@/fait/Semaine";
 import { dimancheDe, lundiDe } from "@/lib/dates";
 import { instant } from "@/relances/temps";
 import { Coquille } from "../Coquille";
@@ -41,6 +43,16 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
     affectations: await surLaPeriode(session, lundi, dimancheDe(lundi)),
   })));
 
+  const personne = (id: string) => { const m = membres.find((x) => x.id === id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
+  const fiches: TacheFiche[] = taches.map((t) => ({
+    id: t.id, titre: t.titre, bucket: t.bucket as TacheFiche["bucket"], statut: t.statut,
+    engagement: t.engagement, reportsCount: t.reportsCount,
+    assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
+    aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+    fin: { etat: t.etatTerminal!, jour: t.jourFin },
+  }));
+
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="fait">
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
@@ -49,7 +61,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
         <div className="flex-1" />
       </header>
       <main className="min-h-0 flex-1 overflow-y-auto px-10 py-4">
-        {semaines.map((s) => <Semaine key={s.lundi} semaine={s} membres={visibles} />)}
+        <Historique semaines={semaines} membres={visibles} fiches={fiches} />
       </main>
     </Coquille>
   );
