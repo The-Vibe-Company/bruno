@@ -41,6 +41,16 @@ export function libelleReport(jour: string, ref: string = aujourdhui()): string 
   return `Reporter au ${l}`;
 }
 
+/**
+ * Le nom du dernier jour travaillé : « Hier », ou « Vendredi » un lundi matin. Dire « Hier » en
+ * montrant vendredi, c'est faux — et on lit le Daily à voix haute.
+ */
+export function libelleDernierJour(jour: string, ref: string = aujourdhui()): string {
+  if (jour === veille(ref)) return "Hier";
+  const l = libelleLong(jour);
+  return l.charAt(0).toUpperCase() + l.slice(1);
+}
+
 /** « aujourd'hui », « 3 j », « 2 sem. », « 1 mois » — depuis quand on est dessus, en petit. */
 export function libelleDuree(depuis: string, ref: string = aujourdhui()): string {
   const j = joursEntre(depuis, ref);

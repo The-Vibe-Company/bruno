@@ -26,3 +26,12 @@ Terminées *et* Abandonnées, alors que `Terminé` désigne un état précis du 
       Tâches Terminées et Abandonnées
 - [x] **Pas de compteur de jours par Client, pas de cumul mensuel.** C'est explicitement hors
       scope — la donnée est stockée, l'écran viendra si le besoin devient réel
+
+## BRU-58 — Le Daily ne dit plus « Hier » pour vendredi · **livré le 14 septembre**
+
+Antoine, un lundi : « On est lundi 14… » sous un bloc intitulé « Hier · vendredi 11 septembre ».
+
+- [x] La colonne prend le nom du jour qu'elle montre : « Hier » quand c'en est un, sinon
+      « Vendredi 11 septembre ». Le Daily se lit à voix haute : le titre ne doit pas mentir
+- [x] « Affectations de la veille » devient « Affectations ce jour-là » quand ce n'est pas la veille
+
