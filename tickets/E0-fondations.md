@@ -92,8 +92,12 @@ plus tard (PRD §11).
       `HttpOnly` pour le web, `Authorization: Bearer` pour iOS. L'API ne connaît qu'un chemin
 - [x] Aucun écran d'inscription, aucun mot de passe, aucune réinitialisation — quelqu'un du
       domaine qui se connecte pour la première fois devient un Membre
-- [x] Un email hors domaine est refusé proprement : redirection avec `?connexion=hors_domaine`
-      sur le web, `403 hors_domaine` sur iOS
+- [x] Un email hors domaine est refusé proprement : sur le web, la page `/connexion` le dit
+      (`?raison=hors_domaine` — et de même `desactive`, `refusee`, `etat_invalide`, `erreur`) ;
+      `403 hors_domaine` sur iOS. *14 septembre : avant, l'échec renvoyait sur `/`, qui renvoyait
+      chez Google, qui renvoyait sur `/`… — la raison n'était jamais visible. Et « Se déconnecter »
+      est un vrai formulaire qui atterrit sur cette page, au lieu d'un `fetch` suivi d'un retour
+      sur `/` qui reconnectait aussitôt.*
 - [x] Un Membre désactivé perd l'accès **immédiatement**, sans attendre l'expiration de sa session
 - [x] 18 tests d'authentification, signés avec une paire de clés locale : le refus hors domaine
       est prouvé sans dépendre de Google

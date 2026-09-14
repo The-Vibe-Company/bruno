@@ -46,7 +46,7 @@ export function enteteCookie(jeton: string): string {
   return attrs.join("; ");
 }
 
-export const cookieEfface = `${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+export const cookieEfface = [`${COOKIE}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0", ...(process.env.NODE_ENV === "production" ? ["Secure"] : [])].join("; ");
 
 export function jetonDeLaRequete(request: Request): string | null {
   const entete = request.headers.get("authorization");
