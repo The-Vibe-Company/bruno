@@ -70,7 +70,11 @@ Le meilleur levier du pilier 1 : supprimer les trois secondes d'ouverture d'app.
 Antoine, le 14 septembre : « on peut pas ajouter une tâche sur Bruno web ! ». La Capture était
 pensée pour l'iPhone ; le web n'avait aucun champ.
 
-- [x] En haut du panneau En attente, un champ « Une tâche, une idée… ⏎ » : Entrée crée la Tâche,
-      elle atterrit À trier comme une Capture, Échap vide le champ
-- [x] Rail replié : un « + » déplie le panneau avec le champ prêt
+- [x] Un « + » à côté de chaque titre de pile — À faire, En cours, Bloqué, En attente, À venir,
+      Idées — et sous la dernière carte, une ligne discrète « Nouvelle tâche ». Entrée crée,
+      Échap referme *(la première version, un champ unique en haut du panneau, ne convenait pas)*
+- [x] Dans une colonne Sur le feu, la Tâche passe par le **droit d'entrée** : elle est créée,
+      puis on dit à qui et pour quand — l'invariant 2 tient (rien n'entre Sur le feu sans Assigné
+      ni Engagement)
+- [x] Dans En attente, elle atterrit directement dans sa pile : À trier, À venir ou Idées
 

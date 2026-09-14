@@ -5,6 +5,7 @@ import { useState } from "react";
 import { libelleJour } from "@/lib/dates";
 import { Initiale, type Personne } from "./visuel";
 import { poserReplie, useReplie } from "./replie";
+import { BoutonPlus, NouvelleTache } from "./NouvelleTache";
 
 export type TacheAttente = {
   id: string; titre: string; bucket: "a_trier" | "a_venir" | "idees"; transcriptionBrute: string | null;
@@ -71,31 +72,15 @@ function CarteATrier({ t, onDestination, onSupprimer }: { t: TacheAttente; onDes
   );
 }
 
-/** Une Tâche tapée ici va À trier, comme une Capture : un titre, Entrée, et on la range après. */
-function Capture({ onCreer, autoFocus }: { onCreer: (titre: string) => Promise<void>; autoFocus?: boolean }) {
-  const [titre, setTitre] = useState("");
-  const [occupe, setOccupe] = useState(false);
-  async function valider() {
-    const t = titre.trim();
-    if (!t || occupe) return;
-    setOccupe(true);
-    try { await onCreer(t); setTitre(""); } finally { setOccupe(false); }
-  }
-  return (
-    <input value={titre} onChange={(e) => setTitre(e.target.value)} autoFocus={autoFocus} aria-label="Nouvelle tâche" placeholder="Une tâche, une idée… ⏎"
-      onKeyDown={(e) => { if (e.key === "Enter") valider(); if (e.key === "Escape") setTitre(""); }}
-      className="mx-4 mb-2 h-9 flex-none rounded-lg border border-bord-fort bg-fond px-3 text-[13.5px] outline-none placeholder:text-texte-faible focus:border-accent" />
-  );
-}
-
 export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCreer }: {
   taches: TacheAttente[];
   onDestination: (t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") => void;
   onSupprimer: (id: string) => void; onOuvrir: (id: string) => void;
-  onCreer: (titre: string) => Promise<void>;
+  onCreer: (bucket: Bucket, titre: string) => Promise<void>;
 }) {
-  // Depuis le rail replié, « + » déplie le panneau avec le champ déjà prêt.
-  const [focusCapture, setFocusCapture] = useState(false);
+  // La pile dont la ligne « Nouvelle tâche » est ouverte.
+  const [saisie, setSaisie] = useState<Bucket | null>(null);
+  const saisir = (b: Bucket) => { setOuverts((o) => ({ ...o, [b]: true })); setSaisie(b); };
   const [ouverts, setOuverts] = useState<Record<Bucket, boolean>>({ a_trier: true, a_venir: false, idees: false });
   const replie = useReplie();
   const par = (b: Bucket) => taches.filter((t) => t.bucket === b);
@@ -105,7 +90,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
     return (
       <aside className="flex w-14 flex-none flex-col items-center gap-1 border-l border-bord-faible bg-surface-3 pb-4 pt-[11px]">
         <Bascule replie onClick={() => poserReplie(false)} />
-        <button onClick={() => { setOuverts((o) => ({ ...o, a_trier: true })); setFocusCapture(true); poserReplie(false); }} aria-label="Nouvelle tâche" title="Nouvelle tâche"
+        <button onClick={() => { saisir("a_trier"); poserReplie(false); }} aria-label="Nouvelle tâche" title="Nouvelle tâche"
           className="mt-1 flex h-8 w-8 items-center justify-center rounded-md text-accent hover:bg-surface-2">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"><path d="M8 2.5v11M2.5 8h11" /></svg>
         </button>
@@ -122,16 +107,22 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
 
   return (
     <aside className="flex w-[320px] flex-none flex-col border-l border-bord-faible bg-surface-3">
-      <header className="flex h-[54px] flex-none items-center pl-5 pr-3"><h2 className="flex-1 text-[15px] font-medium tracking-tight">En attente</h2><Bascule replie={false} onClick={() => poserReplie(true)} /></header>
-      <Capture onCreer={onCreer} autoFocus={focusCapture} />
+      <header className="flex h-[54px] flex-none items-center gap-1 pl-5 pr-3">
+        <h2 className="flex-1 text-[15px] font-medium tracking-tight">En attente</h2>
+        <BoutonPlus onClick={() => saisir("a_trier")} libelle="Nouvelle tâche · À trier" />
+        <Bascule replie={false} onClick={() => poserReplie(true)} />
+      </header>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-4">
         {BUCKETS.map((b) => (
           <section key={b}>
-            <button onClick={() => setOuverts((o) => ({ ...o, [b]: !o[b] }))} className="flex h-10 w-full items-center gap-2 border-b border-bord-faible text-left">
-              <Chevron ouvert={ouverts[b]} />
-              <span className="flex-1 text-[14px] font-medium">{LIBELLE[b]}</span>
+            <div className="flex h-10 w-full items-center gap-2 border-b border-bord-faible">
+              <button onClick={() => setOuverts((o) => ({ ...o, [b]: !o[b] }))} className="flex h-full flex-1 items-center gap-2 text-left">
+                <Chevron ouvert={ouverts[b]} />
+                <span className="flex-1 text-[14px] font-medium">{LIBELLE[b]}</span>
+              </button>
+              {b !== "a_trier" && <BoutonPlus onClick={() => saisir(b)} libelle={`Nouvelle tâche · ${LIBELLE[b]}`} />}
               <span className={`text-xs ${b === "a_trier" && par(b).length ? "text-accent" : "text-texte-sourd"}`}>{par(b).length}</span>
-            </button>
+            </div>
             {ouverts[b] && (b === "a_trier"
               ? par(b).map((t) => <CarteATrier key={t.id} t={t} onDestination={onDestination} onSupprimer={onSupprimer} />)
               : par(b).map((t) => (
@@ -141,7 +132,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
                   {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} />}
                 </button>
               )))}
-            {ouverts[b] && par(b).length === 0 && <p className="py-2.5 text-[13px] text-texte-faible">Rien ici.</p>}
+            {ouverts[b] && <div className="pt-1.5"><NouvelleTache compact ouvert={saisie === b} onOuvrir={() => setSaisie(b)} onFermer={() => setSaisie((s) => (s === b ? null : s))} onCreer={(titre) => onCreer(b, titre)} /></div>}
           </section>
         ))}
       </div>

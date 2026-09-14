@@ -44,6 +44,8 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   const [origine, setOrigine] = useState<Colonnes>(initiales);
   const [ouverteId, setOuverteId] = useState<string | null>(null);
   const [demande, setDemande] = useState<Demande>(null);
+  // La colonne dont la ligne « Nouvelle tâche » est ouverte.
+  const [saisie, setSaisie] = useState<Statut | null>(null);
   const [demandeAVenir, setDemandeAVenir] = useState<DemandeAVenir>(null);
   const [demandeReport, setDemandeReport] = useState<DemandeReport>(null);
   // Une carte lâchée dans Bloqué attend sa raison avant que rien ne parte au serveur.
@@ -153,7 +155,11 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   }
   async function entrerSurLeFeu(d: { id: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) {
     setErreur(null);
-    try { await deplacerBucket(d.id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut, raison: d.raison }); setDemande(null); }
+    try {
+      // Une Tâche tapée dans une colonne n'existe pas encore : on la crée, puis elle entre — par le droit d'entrée, comme les autres.
+      const id = d.id || (await creerTache(demande?.titre ?? "")).id;
+      await deplacerBucket(id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut, raison: d.raison }); setDemande(null);
+    }
     catch (e) { setErreur((e as Error).message); }
     rafraichir();
   }
@@ -182,10 +188,12 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
       <div className="flex min-h-0 flex-1">
         <div className="grid min-h-0 flex-1 grid-cols-3 gap-4 px-5 pb-5 pt-4">
           {STATUTS.map((s) => (
-            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })} />
+            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })}
+              saisie={saisie === s} onSaisir={(ouvert) => setSaisie(ouvert ? s : null)}
+              onCreer={async (titre) => { setDemande({ id: "", titre, statut: s }); }} />
           ))}
         </div>
-        <EnAttente taches={enAttente} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} onCreer={async (titre) => { setErreur(null); try { await creerTache(titre); } catch (e) { setErreur((e as Error).message); } rafraichir(); }} />
+        <EnAttente taches={enAttente} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} onCreer={async (bucket, titre) => { setErreur(null); try { await creerTache(titre, bucket); } catch (e) { setErreur((e as Error).message); } rafraichir(); }} />
       </div>
       <DroitEntree demande={demande} membres={membres} moiId={moiId} onConfirmer={entrerSurLeFeu} onAnnuler={() => setDemande(null)} />
       <PourQuand demande={demandeAVenir} onConfirmer={passerAVenir} onAnnuler={() => setDemandeAVenir(null)} />
