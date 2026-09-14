@@ -7,7 +7,7 @@ import { sessionCourante } from "@/auth/serveur";
 import { Affectations } from "@/board/Affectations";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
-import { dimancheDe, libelleDate, libelleSemaine, lundiDe } from "@/lib/dates";
+import { dimancheDe, libelleSemaine, lundiDe } from "@/lib/dates";
 import { instant } from "@/relances/temps";
 import { Sujets } from "@/weekly/Sujets";
 
@@ -17,9 +17,9 @@ export const dynamic = "force-dynamic";
 const SEMAINES_PROCHES = 1;
 
 /**
- * Le Weekly : l'interface de la réunion de la semaine. À gauche les semaines, la courante en
- * haut ; au centre l'Affectation de chacun puis trois encarts — les skills, les projets, les
- * victoires. Une semaine, une page blanche : rien ne se traîne d'une semaine à l'autre.
+ * Le Weekly : l'interface de la réunion de la semaine. Deux flèches dans l'en-tête pour passer
+ * d'une semaine à l'autre, l'Affectation de chacun, puis trois encarts — les skills, les projets,
+ * les victoires. Une semaine, une page blanche : rien ne se traîne d'une semaine à l'autre.
  */
 export default async function Weekly({ searchParams }: { searchParams: Promise<{ semaine?: string }> }) {
   const session = await sessionCourante();
@@ -43,38 +43,43 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
     listerAffectations(session),
   ]);
 
+  // `lundis` va de la plus récente à la plus ancienne : reculer, c'est avancer dans la liste.
+  const rang = lundis.indexOf(lundi);
+  const precedente = lundis[rang + 1];
+  const suivante = lundis[rang - 1];
+  const lien = (l: string | undefined) => (l === courante ? "/weekly" : `/weekly?semaine=${l}`);
+
   return (
     <>
-      <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
+      <header className="flex h-12 flex-none items-center gap-3 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Weekly</h1>
+        <Fleche vers={precedente && lien(precedente)} libelle="Semaine précédente" sens="gauche" />
         <span className="text-[13px] text-texte-sourd">{libelleSemaine(lundi)}</span>
+        <Fleche vers={suivante && lien(suivante)} libelle="Semaine suivante" sens="droite" />
+        {lundi === courante && <span className="text-[12px] text-texte-faible">en cours</span>}
         <div className="flex-1" />
         <span className="text-[12.5px] text-texte-faible">Un lien collé devient cliquable — un skill, par exemple.</span>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <nav aria-label="Les semaines" className="flex w-[196px] flex-none flex-col overflow-y-auto border-r border-bord-2 py-3">
-          <h2 className="px-4 pb-1.5 text-[11.5px] uppercase tracking-wide text-texte-faible">Semaine du</h2>
-          {lundis.map((l) => (
-            <Link key={l} href={l === courante ? "/weekly" : `/weekly?semaine=${l}`} aria-current={l === lundi ? "page" : undefined}
-              className={`flex items-center gap-2 border-l-2 py-2 pl-4 pr-3 text-[14px] ${l === lundi ? "border-accent bg-surface-2 text-texte" : "border-transparent text-texte-sourd hover:text-texte"}`}>
-              <span className="flex-1 truncate">{libelleDate(l)}</span>
-              {l === courante && <span className="flex-none text-[11.5px] text-texte-faible">en cours</span>}
-              {comptes[l] > 0 && <span className="flex-none text-[11.5px] tabular-nums text-texte-faible">{comptes[l]}</span>}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          {/* Qui est sur quoi : la réunion commence par là. Une semaine passée se lit, ne se change pas. */}
-          <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} lectureSeule={lundi !== courante} />
-          <main className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-            <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} />
-          </main>
-        </div>
-      </div>
+      {/* Qui est sur quoi : la réunion commence par là. Une semaine passée se lit, ne se change pas. */}
+      <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} lectureSeule={lundi !== courante} />
+      <main className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} />
+      </main>
     </>
   );
+}
+
+/**
+ * D'une semaine à l'autre. Grisée quand il n'y a rien de ce côté : on ne descend pas dans des
+ * semaines vides, seules celles qui ont servi comptent — et il n'y a jamais de semaine d'après
+ * la semaine en cours.
+ */
+function Fleche({ vers, libelle, sens }: { vers: string | undefined; libelle: string; sens: "gauche" | "droite" }) {
+  const dessin = <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={sens === "gauche" ? "rotate-180" : ""}><path d="M4 2l4 4-4 4" /></svg>;
+  const forme = "flex h-7 w-7 items-center justify-center rounded-md";
+  if (!vers) return <span aria-disabled className={`${forme} text-texte-tres-faible`} title={`${libelle} — il n’y en a pas`}>{dessin}</span>;
+  return <Link href={vers} aria-label={libelle} title={libelle} className={`${forme} text-texte-sourd hover:bg-surface-2 hover:text-texte`}>{dessin}</Link>;
 }
 
 /** Le lundi d'il y a `n` semaines. */

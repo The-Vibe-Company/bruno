@@ -63,8 +63,9 @@ rappelle les Affectations de chacun. Ça permet à chacun d'ajouter les sujets d
 Il peut mettre les skills qu'il a codé (le lien skillpack des skills). »
 
 - [x] Un onglet **Weekly** sous Daily, avec le bandeau des Affectations en tête
-- [x] **Un menu des semaines à gauche** : la semaine en cours, et seulement les autres qui portent
-      des Sujets — pas de semaines vides à faire défiler. Une semaine passée se lit, ne se change pas
+- [x] **Deux flèches dans l'en-tête** pour passer d'une semaine à l'autre, grisées quand il n'y a
+      rien de ce côté : on ne va que sur la semaine en cours et celles qui portent des Sujets.
+      Une semaine passée se lit, ne se change pas
 - [x] Trois encarts côte à côte — *Skills of the week*, *Projects of the week*, *Wins of the week* —
       repliables, chacun avec son **+** qui ouvre la saisie
       *(troisième version : une colonne par personne, puis des encarts empilés, ne convenaient pas)*
