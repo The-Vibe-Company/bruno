@@ -31,7 +31,7 @@ export default async function Connexion({ searchParams }: { searchParams: Promis
           <h1 className="text-[19px] font-semibold tracking-tight">{message?.titre ?? "Bruno"}</h1>
           <p className="text-[14px] text-texte-sourd">{message?.detail ?? "La to-do de The Vibe Company."}</p>
         </div>
-        <a href="/api/auth/google" className="flex h-11 w-full items-center justify-center rounded-lg bg-accent text-[15px] font-medium text-sur-accent hover:bg-accent-survol">
+        <a href="/api/auth/google?choisir=1" className="flex h-11 w-full items-center justify-center rounded-lg bg-accent text-[15px] font-medium text-sur-accent hover:bg-accent-survol">
           Se connecter avec Google
         </a>
         <p className="text-[12.5px] text-texte-faible">Réservé aux comptes @thevibecompany.co.</p>
