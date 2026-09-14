@@ -69,6 +69,6 @@ Antoine : « je trouve le site assez lent, les clics et tout, ça manque de flui
       serveur sans rien afficher. C'est aussi ce qui permet à Next de préparer les pages à l'avance
 - [x] `sessionCourante()` est mise en cache le temps d'un rendu : une requête de base au lieu de
       deux par page
-- [x] Weekly : la liste des semaines s'arrête aux quatre dernières, plus celles qui ont servi —
-      elle ne descend plus jusqu'en juin
+- [x] Weekly : le menu ne garde que la semaine en cours et celles qui portent des Sujets
+- [x] Le contour du clavier prend l'accent de Bruno : celui du navigateur est bleu, il jurait partout
 

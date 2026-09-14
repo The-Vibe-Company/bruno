@@ -13,8 +13,8 @@ import { Sujets } from "@/weekly/Sujets";
 
 export const dynamic = "force-dynamic";
 
-/** Les semaines toujours proposées, même vides : celle-ci et les trois d'avant. */
-const SEMAINES_PROCHES = 4;
+/** La semaine en cours, toujours. Les autres n'apparaissent que si elles portent des Sujets. */
+const SEMAINES_PROCHES = 1;
 
 /**
  * Le Weekly : l'interface de la réunion de la semaine. À gauche les semaines, la courante en
@@ -28,7 +28,7 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
   const { jour } = instant();
   const courante = lundiDe(jour);
   const comptes = await parSemaine(session);
-  // Les semaines proches, plus celles qui ont servi : une liste qui ne descend pas dans le vide.
+  // La semaine en cours, plus celles qui ont servi : une liste qui ne descend pas dans le vide.
   const lundis = [...new Set([
     ...Array.from({ length: SEMAINES_PROCHES }, (_, i) => reculer(courante, i)),
     ...Object.keys(comptes).filter((l) => l <= courante),
