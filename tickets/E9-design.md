@@ -72,3 +72,19 @@ Antoine : « je trouve le site assez lent, les clics et tout, ça manque de flui
 - [x] Weekly : le menu ne garde que la semaine en cours et celles qui portent des Sujets
 - [x] Le contour du clavier prend l'accent de Bruno : celui du navigateur est bleu, il jurait partout
 
+## BRU-67 — Les gestes du Board s'affichent avant le serveur · **livré le 14 septembre**
+
+Antoine : « je trouve encore le site lent ». Mesuré : la fonction tourne à **iad1 (Washington)**,
+à côté de la base ; depuis Paris chaque requête traverse l'Atlantique. Un statique servi au bord
+répond en **55 ms**, une page dynamique en **165 à 240 ms**. Un geste en coûtait deux (l'appel,
+puis le rendu) : ~340 ms avant que l'écran bouge.
+
+- [x] Changer d'Assigné, d'Aidants, de titre, de Notes : l'écran bouge tout de suite, le serveur
+      suit. Si la requête échoue, la retouche s'annule et le message s'affiche
+- [x] Terminé et Abandonné : la carte s'en va aussitôt, le toast avec ; « Annuler » la ramène net
+- [x] Les Tâches de même Rang (il y en a dans les données de départ) ne sautent plus d'un rendu à
+      l'autre : l'ordre se départage par date de création
+
+**Reste, hors code :** pour descendre vraiment, il faut la base **en Europe** et les fonctions à
+`cdg1`. C'est une migration de la base de production — la décision est à Antoine.
+

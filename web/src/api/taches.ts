@@ -2,7 +2,7 @@
  * Les opérations sur les Tâches. Toute la logique métier vit ici ; les routes ne font que
  * valider l'entrée, appeler ces fonctions et sérialiser la sortie.
  */
-import { and, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { FUSEAU } from "@/relances/temps";
 import { z } from "zod";
 import { db } from "@/db/client";
@@ -67,7 +67,9 @@ export async function lister(ctx: Ctx, f: z.infer<typeof C.FiltresTaches>) {
     .select()
     .from(tache)
     .where(and(...conditions))
-    .orderBy(sql`${tache.rang} asc`);
+    // Deux Tâches peuvent porter le même Rang (les données de départ en ont) : sans second
+    // critère, Postgres les rend dans un ordre libre et les cartes sautent d'un rendu à l'autre.
+    .orderBy(sql`${tache.rang} asc`, asc(tache.createdAt), asc(tache.id));
   return avecAidants(lignes);
 }
 
