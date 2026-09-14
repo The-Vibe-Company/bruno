@@ -12,7 +12,6 @@ import { Historique } from "@/fait/Historique";
 import type { Semaine as SemaineFaite } from "@/fait/Semaine";
 import { dimancheDe, lundiDe } from "@/lib/dates";
 import { instant } from "@/relances/temps";
-import { Coquille } from "../Coquille";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +22,7 @@ export const dynamic = "force-dynamic";
  */
 export default async function Fait({ searchParams }: { searchParams: Promise<{ membres?: string }> }) {
   const session = await sessionCourante();
-  if (!session) redirect("/api/auth/google");
+  if (!session) redirect("/api/auth/google"); // le layout l'a déjà fait ; TypeScript veut la garantie
   const { membres: filtre } = await searchParams;
   const { jour } = instant();
   const cetteSemaine = lundiDe(jour);
@@ -54,7 +53,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
   }));
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="fait">
+    <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Fait</h1>
         <FiltreMembres membres={membres} />
@@ -63,6 +62,6 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
       <main className="min-h-0 flex-1 overflow-y-auto px-10 py-4">
         <Historique semaines={semaines} membres={visibles} fiches={fiches} />
       </main>
-    </Coquille>
+    </>
   );
 }

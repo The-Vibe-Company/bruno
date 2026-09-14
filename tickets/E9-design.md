@@ -59,3 +59,16 @@ Antoine : « on hover des icônes à gauche je veux une tooltip avec le titre de
 - [x] Elle apparaît après un court délai (le temps de distinguer un survol d'un passage de
       souris) et disparaît net
 
+## BRU-66 — La navigation ne fait plus attendre · **livré le 14 septembre**
+
+Antoine : « je trouve le site assez lent, les clics et tout, ça manque de fluidité ».
+
+- [x] Le rail passe dans un **layout** : il ne se re-rend plus à chaque page. Le cadre reste,
+      seule la page change
+- [x] Un **`loading.tsx`** : un clic montre la page suivante tout de suite, au lieu d'attendre le
+      serveur sans rien afficher. C'est aussi ce qui permet à Next de préparer les pages à l'avance
+- [x] `sessionCourante()` est mise en cache le temps d'un rendu : une requête de base au lieu de
+      deux par page
+- [x] Weekly : la liste des semaines s'arrête aux quatre dernières, plus celles qui ont servi —
+      elle ne descend plus jusqu'en juin
+

@@ -13,7 +13,6 @@ import { db } from "@/db/client";
 import { membre } from "@/db/schema";
 import { jourOuvrePrecedent, libelleLong, veille } from "@/lib/dates";
 import { instant } from "@/relances/temps";
-import { Coquille } from "../Coquille";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +22,7 @@ export const dynamic = "force-dynamic";
  */
 export default async function Daily({ searchParams }: { searchParams: Promise<{ membres?: string }> }) {
   const session = await sessionCourante();
-  if (!session) redirect("/api/auth/google");
+  if (!session) redirect("/api/auth/google"); // le layout l'a déjà fait ; TypeScript veut la garantie
   const { membres: filtre } = await searchParams;
   const { jour } = instant();
   const hier = jourOuvrePrecedent(jour);
@@ -49,7 +48,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   }));
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="daily">
+    <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Daily</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong(jour)}</span>
@@ -62,6 +61,6 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
         <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} taches={tachesHier} />
         <SurLeFeu taches={tachesFeu} />
       </main>
-    </Coquille>
+    </>
   );
 }

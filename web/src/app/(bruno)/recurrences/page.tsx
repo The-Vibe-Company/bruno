@@ -9,14 +9,13 @@ import { membre } from "@/db/schema";
 import { Editeur, type Brouillon } from "@/recurrences/Editeur";
 import { libelleFrequence, libelleNombre } from "@/recurrences/regle";
 import { instant } from "@/relances/temps";
-import { Coquille } from "../Coquille";
 
 export const dynamic = "force-dynamic";
 
 /** Les Récurrences : la liste des règles à gauche, la règle ouverte à droite. Web uniquement (règle 18). */
 export default async function Recurrences({ searchParams }: { searchParams: Promise<{ regle?: string; nouvelle?: string }> }) {
   const session = await sessionCourante();
-  if (!session) redirect("/api/auth/google");
+  if (!session) redirect("/api/auth/google"); // le layout l'a déjà fait ; TypeScript veut la garantie
   const { regle: ouverteId, nouvelle } = await searchParams;
   const [regles, membres] = await Promise.all([
     lister(session),
@@ -29,7 +28,7 @@ export default async function Recurrences({ searchParams }: { searchParams: Prom
     : { id: null, titre: "", assigneId: session.membreId, frequence: "hebdomadaire", jourSemaine: 1, jourMois: 1, decalages: [0] };
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar} page="recurrences">
+    <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Récurrences</h1>
         <span className="text-[13px] text-texte-sourd">{regles.length} règle{regles.length > 1 ? "s" : ""}</span>
@@ -53,6 +52,6 @@ export default async function Recurrences({ searchParams }: { searchParams: Prom
         </section>
         <Editeur key={ouverte?.id ?? "nouvelle"} initial={brouillon} membres={membres} aujourdhui={instant().jour} />
       </main>
-    </Coquille>
+    </>
   );
 }
