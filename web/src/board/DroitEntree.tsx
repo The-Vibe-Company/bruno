@@ -17,9 +17,12 @@ export type Demande = { id: string; titre: string; statut: Statut } | null;
  */
 export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }: {
   demande: Demande; membres: Membre[]; moiId: string;
-  onConfirmer: (d: { id: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) => Promise<void>;
+  onConfirmer: (d: { id: string; titre: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) => Promise<void>;
   onAnnuler: () => void;
 }) {
+  // Une demande sans identifiant, c'est une Tâche qui n'existe pas encore : son titre se tape ici.
+  const neuve = demande?.id === "";
+  const [titre, setTitre] = useState("");
   const [assigneId, setAssigneId] = useState(moiId);
   const [engagement, setEngagement] = useState(aujourdhui());
   const [occupe, setOccupe] = useState(false);
@@ -27,12 +30,13 @@ export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }:
   const ouvert = demande !== null;
   const versBloque = demande?.statut === "bloque";
 
+  const pret = !occupe && (!versBloque || !!raison.trim()) && (!neuve || !!titre.trim());
+
   async function confirmer() {
-    if (!demande) return;
+    if (!demande || !pret) return;
     setOccupe(true);
-    if (versBloque && !raison.trim()) return;
-    try { await onConfirmer({ id: demande.id, assigneId, engagement, statut: demande.statut, raison: versBloque ? raison.trim() : undefined }); }
-    finally { setOccupe(false); setAssigneId(moiId); setEngagement(aujourdhui()); setRaison(""); }
+    try { await onConfirmer({ id: demande.id, titre: titre.trim() || demande.titre, assigneId, engagement, statut: demande.statut, raison: versBloque ? raison.trim() : undefined }); }
+    finally { setOccupe(false); setTitre(""); setAssigneId(moiId); setEngagement(aujourdhui()); setRaison(""); }
   }
 
   return (
@@ -42,7 +46,16 @@ export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }:
         <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-1/2 flex w-[440px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-2xl border border-bord-fort bg-surface p-6 shadow-2xl outline-none">
           <div>
             <p className="text-[13px] text-accent">Passer Sur le feu</p>
-            <Dialog.Title className="mt-1.5 text-[21px] font-medium leading-tight tracking-tight">{demande?.titre}</Dialog.Title>
+            {neuve ? (
+              <>
+                <Dialog.Title className="sr-only">Nouvelle tâche Sur le feu</Dialog.Title>
+                <input autoFocus value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Qu’est-ce qu’il y a à faire ?" aria-label="Titre"
+                  onKeyDown={(e) => { if (e.key === "Enter") confirmer(); }}
+                  className="mt-1.5 w-full bg-transparent text-[21px] font-medium leading-tight tracking-tight text-texte outline-none placeholder:text-texte-faible" />
+              </>
+            ) : (
+              <Dialog.Title className="mt-1.5 text-[21px] font-medium leading-tight tracking-tight">{demande?.titre}</Dialog.Title>
+            )}
           </div>
           <div className="flex flex-col gap-3.5">
             <label className="flex flex-col gap-1.5 text-[13px] text-texte-sourd">
@@ -77,7 +90,7 @@ export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }:
             )}
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={confirmer} disabled={occupe || (versBloque && !raison.trim())} className="h-11 flex-1 rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Passer Sur le feu</button>
+            <button onClick={confirmer} disabled={!pret} className="h-11 flex-1 rounded-lg bg-accent text-[14.5px] font-medium text-sur-accent disabled:opacity-60">Passer Sur le feu</button>
             <Dialog.Close asChild><button className="h-11 px-3 text-sm text-texte-sourd">Annuler</button></Dialog.Close>
           </div>
         </Dialog.Content>
