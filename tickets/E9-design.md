@@ -49,3 +49,13 @@ jusque dans les maquettes. **Débloque BRU-28.**
 
 Le libellé de l'état vide différait entre les plateformes : le web disait **« Aucune Affectation »**,
 l'iOS **« Sur rien aujourd'hui »**. **Tranché avec BRU-28 : « Aucune Affectation » partout.**
+
+## BRU-65 — Le rail se nomme au survol · **livré le 14 septembre**
+
+Antoine : « on hover des icônes à gauche je veux une tooltip avec le titre de la section ».
+
+- [x] Chaque entrée du rail dit son nom au survol, à côté de l'icône — Board, Daily, Weekly,
+      Fait, Récurrences, Réglages, et Mon compte
+- [x] Elle apparaît après un court délai (le temps de distinguer un survol d'un passage de
+      souris) et disparaît net
+

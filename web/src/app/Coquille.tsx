@@ -14,6 +14,18 @@ const ENTREES: { page: Page; href: string; libelle: string; icone: ReactNode }[]
   { page: "reglages", href: "/reglages", libelle: "Réglages", icone: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4.5h14M2 9h14M2 13.5h14" /><circle cx="6" cy="4.5" r="1.8" fill="var(--fond)" /><circle cx="12" cy="9" r="1.8" fill="var(--fond)" /><circle cx="7.5" cy="13.5" r="1.8" fill="var(--fond)" /></svg> },
 ];
 
+/**
+ * Le nom de l'entrée, au survol : un rail d'icônes ne se devine pas. Elle apparaît après un
+ * court délai — le temps de distinguer un survol d'un passage de souris — et disparaît net.
+ */
+function Infobulle({ children }: { children: ReactNode }) {
+  return (
+    <span aria-hidden className="pointer-events-none absolute left-[calc(100%+8px)] top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded-md border border-bord-fort bg-surface px-2 py-1 text-[12.5px] text-texte opacity-0 shadow-lg transition-opacity duration-100 group-hover:opacity-100 group-hover:delay-300">
+      {children}
+    </span>
+  );
+}
+
 export function Coquille({ children, initiale, avatar, page = "board" }: { children: ReactNode; initiale: string; avatar?: string | null; page?: Page }) {
   return (
     <div className="flex h-dvh overflow-hidden">
@@ -23,13 +35,17 @@ export function Coquille({ children, initiale, avatar, page = "board" }: { child
         </Link>
         {ENTREES.map((e) => (
           <Link key={e.page} href={e.href} aria-label={e.libelle} aria-current={e.page === page ? "page" : undefined}
-            className={`flex h-11 w-14 items-center justify-center border-l-2 ${e.page === page ? "border-accent text-texte" : "border-transparent text-texte-faible hover:text-texte"}`}>
+            className={`group relative flex h-11 w-14 items-center justify-center border-l-2 ${e.page === page ? "border-accent text-texte" : "border-transparent text-texte-faible hover:text-texte"}`}>
             {e.icone}
+            <Infobulle>{e.libelle}</Infobulle>
           </Link>
         ))}
-        <Link href="/reglages" aria-label="Mon compte" className="mt-auto inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-bord-faible text-xs font-medium">
-          {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}
-          {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initiale}
+        <Link href="/reglages" aria-label="Mon compte" className="group relative mt-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-bord-faible text-xs font-medium">
+          <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
+            {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}
+            {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initiale}
+          </span>
+          <Infobulle>Mon compte</Infobulle>
         </Link>
       </aside>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
