@@ -28,6 +28,11 @@ async function espaceCourant(): Promise<string> {
   );
 }
 
+/** Un Membre désactivé n'entre plus — tout de suite, sans attendre l'expiration de sa session. */
+export class MembreDesactive extends Error {
+  constructor() { super("Ce Membre est désactivé."); this.name = "MembreDesactive"; }
+}
+
 export async function membrePourIdentite(identite: IdentiteGoogle): Promise<Session> {
   const spaceId = await espaceCourant();
 
@@ -37,7 +42,7 @@ export async function membrePourIdentite(identite: IdentiteGoogle): Promise<Sess
     .where(and(eq(membre.spaceId, spaceId), eq(membre.email, identite.email)));
 
   if (existant) {
-    if (!existant.actif) throw new Error("Ce Membre est désactivé.");
+    if (!existant.actif) throw new MembreDesactive();
     return { membreId: existant.id, spaceId };
   }
 

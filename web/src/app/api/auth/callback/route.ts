@@ -1,5 +1,5 @@
 import { DomaineRefuse, verifierIdToken } from "@/auth/google";
-import { membrePourIdentite } from "@/auth/membre";
+import { MembreDesactive, membrePourIdentite } from "@/auth/membre";
 import { diagnostiquerEtat, echangerCode, etatEfface } from "@/auth/oauth";
 import { creerSession, enteteCookie } from "@/auth/session";
 
@@ -8,11 +8,13 @@ export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const racine = new URL("/", request.url);
 
+  /** Un échec se lit sur la page de connexion — jamais sur `/`, qui renverrait chez Google en boucle. */
   const echec = (raison: string) => {
-    racine.searchParams.set("connexion", raison);
+    const page = new URL("/connexion", request.url);
+    page.searchParams.set("raison", raison);
     return new Response(null, {
       status: 302,
-      headers: { location: racine.toString(), "set-cookie": etatEfface },
+      headers: { location: page.toString(), "set-cookie": etatEfface },
     });
   };
 
@@ -41,7 +43,8 @@ export async function GET(request: Request) {
     });
   } catch (e) {
     if (e instanceof DomaineRefuse) return echec("hors_domaine");
-    console.error(e);
+    if (e instanceof MembreDesactive) return echec("desactive");
+    console.error("[auth] connexion échouée", e);
     return echec("erreur");
   }
 }

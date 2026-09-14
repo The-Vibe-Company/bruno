@@ -28,10 +28,6 @@ export function Compte({ nom, email, avatar }: { nom: string; email: string; ava
     } catch (e) { setErreur((e as Error).message); }
     finally { setOccupe(false); }
   }
-  async function deconnecter() {
-    await fetch("/api/auth/deconnexion", { method: "POST" });
-    router.push("/"); router.refresh();
-  }
 
   return (
     <section>
@@ -53,7 +49,8 @@ export function Compte({ nom, email, avatar }: { nom: string; email: string; ava
           </p>
           {erreur && <p role="alert" className="mt-1 text-[13px] text-bloque">{erreur}</p>}
         </div>
-        <button onClick={deconnecter} className="h-10 rounded-lg border border-bord-fort px-4 text-[14.5px]">Se déconnecter</button>
+        {/* Une vraie navigation : le serveur efface le cookie et envoie sur la page de connexion. */}
+        <form method="post" action="/api/auth/deconnexion"><button type="submit" className="h-10 rounded-lg border border-bord-fort px-4 text-[14.5px]">Se déconnecter</button></form>
       </div>
     </section>
   );
