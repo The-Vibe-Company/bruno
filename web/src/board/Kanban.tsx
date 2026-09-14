@@ -59,6 +59,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
   if (baseAttente !== enAttente) { setBaseAttente(enAttente); if (enVol.current === 0) setProvisoires([]); }
   const attendues = useMemo(() => [...enAttente, ...provisoires], [enAttente, provisoires]);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
+  const finiesParId = useMemo(() => new Map(finies.map((t) => [t.id, t])), [finies]);
   const [erreur, setErreur] = useState<string | null>(null);
   // Le dernier Terminé / Abandonné, le temps de se raviser : un « Annuler » de six secondes.
   const [derniereFin, setDerniereFin] = useState<{ id: string; titre: string; libelle: string } | null>(null);
@@ -144,8 +145,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
   function fiche(id: string): TacheFiche | null {
     const t = parId.get(id);
     if (t) return { ...t, statut: colonneDe(colonnes, id) ?? t.statut, bucket: "sur_le_feu" };
-    const a = attenteParId.get(id);
-    return a ? { ...a, bucket: a.bucket } : null;
+    return attenteParId.get(id) ?? finiesParId.get(id) ?? null;
   }
 
   async function destination(t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") {
@@ -228,6 +228,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
         onSupprimer={action(supprimer)}
         onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })}
         // Le Statut et la raison du blocage n'existent que Sur le feu : ailleurs, la fiche ne les montre pas.
+        onRouvrir={action(rouvrir)}
         onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}
         onStatut={(t, statut) => {
           if (statut === t.statut) return;

@@ -10,7 +10,7 @@ import { poserReplie, useReplie } from "./replie";
 import { BoutonPlus, NouvelleTache } from "./NouvelleTache";
 
 /** Une Tâche finie ces deux derniers jours ouvrés — elle a quitté le Board, pas la vue. */
-export type TacheFinie = { id: string; titre: string; etat: "termine" | "abandonne"; jour: string; assigne: Personne | null };
+export type TacheFinie = TacheFiche & { fin: { etat: "termine" | "abandonne"; jour: string } };
 
 export type TacheAttente = Omit<TacheFiche, "bucket"> & {
   bucket: "a_trier" | "a_venir" | "idees";
@@ -153,7 +153,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
             {ouverts[b] && <div className="pt-1.5"><NouvelleTache compact ouvert={saisie === b} onOuvrir={() => setSaisie(b)} onFermer={() => setSaisie((s) => (s === b ? null : s))} onCreer={(titre) => onCreer(b, titre)} /></div>}
           </section>
         ))}
-        <Fait taches={finies} ouvert={faitOuvert} onBasculer={() => setFaitOuvert((o) => !o)} onRouvrir={onRouvrir} />
+        <Fait taches={finies} ouvert={faitOuvert} onBasculer={() => setFaitOuvert((o) => !o)} onRouvrir={onRouvrir} onOuvrir={onOuvrir} />
       </div>
     </aside>
   );
@@ -167,7 +167,7 @@ function IconeFait() {
  * Où vont les Tâches terminées : ici, deux jours ouvrés durant, avant de rejoindre Fait pour de
  * bon. Une Tâche cochée par erreur se rattrape longtemps après le « Annuler » de six secondes.
  */
-function Fait({ taches, ouvert, onBasculer, onRouvrir }: { taches: TacheFinie[]; ouvert: boolean; onBasculer: () => void; onRouvrir: (id: string) => void }) {
+function Fait({ taches, ouvert, onBasculer, onRouvrir, onOuvrir }: { taches: TacheFinie[]; ouvert: boolean; onBasculer: () => void; onRouvrir: (id: string) => void; onOuvrir: (id: string) => void }) {
   return (
     <section>
       <div className="flex h-10 w-full items-center gap-2 border-b border-bord-faible">
@@ -181,9 +181,9 @@ function Fait({ taches, ouvert, onBasculer, onRouvrir }: { taches: TacheFinie[];
       {ouvert && taches.length === 0 && <p className="py-2.5 text-[13px] text-texte-faible">Rien de fini depuis deux jours.</p>}
       {ouvert && taches.map((t) => (
         <div key={t.id} className="mt-1.5 flex items-center gap-2 rounded-lg px-1 py-1.5">
-          <span className={`h-[15px] w-[15px] flex-none rounded-full border-[1.5px] ${t.etat === "termine" ? "border-accent bg-accent-voile" : "border-dashed border-texte-tres-faible"}`} />
-          <span className="min-w-0 flex-1 truncate text-[13.5px] text-texte-sourd" title={t.titre}>{t.titre}</span>
-          <span className="flex-none text-[12px] text-texte-faible">{libelleJour(t.jour)}</span>
+          <span className={`h-[15px] w-[15px] flex-none rounded-full border-[1.5px] ${t.fin.etat === "termine" ? "border-accent bg-accent-voile" : "border-dashed border-texte-tres-faible"}`} />
+          <button onClick={() => onOuvrir(t.id)} className="min-w-0 flex-1 truncate text-left text-[13.5px] text-texte-sourd hover:text-texte" title={t.titre}>{t.titre}</button>
+          <span className="flex-none text-[12px] text-texte-faible">{libelleJour(t.fin.jour)}</span>
           <button onClick={() => onRouvrir(t.id)} className="flex-none text-[12px] text-texte-faible hover:text-accent">Rouvrir</button>
           {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} />}
         </div>

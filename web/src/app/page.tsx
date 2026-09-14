@@ -57,7 +57,14 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
 
   const finies: TacheFinie[] = finiesRecemment
     .filter((t) => t.assigneId && actifs.has(t.assigneId))
-    .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigne: t.assigneId ? personne(t.assigneId) : null }));
+    .map((t) => ({
+      id: t.id, titre: t.titre, bucket: t.bucket as TacheFinie["bucket"], statut: t.statut,
+      engagement: t.engagement, reportsCount: t.reportsCount,
+      assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
+      aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
+      notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+      fin: { etat: t.etatTerminal!, jour: t.jourFin },
+    }));
 
   return (
     <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar}>
