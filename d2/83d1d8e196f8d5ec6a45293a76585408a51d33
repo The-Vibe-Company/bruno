@@ -1,0 +1,23 @@
+web/src/app/connexion/page.tsx
+  s_09427aeab13931::t_8fd252930a8e17 34
+web/src/auth/oauth.test.ts
+  s_09427aeab13931::t_8fd252930a8e17 1-15
+web/src/auth/oauth.ts
+  s_09427aeab13931::t_8fd252930a8e17 33-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d283d1d8e196f8d5ec6a45293a76585408a51d33",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
