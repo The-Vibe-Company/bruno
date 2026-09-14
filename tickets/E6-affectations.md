@@ -66,3 +66,13 @@ une phrase entière — « Stan Girard n'est plus dessus » — qui passait à l
       la coche bouge tout de suite, le serveur suit, et si ça rate elle revient
 - [x] Il ne reste qu'un « Fermer », discret, en bas à droite
 
+## BRU-60 — Une Affectation ne se lit qu'une fois par période · **livré le 14 septembre**
+
+Antoine, devant « Stan Girard · AFP · AFP » dans Fait : « ça a pas de sens qu'il y ait deux fois
+AFP pour Stan ici, on s'en fout, mets-le qu'une fois ».
+
+- [x] Quitter une Affectation puis la reprendre dans la même semaine ne la montre qu'une fois :
+      ce qui compte, c'est sur quoi la personne était, pas en combien de passages
+- [x] La période retenue va du premier début à la dernière fin — encore en cours si l'un des
+      passages l'est. Vaut aussi pour le Daily, qui lit le même jour
+

@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, membre, space } from "@/db/schema";
-import { activer, ajouter, auJour, enCours, fermer, historique, lister, poser, supprimer, surLaPeriode } from "./affectations";
+import { activer, ajouter, auJour, enCours, fermer, fondre, historique, lister, poser, supprimer, surLaPeriode } from "./affectations";
 import { tache } from "@/db/schema";
 import { instant } from "@/relances/temps";
 
@@ -102,5 +102,27 @@ describe("supprimer une Affectation", () => {
     expect((await supprimer(ctx, faute.id)).map((a) => a.nom)).not.toContain("jb,b");
     await expect(supprimer(ctx, monka)).rejects.toMatchObject({ code: "requete_invalide", statut: 422 });
     expect((await lister(ctx)).map((a) => a.nom)).toContain("MONKA");
+  });
+});
+
+describe("plusieurs passages sur la même Affectation", () => {
+  const sur = (id: string, affectationId: string, depuis: string, jusqu: string | null) =>
+    ({ id, affectationId, nom: "AFP", couleur: "#4EA7FC", depuis, jusqu });
+
+  it("n'en font qu'un : on était sur AFP, pas « sur AFP deux fois »", () => {
+    const fondu = fondre([sur("1", "afp", "2026-09-14", "2026-09-15"), sur("2", "afp", "2026-09-17", null)]);
+    expect(fondu).toHaveLength(1);
+    expect(fondu[0].depuis).toBe("2026-09-14");
+    // Un passage encore ouvert l'emporte : la personne est toujours dessus.
+    expect(fondu[0].jusqu).toBeNull();
+  });
+
+  it("garde la dernière fin quand tous les passages sont clos", () => {
+    const fondu = fondre([sur("1", "afp", "2026-09-14", "2026-09-15"), sur("2", "afp", "2026-09-17", "2026-09-18")]);
+    expect(fondu[0].jusqu).toBe("2026-09-18");
+  });
+
+  it("ne touche pas à deux Affectations différentes", () => {
+    expect(fondre([sur("1", "afp", "2026-09-14", null), sur("2", "monka", "2026-09-14", null)])).toHaveLength(2);
   });
 });
