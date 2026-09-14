@@ -17,12 +17,12 @@ export function Colonne({ statut, taches, membres, onTerminer, onOuvrir, onAssig
   const [point, filet] = COULEUR[statut].split(" ");
   return (
     <section className="flex min-h-0 flex-1 flex-col">
-      <header className={`flex items-baseline justify-between border-b pb-1.5 ${filet}`}>
+      <header className={`flex h-8 items-center justify-between border-b pb-1.5 ${filet}`}>
         <h2 className="flex items-center gap-2 text-[15px] font-medium tracking-tight">
           <span className={`h-1.5 w-1.5 rounded-full ${point}`} />
           {LIBELLE[statut]}
         </h2>
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-1">
           <BoutonPlus onClick={onNouvelle} libelle={`Nouvelle tâche · ${LIBELLE[statut]}`} />
           <span className="text-xs text-texte-sourd">{taches.length}</span>
         </span>
