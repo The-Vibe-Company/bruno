@@ -1,0 +1,27 @@
+web/src/board/Colonne.tsx
+  s_09427aeab13931::t_74d12709066127 23
+web/src/recurrences/Editeur.tsx
+  s_09427aeab13931::t_74d12709066127 53
+web/src/app/daily/page.tsx
+  s_09427aeab13931::t_74d12709066127 61
+web/src/app/Coquille.tsx
+  s_09427aeab13931::t_74d12709066127 17,33
+web/src/app/reglages/page.tsx
+  s_09427aeab13931::t_74d12709066127 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "09b8c94d9b83682951ffbb85e530b423be7ca468",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
