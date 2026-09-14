@@ -35,3 +35,13 @@ Antoine, un lundi : « On est lundi 14… » sous un bloc intitulé « Hier · v
       « Vendredi 11 septembre ». Le Daily se lit à voix haute : le titre ne doit pas mentir
 - [x] « Affectations de la veille » devient « Affectations ce jour-là » quand ce n'est pas la veille
 
+## BRU-59 — Où vont les Tâches terminées, en clair · **livré le 14 septembre**
+
+Antoine : « il manque un truc hyper clair : où vont les Tâches terminées du jour et de la veille ».
+Une Tâche cochée disparaissait, avec pour seul recours un « Annuler » de six secondes.
+
+- [x] Une quatrième section **Fait** en bas du panneau, ouverte par défaut : les Tâches terminées
+      ou abandonnées depuis le dernier jour ouvré, avec le jour, l'Assigné et **Rouvrir**
+- [x] « Tout voir » mène à Fait, où l'historique complet vit
+- [x] Le rail replié montre la pastille Fait et son compte
+

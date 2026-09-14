@@ -6,7 +6,7 @@ import { abandonner, appliquer, creerTache, deplacerBucket, modifierTache, repor
 import { Blocage, type DemandeBlocage } from "./Blocage";
 import { Detail, type TacheFiche } from "./Detail";
 import { DroitEntree, type Demande, type Membre } from "./DroitEntree";
-import { EnAttente, type TacheAttente } from "./EnAttente";
+import { EnAttente, type TacheAttente, type TacheFinie } from "./EnAttente";
 import { PourQuand, type DemandeAVenir } from "./PourQuand";
 import { Report, type DemandeReport } from "./Report";
 import { Carte, type TacheCarte } from "./Carte";
@@ -25,7 +25,7 @@ const collision: CollisionDetection = (args) => {
   return sous.length > 0 ? sous : closestCorners(args);
 };
 
-export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCarte[]; enAttente: TacheAttente[]; membres: Membre[]; moiId: string }) {
+export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: TacheCarte[]; enAttente: TacheAttente[]; finies: TacheFinie[]; membres: Membre[]; moiId: string }) {
   const router = useRouter();
   const [, demarrer] = useTransition();
   const parId = useMemo(() => new Map(taches.map((t) => [t.id, t])), [taches]);
@@ -206,7 +206,7 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
               onNouvelle={() => setDemande({ id: "", titre: "", statut: s })} />
           ))}
         </div>
-        <EnAttente taches={attendues} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={setOuverteId} onCreer={(bucket, titre) => {
+        <EnAttente taches={attendues} finies={finies} onRouvrir={action(rouvrir)} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={setOuverteId} onCreer={(bucket, titre) => {
           setErreur(null);
           setProvisoires((p) => [...p, { id: `provisoire-${crypto.randomUUID()}`, titre, bucket, provisoire: true, statut: null, engagement: null, reportsCount: 0, assigneId: null, assigne: null, aidantIds: [], aidants: [], notes: null, transcriptionBrute: null, raisonBlocage: null, auteur: null }]);
           enVol.current += 1;
