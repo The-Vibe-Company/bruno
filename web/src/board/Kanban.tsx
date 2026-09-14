@@ -1,7 +1,7 @@
 "use client";
 import { DndContext, DragOverlay, PointerSensor, closestCorners, pointerWithin, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragOverEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import { abandonner, appliquer, creerTache, deplacerBucket, modifierTache, reporter, rouvrir, supprimer, terminer, type Patch } from "./api";
 import { Blocage, type DemandeBlocage } from "./Blocage";
 import { Detail } from "./Detail";
@@ -44,13 +44,20 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
   const [origine, setOrigine] = useState<Colonnes>(initiales);
   const [ouverteId, setOuverteId] = useState<string | null>(null);
   const [demande, setDemande] = useState<Demande>(null);
-  // La colonne dont la ligne « Nouvelle tâche » est ouverte.
-  const [saisie, setSaisie] = useState<Statut | null>(null);
   const [demandeAVenir, setDemandeAVenir] = useState<DemandeAVenir>(null);
   const [demandeReport, setDemandeReport] = useState<DemandeReport>(null);
   // Une carte lâchée dans Bloqué attend sa raison avant que rien ne parte au serveur.
   const [demandeBlocage, setDemandeBlocage] = useState<DemandeBlocage>(null);
   const [mutationsEnAttente, setMutationsEnAttente] = useState<Mutation[]>([]);
+  // Les Tâches tapées à l'instant, posées à l'écran avant la réponse du serveur. Le prochain
+  // rendu venu du serveur les remplace par les vraies — même motif que les colonnes.
+  const [provisoires, setProvisoires] = useState<TacheAttente[]>([]);
+  // Tant qu'une création est en route, on garde les provisoires : sinon la deuxième ligne tapée
+  // disparaîtrait le temps que la première revienne du serveur.
+  const enVol = useRef(0);
+  const [baseAttente, setBaseAttente] = useState(enAttente);
+  if (baseAttente !== enAttente) { setBaseAttente(enAttente); if (enVol.current === 0) setProvisoires([]); }
+  const attendues = useMemo(() => [...enAttente, ...provisoires], [enAttente, provisoires]);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const [erreur, setErreur] = useState<string | null>(null);
   // Le dernier Terminé / Abandonné, le temps de se raviser : un « Annuler » de six secondes.
@@ -153,11 +160,11 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
     catch (e) { setErreur((e as Error).message); }
     rafraichir();
   }
-  async function entrerSurLeFeu(d: { id: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) {
+  async function entrerSurLeFeu(d: { id: string; titre: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) {
     setErreur(null);
     try {
-      // Une Tâche tapée dans une colonne n'existe pas encore : on la crée, puis elle entre — par le droit d'entrée, comme les autres.
-      const id = d.id || (await creerTache(demande?.titre ?? "")).id;
+      // Une Tâche tapée dans la fenêtre n'existe pas encore : on la crée, puis elle entre — par le même droit d'entrée que les autres.
+      const id = d.id || (await creerTache(d.titre)).id;
       await deplacerBucket(id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut, raison: d.raison }); setDemande(null);
     }
     catch (e) { setErreur((e as Error).message); }
@@ -189,11 +196,17 @@ export function Kanban({ taches, enAttente, membres, moiId }: { taches: TacheCar
         <div className="grid min-h-0 flex-1 grid-cols-3 gap-4 px-5 pb-5 pt-4">
           {STATUTS.map((s) => (
             <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id)).map((id) => carte(id, s))} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })}
-              saisie={saisie === s} onSaisir={(ouvert) => setSaisie(ouvert ? s : null)}
-              onCreer={async (titre) => { setDemande({ id: "", titre, statut: s }); }} />
+              onNouvelle={() => setDemande({ id: "", titre: "", statut: s })} />
           ))}
         </div>
-        <EnAttente taches={enAttente} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} onCreer={async (bucket, titre) => { setErreur(null); try { await creerTache(titre, bucket); } catch (e) { setErreur((e as Error).message); } rafraichir(); }} />
+        <EnAttente taches={attendues} onDestination={destination} onSupprimer={action(supprimer)} onOuvrir={() => {}} onCreer={(bucket, titre) => {
+          setErreur(null);
+          setProvisoires((p) => [...p, { id: `provisoire-${crypto.randomUUID()}`, titre, bucket, transcriptionBrute: null, engagement: null, auteur: null, assigne: null, provisoire: true }]);
+          enVol.current += 1;
+          creerTache(titre, bucket)
+            .catch((e) => { setErreur((e as Error).message); setProvisoires([]); })
+            .finally(() => { enVol.current -= 1; rafraichir(); });
+        }} />
       </div>
       <DroitEntree demande={demande} membres={membres} moiId={moiId} onConfirmer={entrerSurLeFeu} onAnnuler={() => setDemande(null)} />
       <PourQuand demande={demandeAVenir} onConfirmer={passerAVenir} onAnnuler={() => setDemandeAVenir(null)} />

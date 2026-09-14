@@ -10,6 +10,8 @@ import { BoutonPlus, NouvelleTache } from "./NouvelleTache";
 export type TacheAttente = {
   id: string; titre: string; bucket: "a_trier" | "a_venir" | "idees"; transcriptionBrute: string | null;
   engagement: string | null; auteur: Personne | null; assigne: Personne | null;
+  /** Posée à l'écran avant la réponse du serveur : visible, pas encore manipulable. */
+  provisoire?: boolean;
 };
 type Bucket = TacheAttente["bucket"];
 const LIBELLE: Record<Bucket, string> = { a_trier: "À trier", a_venir: "À venir", idees: "Idées" };
@@ -76,7 +78,7 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
   taches: TacheAttente[];
   onDestination: (t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") => void;
   onSupprimer: (id: string) => void; onOuvrir: (id: string) => void;
-  onCreer: (bucket: Bucket, titre: string) => Promise<void>;
+  onCreer: (bucket: Bucket, titre: string) => void;
 }) {
   // La pile dont la ligne « Nouvelle tâche » est ouverte.
   const [saisie, setSaisie] = useState<Bucket | null>(null);
@@ -107,9 +109,8 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
 
   return (
     <aside className="flex w-[320px] flex-none flex-col border-l border-bord-faible bg-surface-3">
-      <header className="flex h-[54px] flex-none items-center gap-1 pl-5 pr-3">
+      <header className="flex h-[54px] flex-none items-center pl-5 pr-3">
         <h2 className="flex-1 text-[15px] font-medium tracking-tight">En attente</h2>
-        <BoutonPlus onClick={() => saisir("a_trier")} libelle="Nouvelle tâche · À trier" />
         <Bascule replie={false} onClick={() => poserReplie(true)} />
       </header>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-4">
@@ -120,18 +121,21 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
                 <Chevron ouvert={ouverts[b]} />
                 <span className="flex-1 text-[14px] font-medium">{LIBELLE[b]}</span>
               </button>
-              {b !== "a_trier" && <BoutonPlus onClick={() => saisir(b)} libelle={`Nouvelle tâche · ${LIBELLE[b]}`} />}
+              <BoutonPlus onClick={() => saisir(b)} libelle={`Nouvelle tâche · ${LIBELLE[b]}`} />
               <span className={`text-xs ${b === "a_trier" && par(b).length ? "text-accent" : "text-texte-sourd"}`}>{par(b).length}</span>
             </div>
             {ouverts[b] && (b === "a_trier"
-              ? par(b).map((t) => <CarteATrier key={t.id} t={t} onDestination={onDestination} onSupprimer={onSupprimer} />)
-              : par(b).map((t) => (
+              ? par(b).filter((t) => !t.provisoire).map((t) => <CarteATrier key={t.id} t={t} onDestination={onDestination} onSupprimer={onSupprimer} />)
+              : par(b).filter((t) => !t.provisoire).map((t) => (
                 <button key={t.id} onClick={() => onOuvrir(t.id)} className="mt-1.5 flex w-full items-center gap-2 rounded-lg border border-bord-2 bg-surface px-3 py-2 text-left">
                   <span className="flex-1 text-[13.5px]">{t.titre}</span>
                   {t.engagement && <span className="text-[12px] text-texte-sourd">{libelleJour(t.engagement)}</span>}
                   {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} />}
                 </button>
               )))}
+            {ouverts[b] && par(b).filter((t) => t.provisoire).map((t) => (
+              <div key={t.id} className="mt-1.5 rounded-lg border border-bord-2 bg-surface px-3 py-2 text-[13.5px] text-texte-sourd opacity-60">{t.titre}</div>
+            ))}
             {ouverts[b] && <div className="pt-1.5"><NouvelleTache compact ouvert={saisie === b} onOuvrir={() => setSaisie(b)} onFermer={() => setSaisie((s) => (s === b ? null : s))} onCreer={(titre) => onCreer(b, titre)} /></div>}
           </section>
         ))}
