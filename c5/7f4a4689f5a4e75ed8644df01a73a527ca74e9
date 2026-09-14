@@ -1,0 +1,35 @@
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_5e6e2b6e8156d1 48-58
+web/src/board/EnAttente.tsx
+  s_09427aeab13931::t_670ccab6ce543d 13,156,170,184-186
+web/src/api/taches.ts
+  s_09427aeab13931::t_670ccab6ce543d 289,292-294
+web/src/app/page.tsx
+  s_09427aeab13931::t_670ccab6ce543d 60-67
+web/src/board/Detail.tsx
+  s_09427aeab13931::t_670ccab6ce543d 17-22,29-33,56,58-60,103-105,132,173-175,178,193-194,197,204,207,240-250
+web/src/board/Kanban.tsx
+  s_09427aeab13931::t_670ccab6ce543d 62,148,231
+web/src/app/fait/page.tsx
+  s_09427aeab13931::t_670ccab6ce543d 10-12,46-55,64
+web/src/fait/Historique.tsx
+  s_09427aeab13931::t_670ccab6ce543d 1-47
+web/src/fait/Semaine.tsx
+  s_09427aeab13931::t_670ccab6ce543d 15,45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c57f4a4689f5a4e75ed8644df01a73a527ca74e9",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
