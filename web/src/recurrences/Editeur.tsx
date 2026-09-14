@@ -50,7 +50,7 @@ export function Editeur({ initial, membres, aujourdhui }: { initial: Brouillon; 
 
   const champ = "h-10 w-full border-b border-bord-faible bg-transparent text-[15.5px] outline-none focus:border-accent";
   return (
-    <form className="flex max-w-[760px] flex-col gap-8 px-10 py-7" onSubmit={(e) => { e.preventDefault(); envoyer(b.id ? "PUT" : "POST"); }}>
+    <form className="flex max-w-[760px] flex-col gap-8 overflow-y-auto px-10 py-7" onSubmit={(e) => { e.preventDefault(); envoyer(b.id ? "PUT" : "POST"); }}>
       <h2 className="text-[28px] font-medium tracking-tight">{b.titre.trim() || (b.id ? "Règle" : "Nouvelle règle")}</h2>
       {erreur && <p role="alert" className="rounded-lg border border-bloque/40 bg-bloque-voile px-3 py-2 text-sm">{erreur}</p>}
       <div className="grid grid-cols-2 gap-x-10 gap-y-5">

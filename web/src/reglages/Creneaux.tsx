@@ -36,7 +36,6 @@ export function Creneaux({ initiaux }: { initiaux: Creneau[] }) {
     <section>
       <header className="flex items-baseline justify-between border-b border-accent pb-2.5">
         <h2 className="text-xl font-medium tracking-tight">Mes Créneaux</h2>
-        <span className="text-sm text-texte-sourd">au quart d’heure · trois minimum</span>
       </header>
       {erreur && <p role="alert" className="mt-3 rounded-lg border border-bloque/40 bg-bloque-voile px-3 py-2 text-sm">{erreur}</p>}
       <ul>

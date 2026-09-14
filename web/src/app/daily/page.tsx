@@ -58,7 +58,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
         <Sante aTrier={sante.aTrier} reportees={sante.reportees} seuil={SEUIL_SIGNAL} />
       </header>
       <Affectations membres={deLui(dujour)} moiId="" choix={[]} lectureSeule />
-      <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))]">
+      <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden">
         <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} taches={tachesHier} />
         <SurLeFeu taches={tachesFeu} />
       </main>
