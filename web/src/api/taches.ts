@@ -286,9 +286,12 @@ export async function reports(ctx: Ctx, id: string) {
  */
 export async function terminees(ctx: { spaceId: string }, du: string, au: string = du) {
   const jourFin = sql<string>`(${tache.termineLe} at time zone ${FUSEAU})::date::text`;
-  return db.select({ ...getTableColumns(tache), jourFin }).from(tache)
+  const lignes = await db.select({ ...getTableColumns(tache), jourFin }).from(tache)
     .where(and(eq(tache.spaceId, ctx.spaceId), isNotNull(tache.etatTerminal), sql`${jourFin} between ${du} and ${au}`))
     .orderBy(desc(tache.termineLe));
+  // Les Aidants suivent la Tâche jusqu'au bout : c'est une des choses qu'on vient lire sur une Tâche finie.
+  const avec = await avecAidants(lignes);
+  return lignes.map((l, i) => ({ ...l, aidantIds: avec[i].aidantIds }));
 }
 
 export const SEUIL_SIGNAL = 3;

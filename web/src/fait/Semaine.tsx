@@ -12,7 +12,7 @@ const accord = (n: number, mot: string) => (n === 0 ? null : `${n} ${mot}${n > 1
  * la semaine puis ce qu'elle a Terminé et Abandonné. Pas de compteur de jours par Affectation,
  * pas de cumul mensuel — hors scope, volontairement.
  */
-export function Semaine({ semaine, membres }: { semaine: Semaine; membres: { id: string; nom: string; avatar?: string | null }[] }) {
+export function Semaine({ semaine, membres, onOuvrir }: { semaine: Semaine; membres: { id: string; nom: string; avatar?: string | null }[]; onOuvrir: (id: string) => void }) {
   const terminees = semaine.taches.filter((t) => t.etat === "termine").length;
   const abandonnees = semaine.taches.length - terminees;
   const compte = [accord(terminees, "terminée"), accord(abandonnees, "abandonnée")].filter(Boolean).join(" · ") || "rien encore";
@@ -42,7 +42,7 @@ export function Semaine({ semaine, membres }: { semaine: Semaine; membres: { id:
             <ul className="mt-3">
               {p.taches.map((t) => (
                 <li key={t.id} className="flex items-center gap-3 border-t border-bord-2 py-2.5">
-                  <span className={`flex-1 text-[15.5px] ${t.etat === "abandonne" ? "text-texte-sourd" : ""}`}>{t.titre}</span>
+                  <button onClick={() => onOuvrir(t.id)} className={`flex-1 text-left text-[15.5px] hover:text-accent ${t.etat === "abandonne" ? "text-texte-sourd" : ""}`}>{t.titre}</button>
                   <span className="text-[13px] text-texte-faible">{libelleJour(t.jour)}</span>
                   <span className={`w-[76px] text-right text-[13px] ${t.etat === "termine" ? "text-accent" : "text-texte-faible"}`}>{t.etat === "termine" ? "Terminé" : "Abandonné"}</span>
                 </li>
