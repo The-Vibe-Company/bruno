@@ -1,0 +1,24 @@
+web/src/api/affectations.ts
+  s_09427aeab13931::t_9e6ecbc964a122 80-104
+web/src/api/affectations.test.ts
+  s_09427aeab13931::t_9e6ecbc964a122 107-128
+  s_09427aeab13931::t_a065d58095d726 6
+tickets/E6-affectations.md
+  s_09427aeab13931::t_9599b2a4a631b2 69-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2000d89ce29afdcd5e760c2446d8532badafdc61",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
