@@ -1,0 +1,35 @@
+web/src/board/DroitEntree.tsx
+  s_09427aeab13931::t_5abeaff094ccaf 20,23-25,33-34,36,38-39,49-58,93
+web/src/board/Colonne.tsx
+  s_09427aeab13931::t_5abeaff094ccaf 6,11,13-14,26,33
+web/src/board/Kanban.tsx
+  s_09427aeab13931::t_5abeaff094ccaf 163,166-167,199
+  s_09427aeab13931::t_6b57e9245e77fe 52-54,58,60,202-204,209
+  s_09427aeab13931::t_86fe33fc8daff8 4,55-57,59,205-208
+web/src/board/NouvelleTache.tsx
+  s_09427aeab13931::t_5abeaff094ccaf 24,33-38
+  s_09427aeab13931::t_6b57e9245e77fe 9,12-17,19-21,28
+  s_09427aeab13931::t_e624c04dd71d31 39-41
+web/src/board/EnAttente.tsx
+  s_09427aeab13931::t_5ab3bbd715bc2d 136-138
+  s_09427aeab13931::t_6b57e9245e77fe 13-14,112,124,128-129
+  s_09427aeab13931::t_24d36efed9431f 81
+tickets/E1-capture.md
+  s_09427aeab13931::t_03e6c8d4ecd854 73-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "52cd9c86d4ff1e7700f177582ff4952318326fe9",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
