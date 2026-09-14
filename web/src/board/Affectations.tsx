@@ -50,9 +50,10 @@ function Lignes({ sur, choisir = false }: { sur: Sur[]; choisir?: boolean }) {
   );
 }
 
-async function poster(chemin: string, corps?: unknown) {
+async function poster(chemin: string, corps?: unknown): Promise<AffectationsMembre[]> {
   const r = await fetch(chemin, { method: "POST", headers: corps ? { "content-type": "application/json" } : undefined, body: corps ? JSON.stringify(corps) : undefined });
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message ?? `Erreur ${r.status}`);
+  return r.json();
 }
 
 /** Une case cliquable, avec le sélecteur en dessous. */
@@ -60,28 +61,39 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
   const router = useRouter();
   const [, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
-  const [coches, setCoches] = useState<Set<string>>(new Set());
-  const [occupe, setOccupe] = useState(false);
+  /** Ce qui est coché, et pour chaque coche l'Affectation en cours qu'elle a ouverte — c'est elle qu'on ferme. */
+  const [coches, setCoches] = useState<Map<string, string>>(new Map());
+  const [enRoute, setEnRoute] = useState<Set<string>>(new Set());
   const [erreur, setErreur] = useState<string | null>(null);
-  const dessus = new Set(sur.map((a) => a.affectationId));
   const question = moi ? "Sur quoi es-tu aujourd’hui ?" : `Sur quoi est ${nom} aujourd’hui ?`;
 
-  const ouvrir = (o: boolean) => { if (o) { setCoches(new Set(dessus)); setErreur(null); } setOuvert(o); };
-  const basculer = (id: string) => setCoches((c) => { const n = new Set(c); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const depuisLeServeur = () => new Map(sur.map((a) => [a.affectationId, a.id]));
+  const ouvrir = (o: boolean) => { if (o) { setCoches(depuisLeServeur()); setErreur(null); } setOuvert(o); };
 
-  const prises = [...coches].filter((id) => !dessus.has(id));
-  const quittees = sur.filter((a) => !coches.has(a.affectationId));
-  const libelle = prises.length === 0 && quittees.length > 0 ? (moi ? "Je ne suis plus dessus" : `${nom} n’est plus dessus`) : "Commencer aujourd’hui";
-
-  async function confirmer() {
-    setOccupe(true); setErreur(null);
+  /**
+   * Un clic suffit : cocher, c'est commencer aujourd'hui ; décocher, c'est ne plus être dessus.
+   * Rien à confirmer — la coche bouge tout de suite, le serveur suit, et si ça rate elle revient.
+   */
+  async function basculer(affectationId: string) {
+    if (enRoute.has(affectationId)) return;
+    const enCoursId = coches.get(affectationId);
+    setErreur(null);
+    setEnRoute((e) => new Set(e).add(affectationId));
+    setCoches((c) => { const n = new Map(c); if (enCoursId) n.delete(affectationId); else n.set(affectationId, "…"); return n; });
     try {
-      for (const affectationId of prises) await poster("/api/affectations/en-cours", { affectationId, membreId });
-      for (const a of quittees) await poster(`/api/affectations/en-cours/${a.id}/fin`);
-      setOuvert(false);
+      const apres = enCoursId
+        ? await poster(`/api/affectations/en-cours/${enCoursId}/fin`)
+        : await poster("/api/affectations/en-cours", { affectationId, membreId });
+      // Le serveur renvoie qui est sur quoi : on y relit les identifiants, sans attendre le rendu.
+      const miennes = apres.find((m) => m.membreId === membreId);
+      if (miennes) setCoches(new Map(miennes.affectations.map((a) => [a.affectationId, a.id])));
       demarrer(() => router.refresh());
-    } catch (e) { setErreur((e as Error).message); }
-    finally { setOccupe(false); }
+    } catch (e) {
+      setErreur((e as Error).message);
+      setCoches((c) => { const n = new Map(c); if (enCoursId) n.set(affectationId, enCoursId); else n.delete(affectationId); return n; });
+    } finally {
+      setEnRoute((e) => { const n = new Set(e); n.delete(affectationId); return n; });
+    }
   }
 
   return (
@@ -99,7 +111,7 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
               const coche = coches.has(c.id);
               return (
                 <li key={c.id}>
-                  <button role="checkbox" aria-checked={coche} onClick={() => basculer(c.id)} className="flex h-[46px] w-full items-center gap-3 border-b border-bord-2 px-3.5 text-left hover:bg-surface-2">
+                  <button role="checkbox" aria-checked={coche} disabled={enRoute.has(c.id)} onClick={() => basculer(c.id)} className="flex h-[46px] w-full items-center gap-3 border-b border-bord-2 px-3.5 text-left hover:bg-surface-2 disabled:opacity-60">
                     <span className="h-[18px] w-1" style={{ background: c.couleur }} />
                     <span className="flex-1 text-[15.5px]">{c.nom}</span>
                     <span className={`flex h-5 w-5 items-center justify-center rounded-full ${coche ? "bg-accent" : "border-[1.5px] border-texte-tres-faible"}`}>
@@ -112,9 +124,8 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
             {choix.length === 0 && <li className="px-3.5 py-3 text-sm text-texte-sourd">Aucune Affectation active — ajoutez-en une dans les Réglages.</li>}
           </ul>
           {erreur && <p role="alert" className="px-3.5 pt-3 text-sm text-bloque">{erreur}</p>}
-          <div className="flex items-center gap-2 p-3.5">
-            <button onClick={confirmer} disabled={occupe || (prises.length === 0 && quittees.length === 0)} className="h-10 flex-1 rounded-lg bg-accent px-4 text-[14.5px] font-medium text-sur-accent disabled:opacity-50">{libelle}</button>
-            <Popover.Close className="h-10 px-3 text-sm text-texte-sourd">Annuler</Popover.Close>
+          <div className="flex justify-end p-2.5">
+            <Popover.Close className="h-9 rounded-lg px-3 text-sm text-texte-sourd hover:bg-surface-2 hover:text-texte">Fermer</Popover.Close>
           </div>
         </Popover.Content>
       </Popover.Portal>
