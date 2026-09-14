@@ -1,0 +1,46 @@
+web/src/app/api/sujets/[id]/route.ts
+  s_09427aeab13931::t_983d7ddfa9042e 1-2,5-6
+web/drizzle/0006_rubriques.sql
+  s_09427aeab13931::t_f4ba4454ad1028 1-4
+web/src/api/sujets.ts
+  s_09427aeab13931::t_983d7ddfa9042e 16-17,20,24,42,51-65
+  s_09427aeab13931::t_f3ec0e871119aa 66-69
+web/src/api/contrat.ts
+  s_09427aeab13931::t_f4ba4454ad1028 161-162,166,176,181-184
+  s_09427aeab13931::t_a78803976b9f3f 185-186
+web/src/db/schema.ts
+  s_09427aeab13931::t_f4ba4454ad1028 265-266,272-273,281
+web/src/weekly/Sujets.tsx
+  s_09427aeab13931::t_61ecd5e55edf1b 4,6,10-16,21,23,31-34,36-37,47-49,51,54,65-75,88,90,94-100,104-110,112-113,115-116,121,124-129,131-134,136-157,159-173
+web/src/api/sujets.test.ts
+  s_09427aeab13931::t_1a6548f6e97099 6,28,34,39-52,54,59,65
+web/src/app/weekly/page.tsx
+  s_09427aeab13931::t_62d1ee22f74ecd 4,27,31,42-43,45-47
+  s_09427aeab13931::t_4622f60fe9ee62 3
+web/src/api/openapi.ts
+  s_09427aeab13931::t_983d7ddfa9042e 19,169,182
+CONTEXT.md
+  s_09427aeab13931::t_b7e60eff84866c 189-190,195-198
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_1fc5c9bb496e92 65-69
+web/drizzle/meta/0006_snapshot.json
+  s_09427aeab13931::t_fd4da9959ccd1e 1-1303
+web/drizzle/meta/_journal.json
+  s_09427aeab13931::t_5d3fd6dea84263 46-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "eece95181d29fb818fb28cd41765d6f8437cd7d7",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
