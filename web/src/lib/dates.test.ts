@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { demain, dimancheDe, jourOuvrePrecedent, libelleDuree, libelleJour, libelleLong, libelleReport, libelleSemaine, lundiDe, lundiProchain, veille } from "./dates";
+import { demain, dimancheDe, jourOuvrePrecedent, libelleDernierJour, libelleDuree, libelleJour, libelleLong, libelleReport, libelleSemaine, lundiDe, lundiProchain, veille } from "./dates";
 
 describe("le nom d'un jour", () => {
   const ref = "2026-09-08";
@@ -60,5 +60,14 @@ describe("depuis quand on est dessus", () => {
     expect(libelleDuree("2026-09-06", "2026-09-08")).toBe("2 j");
     expect(libelleDuree("2026-08-25", "2026-09-08")).toBe("2 sem.");
     expect(libelleDuree("2026-07-01", "2026-09-08")).toBe("2 mois");
+  });
+});
+
+describe("le nom du dernier jour travaillé", () => {
+  it("dit « Hier » quand c'est bien hier", () => {
+    expect(libelleDernierJour("2026-09-10", "2026-09-11")).toBe("Hier");
+  });
+  it("nomme le jour, un lundi matin — le Daily se lit à voix haute", () => {
+    expect(libelleDernierJour("2026-09-11", "2026-09-14")).toBe("Vendredi 11 septembre");
   });
 });
