@@ -13,14 +13,13 @@ import { jourOuvrePrecedent, libelleLong } from "@/lib/dates";
 import { instant } from "@/relances/temps";
 import { Kanban } from "@/board/Kanban";
 import type { TacheCarte } from "@/board/Carte";
-import { Coquille } from "./Coquille";
 
 export const dynamic = "force-dynamic";
 
 /** Le Board : Sur le feu en kanban. La colonne latérale (À trier, À venir, Idées) arrive avec BRU-14. */
 export default async function Board({ searchParams }: { searchParams: Promise<{ membres?: string }> }) {
   const session = await sessionCourante();
-  if (!session) redirect("/api/auth/google");
+  if (!session) redirect("/api/auth/google"); // le layout l'a déjà fait ; TypeScript veut la garantie
   const { membres: filtre } = await searchParams;
 
   const { jour } = instant();
@@ -66,7 +65,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     }));
 
   return (
-    <Coquille initiale={session.nom.charAt(0).toUpperCase()} avatar={session.avatar}>
+    <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Sur le feu</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong()}</span>
@@ -77,6 +76,6 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       <main className="flex min-h-0 flex-1 flex-col">
         <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />
       </main>
-    </Coquille>
+    </>
   );
 }
