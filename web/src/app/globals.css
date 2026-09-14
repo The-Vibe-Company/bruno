@@ -185,6 +185,12 @@ html {
   button:disabled, [aria-disabled="true"] {
     cursor: not-allowed;
   }
+  /* Le contour du clavier, aux couleurs de Bruno — celui du navigateur est bleu, il jure partout. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 body {
