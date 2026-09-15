@@ -3,7 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { AffectationsMembre, Sur } from "@/api/affectations";
-import { libelleDuree } from "@/lib/dates";
+import { libelleDuree, libelleJour } from "@/lib/dates";
 import { PALETTE } from "@/reglages/palette";
 import { Initiale } from "./visuel";
 
@@ -87,7 +87,7 @@ function Lignes({ sur, genre, choisir = false }: { sur: Ligne[]; genre: Genre; c
         <span key={cle(a.genre, a.affectationId)} className="flex min-w-0 items-center gap-1.5">
           <span className={a.genre === "affectation" ? "h-[13px] w-[3px] flex-none" : "h-[11px] w-[2px] flex-none"} style={{ background: a.couleur }} />
           {/* La place reste comptée : un nom coupé se relit au survol, avec depuis quand. */}
-          <span title={`${a.nom} · ${libelleDuree(a.depuis)}`} className={`truncate leading-none tracking-tight ${a.genre === "affectation" ? "text-[14px] font-medium" : "text-[13px] text-texte-2"}`}>{a.nom}</span>
+          <span title={`${a.nom} · depuis ${libelleJour(a.depuis)}`} className={`truncate leading-none tracking-tight ${a.genre === "affectation" ? "text-[14px] font-medium" : "text-[13px] text-texte-2"}`}>{a.nom}</span>
           <span className="flex-none text-[10.5px] text-texte-faible">{libelleDuree(a.depuis)}</span>
         </span>
       ))}

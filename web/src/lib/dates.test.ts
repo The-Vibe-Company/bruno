@@ -56,7 +56,7 @@ describe("la semaine, pour Fait", () => {
 
 describe("depuis quand on est dessus", () => {
   it("compte en jours, puis en semaines, puis en mois", () => {
-    expect(libelleDuree("2026-09-08", "2026-09-08")).toBe("aujourd'hui");
+    expect(libelleDuree("2026-09-08", "2026-09-08")).toBe("auj.");
     expect(libelleDuree("2026-09-06", "2026-09-08")).toBe("2 j");
     expect(libelleDuree("2026-08-25", "2026-09-08")).toBe("2 sem.");
     expect(libelleDuree("2026-07-01", "2026-09-08")).toBe("2 mois");
