@@ -1,0 +1,41 @@
+web/src/reglages/Affectations.tsx
+  s_09427aeab13931::t_3e4d6d1d0ebc63 21
+  s_09427aeab13931::t_9172f1f2eeb9c2 14-20,22,70
+  s_09427aeab13931::t_2d02355f12ebcd 7,10-12,32-34,59,69,71
+  s_09427aeab13931::t_bc292d34126e53 13
+tickets/E6-affectations.md
+  s_09427aeab13931::t_a4378a2039a83b 14
+web/src/api/contrat.ts
+  s_09427aeab13931::t_5306d7b43a5f14 123
+tickets/E0-fondations.md
+  s_09427aeab13931::t_a4378a2039a83b 23
+web/src/api/rattachements.test.ts
+  s_09427aeab13931::t_4009124a39eccf 99-101,103-119
+web/src/api/openapi.ts
+  s_09427aeab13931::t_4009124a39eccf 154,173
+web/src/api/rattachements.ts
+  s_09427aeab13931::t_5306d7b43a5f14 19-20,24-31,53-58,64
+  s_09427aeab13931::t_4009124a39eccf 6-7,43
+web/src/app/api/projets/[id]/route.ts
+  s_09427aeab13931::t_e86e3a262b5542 7
+web/src/app/api/affectations/[id]/route.ts
+  s_09427aeab13931::t_4009124a39eccf 7
+CONTEXT.md
+  s_09427aeab13931::t_a4378a2039a83b 130-133,138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7446c5922cecb5603c17b41be32f81f585c83875",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
