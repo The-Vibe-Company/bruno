@@ -4,3 +4,7 @@
 # iOS : le projet est généré par xcodegen
 ios/Bruno.xcodeproj
 ios/DerivedData
+.asc/
+*.p8
+*.p12
+*.mobileprovision

@@ -41,6 +41,9 @@ final class Api {
 
     /// Une session, une fois. En dev, `/api/auth/dev` pose le cookie — jamais en production.
     private func connecter() async throws {
+        #if !DEBUG
+        guard Connexion.partagee.jeton != nil else { throw Erreur(statut: 401, message: "Connecte-toi avec Google pour continuer.") }
+        #endif
         if connecte { return }
         #if DEBUG
         let (_, reponse) = try await session.data(from: base.appending(path: "api/auth/dev"))
@@ -58,6 +61,10 @@ final class Api {
         guard let url = URL(string: chemin, relativeTo: base)?.absoluteURL else { throw Erreur(statut: 0, message: "Chemin invalide : \(chemin)") }
         var requete = URLRequest(url: url)
         requete.httpMethod = methode
+        #if !DEBUG
+        let jeton = Connexion.partagee.jeton
+        if let jeton { requete.setValue("Bearer \(jeton)", forHTTPHeaderField: "Authorization") }
+        #endif
         if let corps {
             requete.setValue("application/json", forHTTPHeaderField: "content-type")
             requete.httpBody = try JSONEncoder().encode(corps)
@@ -65,7 +72,12 @@ final class Api {
         let (donnees, reponse) = try await session.data(for: requete)
         let statut = (reponse as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(statut) else {
-            if statut == 401 { connecte = false }
+            if statut == 401 {
+                connecte = false
+                #if !DEBUG
+                if Connexion.partagee.jeton == jeton { Connexion.partagee.expirer() }
+                #endif
+            }
             let message = (try? JSONDecoder().decode(Refus.self, from: donnees))?.message ?? "Erreur \(statut)"
             throw Erreur(statut: statut, message: message)
         }

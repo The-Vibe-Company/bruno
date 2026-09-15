@@ -1,6 +1,6 @@
 import { DomaineRefuse, verifierIdToken } from "@/auth/google";
 import { MembreDesactive, membrePourIdentite } from "@/auth/membre";
-import { diagnostiquerEtat, echangerCode, etatEfface } from "@/auth/oauth";
+import { diagnostiquerEtat, echangerCode, etatEfface, retourIOS } from "@/auth/oauth";
 import { creerSession, enteteCookie } from "@/auth/session";
 
 /** Le retour de Google. Un refus doit être lisible, pas une page blanche. */
@@ -18,8 +18,15 @@ export async function GET(request: Request) {
     });
   };
 
-  if (params.get("error")) return echec("refusee");
   const etat = diagnostiquerEtat(request, params.get("state"));
+  if (etat.valide) {
+    const retour = retourIOS(params);
+    if (retour) return new Response(null, {
+      status: 302,
+      headers: { location: retour.toString(), "set-cookie": etatEfface, "cache-control": "no-store", "referrer-policy": "no-referrer" },
+    });
+  }
+  if (params.get("error")) return echec("refusee");
   if (!etat.valide) {
     // Booléens seulement : assez pour comprendre (cookie absent ? état absent ? différents ?),
     // rien qui permette de rejouer quoi que ce soit.
