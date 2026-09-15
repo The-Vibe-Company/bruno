@@ -19,13 +19,16 @@ const VIDE: Record<Genre, string> = { affectation: "Aucune Affectation", projet:
 const cle = (genre: Genre, id: string) => `${genre}:${id}`;
 
 /**
- * Qui est sur quoi, en un coup d'œil — **une ligne par personne**, le nom écrit une fois, puis
- * deux colonnes : ses Affectations, un filet, ses Projets. Deux bandeaux superposés répétaient les
- * mêmes noms pour rien ; tout mélanger dans une case ne laissait plus voir les deux axes.
+ * Qui est sur quoi. **Une case par personne**, son nom écrit une fois, et dedans **deux lignes** :
+ * ses Affectations, puis ses Projets.
  *
- * Chaque colonne s'ouvre sur son propre sélecteur : on coche, et c'est fait. N'importe qui peut
- * bouger celles de n'importe qui. Décocher, c'est « je ne suis plus dessus ». Le bandeau garde
- * toujours la même hauteur. Rien de tout ça dans les Réglages.
+ * Trois essais pour en arriver là. Deux bandeaux superposés répétaient les trois noms. Tout
+ * mélanger dans une case ne laissait plus voir les deux axes. Deux colonnes côte à côte : à trois
+ * personnes sur une largeur d'écran, il reste 150 px par colonne — deux Affectations et un Projet
+ * s'y écrasaient jusqu'à l'illisible. La place manque en largeur, elle existe en hauteur.
+ *
+ * Chaque ligne s'ouvre sur son propre sélecteur : on coche, et c'est fait. N'importe qui peut
+ * bouger celles de n'importe qui. Décocher, c'est « je ne suis plus dessus ». Rien dans les Réglages.
  */
 export function Affectations({ membres, projets = [], moiId, choix, choixProjets = [], lectureSeule = false }: {
   membres: AffectationsMembre[];
@@ -44,16 +47,18 @@ export function Affectations({ membres, projets = [], moiId, choix, choixProjets
   return (
     <div className="grid flex-none border-b border-bord-2" style={{ gridTemplateColumns: `repeat(${Math.max(membres.length, 1)}, minmax(0, 1fr))` }}>
       {membres.map((m, i) => (
-        <div key={m.membreId} className={`flex h-10 min-w-0 items-center gap-3 overflow-hidden pl-5 pr-3 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
+        <div key={m.membreId} className={`flex min-w-0 items-center gap-3 overflow-hidden py-1.5 pl-5 pr-3 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
           <span className="flex flex-none items-center gap-1.5 text-[12px] text-texte-sourd"><Initiale nom={m.nom} avatar={m.avatar} />{m.nom}</span>
-          {genres.map((genre) => (
-            <div key={genre} className={`flex min-w-0 flex-1 items-center ${genre === "projet" ? "border-l border-bord-2 pl-3" : ""}`}>
-              {lectureSeule
-                ? <Lignes sur={lignesDe(m.membreId, genre)} genre={genre} />
-                : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} genre={genre}
-                    sur={lignesDe(m.membreId, genre)} choix={options[genre]} />}
-            </div>
-          ))}
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            {genres.map((genre) => (
+              <div key={genre} className="flex h-6 min-w-0 items-center">
+                {lectureSeule
+                  ? <Lignes sur={lignesDe(m.membreId, genre)} genre={genre} />
+                  : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} genre={genre}
+                      sur={lignesDe(m.membreId, genre)} choix={options[genre]} />}
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -61,26 +66,26 @@ export function Affectations({ membres, projets = [], moiId, choix, choixProjets
 }
 
 /**
- * Une colonne : ce à quoi une personne est rattachée sur cet axe, côte à côte — jamais l'une sous
- * l'autre. Une Affectation porte le trait plein et le nom en gras ; un Projet, un trait fin et un
- * nom plus léger : même vide, on sait de quelle colonne il s'agit.
+ * Une ligne : ce à quoi une personne est rattachée sur cet axe, côte à côte. L'Affectation porte
+ * le trait plein et le nom en gras, le Projet un trait fin et un nom plus léger — vide, la ligne
+ * se nomme elle-même.
  */
 function Lignes({ sur, genre, choisir = false }: { sur: Ligne[]; genre: Genre; choisir?: boolean }) {
   return (
-    <span className="flex min-w-0 flex-nowrap items-center gap-x-4">
+    <span className="flex min-w-0 flex-nowrap items-center gap-x-3">
       {sur.length === 0 && (
         <span className="flex items-center gap-2">
-          <span className="h-[14px] w-[3px] border border-dashed border-texte-tres-faible" />
-          <span className={`leading-none tracking-tight text-texte-sourd ${genre === "affectation" ? "text-[14.5px] font-medium" : "text-[13px]"}`}>{VIDE[genre]}</span>
+          <span className="h-[12px] w-[3px] flex-none border border-dashed border-texte-tres-faible" />
+          <span className={`truncate leading-none tracking-tight text-texte-sourd ${genre === "affectation" ? "text-[14px] font-medium" : "text-[13px]"}`}>{VIDE[genre]}</span>
           {choisir && <span className="ml-1 text-xs text-accent">Choisir</span>}
         </span>
       )}
       {sur.map((a) => (
-        <span key={cle(a.genre, a.affectationId)} className="flex min-w-0 items-center gap-2">
-          <span className={a.genre === "affectation" ? "h-[14px] w-[3px] flex-none" : "h-[11px] w-[2px] flex-none"} style={{ background: a.couleur }} />
-          {/* Les colonnes sont étroites : le nom coupé se relit au survol. */}
-          <span title={a.nom} className={`truncate leading-none tracking-tight ${a.genre === "affectation" ? "text-[14.5px] font-medium" : "text-[13px] text-texte-2"}`}>{a.nom}</span>
-          <span className="flex-none text-[11px] text-texte-faible">{libelleDuree(a.depuis)}</span>
+        <span key={cle(a.genre, a.affectationId)} className="flex min-w-0 items-center gap-1.5">
+          <span className={a.genre === "affectation" ? "h-[13px] w-[3px] flex-none" : "h-[11px] w-[2px] flex-none"} style={{ background: a.couleur }} />
+          {/* La place reste comptée : un nom coupé se relit au survol, avec depuis quand. */}
+          <span title={`${a.nom} · ${libelleDuree(a.depuis)}`} className={`truncate leading-none tracking-tight ${a.genre === "affectation" ? "text-[14px] font-medium" : "text-[13px] text-texte-2"}`}>{a.nom}</span>
+          <span className="flex-none text-[10.5px] text-texte-faible">{libelleDuree(a.depuis)}</span>
         </span>
       ))}
     </span>
