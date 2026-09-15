@@ -3,8 +3,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { membresActifs } from "@/lib/filtre-membres";
 
 /**
- * Les initiales de chacun — le profil, plus tard — chacune active ou inactive au clic. Le même
- * filtre sur Sur le feu, le Daily et Fait, toujours à droite de la date, porté par l'URL.
+ * Les visages de chacun, actif ou inactif au clic. Le même filtre sur Sur le feu, le Daily et
+ * Fait, à droite de la date, porté par l'URL.
+ *
+ * Qui est retenu porte un **anneau d'accent** ; les autres passent en gris et rapetissent d'un
+ * cheveu. Une simple différence d'opacité ne se voyait pas : on ne savait pas qui était filtré.
  */
 export function FiltreMembres({ membres }: { membres: { id: string; nom: string; avatar?: string | null }[] }) {
   const router = useRouter(); const chemin = usePathname(); const params = useSearchParams();
@@ -23,7 +26,11 @@ export function FiltreMembres({ membres }: { membres: { id: string; nom: string;
         const actif = actifs.has(m.id);
         return (
           <button key={m.id} aria-pressed={actif} title={`${m.nom} — ⌘-clic : seulement ${m.nom}`} onClick={(e) => (e.metaKey || e.ctrlKey ? seul(m.id) : basculer(m.id))}
-            className={`flex h-7 w-7 items-center justify-center overflow-hidden rounded-full text-xs font-medium transition-opacity ${actif ? "bg-bord-faible text-texte" : "border border-bord-faible text-texte-tres-faible opacity-45 hover:opacity-80"}`}>
+            className={`flex h-7 w-7 items-center justify-center overflow-hidden rounded-full text-xs font-medium ring-offset-2 ring-offset-fond transition-all ${
+              actif
+                ? "bg-bord-faible text-texte ring-2 ring-accent"
+                : "scale-90 bg-bord-faible text-texte-tres-faible opacity-40 grayscale hover:opacity-70"
+            }`}>
             {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}
             {m.avatar ? <img src={m.avatar} alt={m.nom} className="h-full w-full object-cover" /> : m.nom.trim().charAt(0).toUpperCase()}
           </button>

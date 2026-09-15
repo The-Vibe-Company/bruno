@@ -77,7 +77,8 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         <FiltreMembres membres={membres} />
         <div className="flex-1" />
       </header>
-      <Affectations membres={affectations} projets={projets} moiId={session.membreId}
+      {/* Le bandeau suit le filtre : filtrer sur Antoine et lire les trois n'aurait pas de sens. */}
+      <Affectations membres={affectations.filter((m) => actifs.has(m.membreId))} projets={projets} moiId={session.membreId}
         choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
       <main className="flex min-h-0 flex-1 flex-col">
         <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />

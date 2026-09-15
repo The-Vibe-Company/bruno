@@ -105,3 +105,13 @@ d'Affectations découlent sur Projets ».
 - [x] 4 tests de plus : les deux listes ne se mélangent pas, et poser un identifiant d'Affectation
       sur un Projet est refusé
 
+## BRU-73 — Le filtre par Membre se voit, et le bandeau le suit · **livré le 15 septembre**
+
+Antoine : « quand je sélectionne Antoine, ce n'est pas assez clair ; et dans le bandeau
+Affectation on ne montre que ceux qui sont sélectionnés ».
+
+- [x] Qui est retenu porte un **anneau d'accent** ; les autres passent en gris, rapetissent d'un
+      cheveu et s'effacent. Une simple différence d'opacité ne se voyait pas
+- [x] Le **bandeau suit le filtre** : filtrer sur une personne et continuer à lire les trois
+      n'avait pas de sens. Le Daily le faisait déjà
+
