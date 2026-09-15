@@ -1,0 +1,21 @@
+web/src/weekly/Sujets.tsx
+  s_09427aeab13931::t_a7dd6e3e06d3d3 122-128,168
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_8f89934b8b23e8 75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "64479950e234f9675932e2404c8ef42b2cae8843",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
