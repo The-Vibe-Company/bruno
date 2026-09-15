@@ -4,12 +4,22 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { PALETTE } from "./palette";
 
-export type Affectation = { id: string; nom: string; couleur: string; actif: boolean };
+export type Affectation = { id: string; nom: string; couleur: string; actif: boolean; periodes: number };
 
 /** Les mots changent, les gestes non : une Affectation et un Projet se gèrent pareil. */
-export type Vocabulaire = { titre: string; chemin: string; un: string; le: string; ajouter: string };
-export const AFFECTATIONS: Vocabulaire = { titre: "Affectations", chemin: "/api/affectations", un: "une Affectation", le: "l’", ajouter: "+ Ajouter une Affectation" };
-export const PROJETS: Vocabulaire = { titre: "Projets", chemin: "/api/projets", un: "un Projet", le: "le ", ajouter: "+ Ajouter un Projet" };
+export type Vocabulaire = { titre: string; chemin: string; un: string; le: string; ajouter: string; la: string; e: string };
+export const AFFECTATIONS: Vocabulaire = { titre: "Affectations", chemin: "/api/affectations", un: "une Affectation", le: "l’", ajouter: "+ Ajouter une Affectation", la: "la", e: "e" };
+export const PROJETS: Vocabulaire = { titre: "Projets", chemin: "/api/projets", un: "un Projet", le: "le ", ajouter: "+ Ajouter un Projet", la: "le", e: "" };
+
+/**
+ * Ce qu'on perd en supprimant. Le compte vient du serveur : dire « des périodes » sans le nombre
+ * laissait croire que c'était une formalité.
+ */
+function consequence(periodes: number, mots: Vocabulaire): string {
+  if (periodes === 0) return "Personne n’a jamais été dessus : rien d’autre ne disparaît.";
+  const [n, part] = periodes === 1 ? ["Une période", "elle part"] : [`${periodes} périodes`, "elles partent"];
+  return `${n} ${mots.la} nomme${periodes === 1 ? "" : "nt"} : ${part} avec, et l’historique ne dira plus qui était dessus. Pour l’enlever sans rien perdre, désactivez-${mots.la}.`;
+}
 
 async function appel(chemin: string, method: string, corps?: unknown): Promise<Affectation[]> {
   const r = await fetch(chemin, { method, headers: corps ? { "content-type": "application/json" } : undefined, body: corps ? JSON.stringify(corps) : undefined });
@@ -19,8 +29,9 @@ async function appel(chemin: string, method: string, corps?: unknown): Promise<A
 
 /**
  * La liste de ce à quoi on peut travailler — les Affectations, ou les Projets : même écran, même
- * code. On désactive ; on ne supprime que ce qui n'a jamais servi — et qui est sur quoi ne se règle
- * pas ici : ça se voit, et se change, là où c'est affiché.
+ * code. Désactiver reste le geste normal ; supprimer efface aussi les périodes, et la boîte de
+ * confirmation le dit avec le compte. Qui est sur quoi ne se règle pas ici : ça se change là où
+ * c'est affiché.
  */
 export function Affectations({ initiales, mots = AFFECTATIONS, titre = true }: { initiales: Affectation[]; mots?: Vocabulaire; titre?: boolean }) {
   const router = useRouter();
@@ -45,7 +56,7 @@ export function Affectations({ initiales, mots = AFFECTATIONS, titre = true }: {
         {liste.map((a) => (
           <li key={a.id} className="flex items-center gap-3.5 border-b border-bord-2 py-3.5">
             <span className="h-5 w-1" style={{ background: a.couleur }} />
-            <span className={`flex-1 text-[15.5px] ${a.actif ? "" : "text-texte-faible"}`}>{a.nom}{!a.actif && <span className="text-[13.5px]"> · désactivé{mots === AFFECTATIONS ? "e" : ""}</span>}</span>
+            <span className={`flex-1 text-[15.5px] ${a.actif ? "" : "text-texte-faible"}`}>{a.nom}{!a.actif && <span className="text-[13.5px]"> · désactivé{mots.e}</span>}</span>
             <button onClick={() => agir(() => appel(`${mots.chemin}/${a.id}`, "PATCH", { actif: !a.actif }))} className="text-[13.5px] text-texte-sourd hover:text-texte">
               {a.actif ? "Désactiver" : "Réactiver"}
             </button>
@@ -55,7 +66,9 @@ export function Affectations({ initiales, mots = AFFECTATIONS, titre = true }: {
                 <AlertDialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/60" />
                 <AlertDialog.Content className="anime-boite fixed left-1/2 top-1/2 w-[400px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
                   <AlertDialog.Title className="text-lg font-semibold tracking-tight">Supprimer « {a.nom} » ?</AlertDialog.Title>
-                  <AlertDialog.Description className="mt-2 text-[14.5px] text-texte-sourd">Possible seulement si personne n’a jamais été dessus. Sinon, Bruno refusera : désactivez-{mots === AFFECTATIONS ? "la" : "le"}, l’historique {mots === AFFECTATIONS ? "la" : "le"} nomme.</AlertDialog.Description>
+                  <AlertDialog.Description className="mt-2 text-[14.5px] text-texte-sourd">
+                    {consequence(a.periodes, mots)}
+                  </AlertDialog.Description>
                   <div className="mt-5 flex justify-end gap-2">
                     <AlertDialog.Cancel asChild><button className="h-10 rounded-lg border border-bord-fort px-4 text-[14.5px]">Annuler</button></AlertDialog.Cancel>
                     <AlertDialog.Action asChild><button onClick={() => agir(() => appel(`${mots.chemin}/${a.id}`, "DELETE"))} className="h-10 rounded-lg bg-bloque px-4 text-[14.5px] font-medium text-sur-accent">Supprimer</button></AlertDialog.Action>

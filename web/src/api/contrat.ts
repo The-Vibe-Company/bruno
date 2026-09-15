@@ -120,7 +120,7 @@ export const ModifierMoi = z.object({
 
 /* ------------------------------------------------------------------ les Affectations */
 
-export const Affectation = z.object({ id: uuid, nom: z.string(), couleur: z.string(), actif: z.boolean() });
+export const Affectation = z.object({ id: uuid, nom: z.string(), couleur: z.string(), actif: z.boolean(), periodes: z.number().int() });
 export const AjouterAffectation = z.object({
   nom: z.string().trim().min(1, "Un nom").max(40),
   couleur: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Une couleur, comme #F27313"),

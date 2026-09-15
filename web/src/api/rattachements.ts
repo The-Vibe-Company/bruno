@@ -3,8 +3,8 @@
  * qui est sur quoi (BRU-27). Les deux ont exactement la même mécanique, donc exactement le même
  * code : `genre` dit lequel on regarde. `affectations.ts` et `projets.ts` ne font que le fixer.
  *
- * La liste est ouverte ; on désactive — et on ne supprime que ce qui n'a jamais servi :
- * l'historique ne doit pas se trouer. Rien de tout ça ne se pose sur une Tâche.
+ * La liste est ouverte ; on désactive pour sortir sans rien perdre, et on peut supprimer pour de
+ * bon — les périodes partent alors avec. Rien de tout ça ne se pose sur une Tâche.
  */
 import { and, asc, desc, eq, gte, isNull, lte, or, sql, type SQL } from "drizzle-orm";
 import { db } from "@/db/client";
@@ -16,12 +16,19 @@ export type Genre = "affectation" | "projet";
 /** Ce que le message d'erreur doit dire quand on ne trouve pas : « Affectation » ou « Projet ». */
 const NOM: Record<Genre, string> = { affectation: "Affectation", projet: "Projet" };
 
-export type Affectation = { id: string; nom: string; couleur: string; actif: boolean };
+/** `periodes` : combien de fois quelqu'un s'est posé dessus. Zéro veut dire « ça n'a jamais servi ». */
+export type Affectation = { id: string; nom: string; couleur: string; actif: boolean; periodes: number };
 type Ctx = { spaceId: string };
 
 export async function lister(ctx: Ctx, genre: Genre): Promise<Affectation[]> {
-  return db.select({ id: affectation.id, nom: affectation.nom, couleur: affectation.couleur, actif: affectation.actif })
-    .from(affectation).where(and(eq(affectation.spaceId, ctx.spaceId), eq(affectation.genre, genre)))
+  return db.select({
+      id: affectation.id, nom: affectation.nom, couleur: affectation.couleur, actif: affectation.actif,
+      periodes: sql<number>`count(${affectationMembre.id})::int`,
+    })
+    .from(affectation)
+    .leftJoin(affectationMembre, eq(affectationMembre.affectationId, affectation.id))
+    .where(and(eq(affectation.spaceId, ctx.spaceId), eq(affectation.genre, genre)))
+    .groupBy(affectation.id)
     .orderBy(asc(affectation.createdAt));
 }
 
@@ -33,7 +40,7 @@ export async function ajouter(ctx: Ctx, genre: Genre, nom: string, couleur: stri
   return lister(ctx, genre);
 }
 
-/** Désactiver ou réactiver. Jamais supprimer : les périodes passées continuent de la nommer. */
+/** Désactiver ou réactiver — la sortie propre : les périodes passées continuent de la nommer. */
 export async function activer(ctx: Ctx, genre: Genre, id: string, actif: boolean): Promise<Affectation[]> {
   const [a] = await db.select({ id: affectation.id }).from(affectation)
     .where(and(eq(affectation.id, id), eq(affectation.spaceId, ctx.spaceId), eq(affectation.genre, genre)));
@@ -43,15 +50,18 @@ export async function activer(ctx: Ctx, genre: Genre, id: string, actif: boolean
 }
 
 /**
- * Supprimer — seulement une Affectation qui n'a jamais servi (une faute de frappe, un doublon).
- * Dès qu'une période la nomme, l'historique en dépend : on désactive, on ne troue pas.
+ * Supprimer, pour de bon — les périodes avec. Longtemps l'API refusait dès qu'une période la
+ * nommait : on désactivait, et rien ne se perdait. Antoine a demandé de pouvoir supprimer quand
+ * même (15 septembre) : une Affectation créée par erreur et déjà posée sur quelqu'un n'avait
+ * aucune sortie. Le prix est dit à l'écran avant de cliquer — l'historique ne la nommera plus.
+ *
+ * Désactiver reste le geste normal : c'est lui qui garde Fait et le Daily honnêtes.
  */
 export async function supprimer(ctx: Ctx, genre: Genre, id: string): Promise<Affectation[]> {
   const [a] = await db.select({ nom: affectation.nom }).from(affectation)
     .where(and(eq(affectation.id, id), eq(affectation.spaceId, ctx.spaceId), eq(affectation.genre, genre)));
   if (!a) throw introuvable(NOM[genre]);
-  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(affectationMembre).where(eq(affectationMembre.affectationId, id));
-  if (n > 0) throw new ErreurApi("requete_invalide", 422, `« ${a.nom} » a servi : l'historique le nomme. Désactivez-le plutôt.`);
+  await db.delete(affectationMembre).where(eq(affectationMembre.affectationId, id));
   await db.delete(affectation).where(eq(affectation.id, id));
   return lister(ctx, genre);
 }

@@ -127,13 +127,15 @@ _Avoid_: Archiver, corbeille, effacer
 **Affectation**:
 Ce à quoi un Membre travaille : un client comme MONKA ou Coup de Pâtes, ou un sujet interne.
 Le mot est volontairement plus large que « client » — `Interne` en est une. La liste se gère
-dans les Réglages ; on **désactive** une Affectation, on ne la supprime jamais, pour ne pas
-trouer l'historique. Une Affectation ne se pose jamais sur une Tâche.
+dans les Réglages. **Désactiver** est le geste normal : l'Affectation sort des choix, et
+l'historique continue de la nommer. **Supprimer** existe aussi, et efface les périodes avec :
+les Réglages disent combien avant de laisser cliquer. Une Affectation ne se pose jamais sur
+une Tâche.
 _Avoid_: Client, compte, dossier, mission, projet
 
 **Projet**:
 Un second axe de rattachement, **exactement la même chose qu'une Affectation** et géré pareil :
-liste ouverte dans les Réglages, on désactive plutôt que supprimer, on se pose dessus depuis le
+liste ouverte dans les Réglages, désactiver plutôt que supprimer, on se pose dessus depuis le
 bandeau, plusieurs à la fois, et l'historique garde depuis quand. Un Membre peut être sur une
 Affectation *et* sur des Projets ; les deux listes sont indépendantes, et un Projet peut porter
 le nom d'une Affectation. Comme elle, un Projet ne se pose jamais sur une Tâche.
