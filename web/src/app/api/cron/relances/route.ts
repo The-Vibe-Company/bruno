@@ -3,10 +3,12 @@
  * Créneaux. Le moteur décide qui, de quoi, et ne livre jamais deux fois (BRU-24).
  *
  * `?apercu=1` montre ce qui partirait sans rien envoyer ; `&quand=2026-09-08T09:15` rejoue un
- * instant (heure de Bruno). Le cron de Vercel envoie
+ * instant (heure de Bruno). La livraison va aux appareils abonnés, et toujours au journal.
+ * Le cron de Vercel envoie
  * `Authorization: Bearer $CRON_SECRET` ; sans secret configuré, la route reste ouverte en dev.
  */
 import { relancer, relancesDues } from "@/relances/moteur";
+import { livreurPush } from "@/relances/push";
 import { instant, instantDepuis } from "@/relances/temps";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +25,6 @@ export async function GET(request: Request) {
     const dues = await relancesDues(i);
     return Response.json({ instant: i, dues: dues.map((r) => ({ membre: r.nom, heure: r.heure, ...r.message })) });
   }
-  const bilan = await relancer(undefined, i);
+  const bilan = await relancer(livreurPush, i);
   return Response.json({ instant: i, ...bilan });
 }

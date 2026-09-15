@@ -14,6 +14,7 @@ const composants = {
   Reordonner: C.Reordonner, Reporter: C.Reporter,
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
+  AbonnerAppareil: C.AbonnerAppareil,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
   Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
@@ -152,6 +153,17 @@ export function documentOpenApi() {
         parameters: [idTache],
         patch: { summary: "Désactiver ou réactiver", description: "Le geste normal : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
         delete: { summary: "Supprimer", description: "Définitif : les périodes qui la nomment partent avec. Pour l'enlever sans trouer l'historique, désactivez-la (PATCH).", responses: { 200: { description: "La liste" } } },
+      },
+      "/api/push/abonnements": {
+        get: { summary: "Mes appareils abonnés", description: "Ceux qui recevront mes Relances en notification.", responses: { 200: { description: "Les appareils" } } },
+        post: { summary: "Abonner cet appareil", description: "Ce que le navigateur donne quand on accepte. Le même endpoint remplace, il ne s'ajoute pas.", requestBody: corps("AbonnerAppareil"), responses: { 200: { description: "Les appareils" } } },
+      },
+      "/api/push/abonnements/{id}": {
+        parameters: [idTache],
+        delete: { summary: "Ne plus rien recevoir sur cet appareil", responses: { 200: { description: "Les appareils restants" } } },
+      },
+      "/api/push/essai": {
+        post: { summary: "Envoyer un essai", description: "La même notification qu'une Relance, tout de suite, à moi seul. Rien n'est tracé : on peut recommencer.", responses: { 200: { description: "Combien sont parties" }, 422: { description: "Aucun appareil abonné" } } },
       },
       "/api/recurrences": {
         get: { summary: "Les Récurrences", responses: { 200: { description: "Les règles", content: { "application/json": { schema: { type: "array", items: ref("Recurrence") } } } } } },
