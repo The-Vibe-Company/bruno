@@ -1,0 +1,31 @@
+web/src/lib/filtre-membres.ts
+  s_09427aeab13931::t_ece6fc7d7acb44 2-6,8,11-13
+web/src/app/(bruno)/page.tsx
+  s_09427aeab13931::t_ece6fc7d7acb44 43-44,78
+web/src/daily/Hier.tsx
+  s_09427aeab13931::t_0f1a44d3cae10a 3,5,7-11,43
+web/src/lib/filtre-membres.test.ts
+  s_09427aeab13931::t_bded155d956839 1-34
+web/src/board/FiltreMembres.tsx
+  s_09427aeab13931::t_ece6fc7d7acb44 12,14-17,20
+web/src/app/(bruno)/daily/page.tsx
+  s_09427aeab13931::t_0f1a44d3cae10a 37-38,48
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_b02092e0755006 105-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9a42c98acd23f815db6d929bbef34ec818d69303",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
