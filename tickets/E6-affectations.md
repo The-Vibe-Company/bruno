@@ -89,8 +89,11 @@ d'Affectations découlent sur Projets ».
       s'appeler comme une Affectation
 - [x] `/api/projets`, `/api/projets/{id}`, `/api/projets/en-cours`, `.../en-cours/{id}/fin`,
       `/api/projets/historique` — le miroir exact, documenté dans l'OpenAPI
-- [x] **Réglages** : une liste Projets sous les Affectations, mêmes gestes (ajouter avec sa couleur,
-      Désactiver, Supprimer si ça n'a jamais servi)
+- [x] **Réglages** : **deux mini onglets**, Affectations et Projets, une liste à la fois — mêmes
+      gestes (ajouter avec sa couleur, Désactiver, Supprimer si ça n'a jamais servi)
+- [x] **Depuis le bandeau** aussi : le sélecteur porte « Nouvelle Affectation » / « Nouveau Projet ».
+      Le nom suffit, la couleur se prend dans la palette (la première libre), et la nouvelle se
+      coche dans la foulée — créer là, c'est vouloir y être
 - [x] **Board, Daily, Weekly** : **une case par personne**, son nom écrit une fois, et dedans
       **deux lignes** — ses Affectations, puis ses Projets. Chacune s'ouvre sur son propre
       sélecteur ; l'Affectation porte le trait plein et le nom en gras, le Projet un trait fin et
