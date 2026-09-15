@@ -1,10 +1,14 @@
 import type { AffectationsMembre } from "@/api/affectations";
 import { Initiale, type Personne } from "@/board/visuel";
-import { libelleDernierJour, libelleLong } from "@/lib/dates";
+import { libelleDernierJour, libelleJour, libelleLong } from "@/lib/dates";
 
-export type TacheFinie = { id: string; titre: string; etat: "termine" | "abandonne"; assigne: Personne | null };
+export type TacheFinie = { id: string; titre: string; etat: "termine" | "abandonne"; jour: string; assigne: Personne | null };
 
-/** Le bloc Hier : les Affectations de la veille, puis ce qui a été Terminé ou Abandonné. Lecture seule. */
+/**
+ * Le bloc Hier : les Affectations de ce jour-là, puis ce qui a été fini **depuis** — le dernier
+ * jour ouvré et aujourd'hui. Au point du matin, ce qui vient d'être coché compte aussi.
+ * Lecture seule : c'est le Board qui bouge.
+ */
 export function Hier({ jour, estLaVeille, affectations, projets, taches }: { jour: string; estLaVeille: boolean; affectations: AffectationsMembre[]; projets: AffectationsMembre[]; taches: TacheFinie[] }) {
   // Les Affectations et les Projets de ce jour-là, dans la même colonne : c'est la même question.
   const parMembre = affectations.map((m) => ({ ...m, tout: [...m.affectations, ...(projets.find((p) => p.membreId === m.membreId)?.affectations ?? [])] }));
@@ -36,6 +40,7 @@ export function Hier({ jour, estLaVeille, affectations, projets, taches }: { jou
       {taches.map((t) => (
         <div key={t.id} className="mt-1.5 flex items-center gap-2.5 rounded-lg border border-bord-2 bg-surface-3 px-3 py-2">
           <span className={`flex-1 text-[13.5px] ${t.etat === "abandonne" ? "text-texte-sourd" : ""}`}>{t.titre}</span>
+          <span className="text-[11.5px] text-texte-faible">{libelleJour(t.jour)}</span>
           <span className={`text-[12px] ${t.etat === "termine" ? "text-accent" : "text-texte-faible"}`}>{t.etat === "termine" ? "Terminé" : "Abandonné"}</span>
           {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} />}
         </div>

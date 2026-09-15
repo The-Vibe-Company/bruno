@@ -40,7 +40,8 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
   ]);
   const parId = new Map(membres.map((m) => [m.id, m]));
   const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
-  const actifs = membresActifs(filtre, membres);
+  // Sur le Board, on arrive pour son propre travail : par défaut, moi seul.
+  const actifs = membresActifs(filtre, membres, [session.membreId]);
   const cartes: TacheCarte[] = taches.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
     reportsCount: t.reportsCount, assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
@@ -74,10 +75,11 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Sur le feu</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong()}</span>
-        <FiltreMembres membres={membres} />
+        <FiltreMembres membres={membres} defaut={[session.membreId]} />
         <div className="flex-1" />
       </header>
-      <Affectations membres={affectations} projets={projets} moiId={session.membreId}
+      {/* Le bandeau suit le filtre : filtrer sur Antoine et lire les trois n'aurait pas de sens. */}
+      <Affectations membres={affectations.filter((m) => actifs.has(m.membreId))} projets={projets} moiId={session.membreId}
         choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
       <main className="flex min-h-0 flex-1 flex-col">
         <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />
