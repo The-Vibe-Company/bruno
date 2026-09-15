@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { lister, terminees } from "@/api/taches";
 import { enCours, lister as listerAffectations } from "@/api/affectations";
 import { enCours as projetsEnCours, lister as listerProjets } from "@/api/projets";
-import { Affectations, AXE_PROJET } from "@/board/Affectations";
+import { Affectations } from "@/board/Affectations";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import type { TacheAttente, TacheFinie } from "@/board/EnAttente";
@@ -77,8 +77,8 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         <FiltreMembres membres={membres} />
         <div className="flex-1" />
       </header>
-      <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} />
-      <Affectations membres={projets} moiId={session.membreId} choix={choixProjets.filter((c) => c.actif)} axe={AXE_PROJET} />
+      <Affectations membres={affectations} projets={projets} moiId={session.membreId}
+        choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
       <main className="flex min-h-0 flex-1 flex-col">
         <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />
       </main>

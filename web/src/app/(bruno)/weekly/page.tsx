@@ -5,7 +5,7 @@ import { lister as listerAffectations, surLaPeriode } from "@/api/affectations";
 import { lister as listerProjets, surLaPeriode as projetsSurLaPeriode } from "@/api/projets";
 import { lister, parSemaine } from "@/api/sujets";
 import { sessionCourante } from "@/auth/serveur";
-import { Affectations, AXE_PROJET } from "@/board/Affectations";
+import { Affectations } from "@/board/Affectations";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
 import { dimancheDe, libelleSemaine, lundiDe } from "@/lib/dates";
@@ -65,8 +65,8 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
       </header>
 
       {/* Qui est sur quoi : la réunion commence par là. Une semaine passée se lit, ne se change pas. */}
-      <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} lectureSeule={lundi !== courante} />
-      <Affectations membres={projets} moiId={session.membreId} choix={choixProjets.filter((c) => c.actif)} lectureSeule={lundi !== courante} axe={AXE_PROJET} />
+      <Affectations membres={affectations} projets={projets} moiId={session.membreId}
+        choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} lectureSeule={lundi !== courante} />
       <main className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} />
       </main>
