@@ -22,7 +22,7 @@ async function appel(chemin: string, method: string, corps?: unknown): Promise<A
  * code. On désactive ; on ne supprime que ce qui n'a jamais servi — et qui est sur quoi ne se règle
  * pas ici : ça se voit, et se change, là où c'est affiché.
  */
-export function Affectations({ initiales, mots = AFFECTATIONS }: { initiales: Affectation[]; mots?: Vocabulaire }) {
+export function Affectations({ initiales, mots = AFFECTATIONS, titre = true }: { initiales: Affectation[]; mots?: Vocabulaire; titre?: boolean }) {
   const router = useRouter();
   const [, demarrer] = useTransition();
   const [liste, setListe] = useState(initiales);
@@ -39,7 +39,7 @@ export function Affectations({ initiales, mots = AFFECTATIONS }: { initiales: Af
 
   return (
     <section>
-      <header className="border-b border-accent pb-2.5"><h2 className="text-xl font-medium tracking-tight">{mots.titre}</h2></header>
+      {titre && <header className="border-b border-accent pb-2.5"><h2 className="text-xl font-medium tracking-tight">{mots.titre}</h2></header>}
       {erreur && <p role="alert" className="mt-3 rounded-lg border border-bloque/40 bg-bloque-voile px-3 py-2 text-sm">{erreur}</p>}
       <ul>
         {liste.map((a) => (
