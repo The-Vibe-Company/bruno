@@ -8,6 +8,17 @@ import { Initiale } from "./visuel";
 
 export type Choix = { id: string; nom: string; couleur: string };
 
+/** Les mots et le chemin changent, les gestes non. */
+export type Axe = { chemin: string; aucun: string; question: (qui: string | null) => string };
+export const AXE_AFFECTATION: Axe = {
+  chemin: "/api/affectations", aucun: "Aucune Affectation",
+  question: (qui) => (qui === null ? "Sur quoi es-tu aujourd’hui ?" : `Sur quoi est ${qui} aujourd’hui ?`),
+};
+export const AXE_PROJET: Axe = {
+  chemin: "/api/projets", aucun: "Aucun Projet",
+  question: (qui) => (qui === null ? "Sur quel Projet es-tu ?" : `Sur quel Projet est ${qui} ?`),
+};
+
 /**
  * Qui est sur quoi, en un coup d'œil — et là où ça se change : un clic sur une case ouvre
  * « Sur quoi es-tu aujourd'hui ? » (ou « Sur quoi est Stan ? » : n'importe qui peut bouger
@@ -15,13 +26,13 @@ export type Choix = { id: string; nom: string; couleur: string };
  * c'est « je ne suis plus dessus ». Le bandeau garde toujours la même hauteur : plusieurs
  * Affectations se posent côte à côte. Rien de tout ça dans les Réglages.
  */
-export function Affectations({ membres, moiId, choix, lectureSeule = false }: { membres: AffectationsMembre[]; moiId: string; choix: Choix[]; lectureSeule?: boolean }) {
+export function Affectations({ membres, moiId, choix, lectureSeule = false, axe = AXE_AFFECTATION }: { membres: AffectationsMembre[]; moiId: string; choix: Choix[]; lectureSeule?: boolean; axe?: Axe }) {
   return (
     <div className="grid flex-none border-b border-bord-2" style={{ gridTemplateColumns: `repeat(${Math.max(membres.length, 1)}, minmax(0, 1fr))` }}>
       {membres.map((m, i) => (
         <div key={m.membreId} className={`flex h-10 min-w-0 items-center gap-3 overflow-hidden px-5 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
           <span className="flex flex-none items-center gap-1.5 text-[12px] text-texte-sourd"><Initiale nom={m.nom} avatar={m.avatar} />{m.nom}</span>
-          {lectureSeule ? <Lignes sur={m.affectations} /> : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} sur={m.affectations} choix={choix} />}
+          {lectureSeule ? <Lignes sur={m.affectations} axe={axe} /> : <Case membreId={m.membreId} nom={m.nom} moi={m.membreId === moiId} sur={m.affectations} choix={choix} axe={axe} />}
         </div>
       ))}
     </div>
@@ -29,13 +40,13 @@ export function Affectations({ membres, moiId, choix, lectureSeule = false }: { 
 }
 
 /** Les Affectations d'une personne, côte à côte — jamais l'une sous l'autre. */
-function Lignes({ sur, choisir = false }: { sur: Sur[]; choisir?: boolean }) {
+function Lignes({ sur, axe, choisir = false }: { sur: Sur[]; axe: Axe; choisir?: boolean }) {
   return (
     <span className="flex min-w-0 flex-nowrap items-center gap-x-4">
       {sur.length === 0 && (
         <span className="flex items-center gap-2">
           <span className="h-[14px] w-[3px] border border-dashed border-texte-tres-faible" />
-          <span className="text-[14.5px] font-medium leading-none tracking-tight text-texte-sourd">Aucune Affectation</span>
+          <span className="text-[14.5px] font-medium leading-none tracking-tight text-texte-sourd">{axe.aucun}</span>
           {choisir && <span className="ml-1 text-xs text-accent">Choisir</span>}
         </span>
       )}
@@ -57,7 +68,7 @@ async function poster(chemin: string, corps?: unknown): Promise<AffectationsMemb
 }
 
 /** Une case cliquable, avec le sélecteur en dessous. */
-function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: string; moi: boolean; sur: Sur[]; choix: Choix[] }) {
+function Case({ membreId, nom, moi, sur, choix, axe }: { membreId: string; nom: string; moi: boolean; sur: Sur[]; choix: Choix[]; axe: Axe }) {
   const router = useRouter();
   const [, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
@@ -65,7 +76,7 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
   const [coches, setCoches] = useState<Map<string, string>>(new Map());
   const [enRoute, setEnRoute] = useState<Set<string>>(new Set());
   const [erreur, setErreur] = useState<string | null>(null);
-  const question = moi ? "Sur quoi es-tu aujourd’hui ?" : `Sur quoi est ${nom} aujourd’hui ?`;
+  const question = axe.question(moi ? null : nom);
 
   const depuisLeServeur = () => new Map(sur.map((a) => [a.affectationId, a.id]));
   const ouvrir = (o: boolean) => { if (o) { setCoches(depuisLeServeur()); setErreur(null); } setOuvert(o); };
@@ -82,8 +93,8 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
     setCoches((c) => { const n = new Map(c); if (enCoursId) n.delete(affectationId); else n.set(affectationId, "…"); return n; });
     try {
       const apres = enCoursId
-        ? await poster(`/api/affectations/en-cours/${enCoursId}/fin`)
-        : await poster("/api/affectations/en-cours", { affectationId, membreId });
+        ? await poster(`${axe.chemin}/en-cours/${enCoursId}/fin`)
+        : await poster(`${axe.chemin}/en-cours`, { affectationId, membreId });
       // Le serveur renvoie qui est sur quoi : on y relit les identifiants, sans attendre le rendu.
       const miennes = apres.find((m) => m.membreId === membreId);
       if (miennes) setCoches(new Map(miennes.affectations.map((a) => [a.affectationId, a.id])));
@@ -100,7 +111,7 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
     <Popover.Root open={ouvert} onOpenChange={ouvrir}>
       <Popover.Trigger asChild>
         <button aria-label={question} className="-mx-1.5 flex min-w-0 items-center rounded-md px-1.5 py-0.5 text-left hover:bg-surface-2">
-          <Lignes sur={sur} choisir />
+          <Lignes sur={sur} axe={axe} choisir />
         </button>
       </Popover.Trigger>
       <Popover.Portal>
@@ -121,7 +132,7 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
                 </li>
               );
             })}
-            {choix.length === 0 && <li className="px-3.5 py-3 text-sm text-texte-sourd">Aucune Affectation active — ajoutez-en une dans les Réglages.</li>}
+            {choix.length === 0 && <li className="px-3.5 py-3 text-sm text-texte-sourd">Rien d’actif — ajoutez-en dans les Réglages.</li>}
           </ul>
           {erreur && <p role="alert" className="px-3.5 pt-3 text-sm text-bloque">{erreur}</p>}
           <div className="flex justify-end p-2.5">

@@ -163,6 +163,26 @@ export function documentOpenApi() {
         put: { summary: "Modifier une règle", description: "Sans effet sur les Tâches déjà fabriquées (règle 20).", requestBody: corps("PoserRecurrence"), responses: { 200: { description: "La règle" } } },
         delete: { summary: "Supprimer une règle", description: "Les Tâches nées de la règle restent.", responses: { 204: { description: "Supprimée" } } },
       },
+      "/api/projets": {
+        get: { summary: "Les Projets", description: "Exactement une Affectation, sur un autre axe : même objet, même mécanique.", responses: { 200: { description: "Les Projets", content: { "application/json": { schema: { type: "array", items: ref("Affectation") } } } } } },
+        post: { summary: "Ajouter un Projet", requestBody: corps("AjouterAffectation"), responses: { 200: { description: "Les Projets" } } },
+      },
+      "/api/projets/{id}": {
+        parameters: [idTache],
+        patch: { summary: "Désactiver ou réactiver un Projet", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "Les Projets" } } },
+        delete: { summary: "Supprimer un Projet", description: "Seulement s'il n'a jamais servi : l'historique ne doit pas se trouer.", responses: { 200: { description: "Les Projets" }, 422: { description: "Il a servi — désactivez-le" } } },
+      },
+      "/api/projets/en-cours": {
+        get: { summary: "Qui est sur quel Projet", responses: { 200: { description: "Par Membre", content: { "application/json": { schema: { type: "array", items: ref("AffectationsMembre") } } } } } },
+        post: { summary: "Se poser sur un Projet", requestBody: corps("PoserAffectation"), responses: { 200: { description: "Par Membre" } } },
+      },
+      "/api/projets/en-cours/{id}/fin": {
+        parameters: [idTache],
+        post: { summary: "Ne plus être sur ce Projet", description: "La fin se pose au jour même, l'histoire reste.", responses: { 200: { description: "Par Membre" } } },
+      },
+      "/api/projets/historique": {
+        get: { summary: "Les Projets d'un Membre, fini compris", parameters: [{ name: "membreId", in: "query", schema: { type: "string", format: "uuid" } }], responses: { 200: { description: "Du plus récent au plus ancien", content: { "application/json": { schema: { type: "array", items: ref("Sur") } } } } } },
+      },
       "/api/sujets": {
         get: {
           summary: "Les Sujets d'une semaine",

@@ -3,7 +3,7 @@ import { Initiale } from "@/board/visuel";
 import { libelleJour, libelleSemaine } from "@/lib/dates";
 
 export type TacheFaite = { id: string; titre: string; etat: "termine" | "abandonne"; jour: string; assigneId: string | null };
-export type Semaine = { lundi: string; enCours: boolean; taches: TacheFaite[]; affectations: AffectationsMembre[] };
+export type Semaine = { lundi: string; enCours: boolean; taches: TacheFaite[]; affectations: AffectationsMembre[]; projets: AffectationsMembre[] };
 
 const accord = (n: number, mot: string) => (n === 0 ? null : `${n} ${mot}${n > 1 ? "s" : ""}`);
 
@@ -18,8 +18,13 @@ export function Semaine({ semaine, membres, onOuvrir }: { semaine: Semaine; memb
   const compte = [accord(terminees, "terminée"), accord(abandonnees, "abandonnée")].filter(Boolean).join(" · ") || "rien encore";
   const colonnes = Math.min(Math.max(membres.length, 1), 3);
   const personnes = membres
-    .map((m) => ({ ...m, taches: semaine.taches.filter((t) => t.assigneId === m.id), sur: semaine.affectations.find((a) => a.membreId === m.id)?.affectations ?? [] }))
-    .filter((p) => p.taches.length > 0 || p.sur.length > 0);
+    .map((m) => ({
+      ...m,
+      taches: semaine.taches.filter((t) => t.assigneId === m.id),
+      sur: semaine.affectations.find((a) => a.membreId === m.id)?.affectations ?? [],
+      projets: semaine.projets.find((a) => a.membreId === m.id)?.affectations ?? [],
+    }))
+    .filter((p) => p.taches.length > 0 || p.sur.length > 0 || p.projets.length > 0);
   return (
     <details open={semaine.enCours} className="group border-b border-bord-faible">
       <summary className="flex cursor-pointer list-none items-center gap-3.5 py-4 [&::-webkit-details-marker]:hidden">
@@ -42,11 +47,18 @@ export function Semaine({ semaine, membres, onOuvrir }: { semaine: Semaine; memb
           <section key={p.id} className="row-span-3 grid grid-rows-subgrid">
             <h3 className="flex items-center gap-2 text-[13.5px] text-texte-sourd"><Initiale nom={p.nom} avatar={p.avatar} />{p.nom}</h3>
             <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 self-start">
-              {p.sur.length === 0 && <span className="text-[15px] text-texte-faible">Aucune Affectation</span>}
+              {p.sur.length === 0 && p.projets.length === 0 && <span className="text-[15px] text-texte-faible">Aucune Affectation</span>}
               {p.sur.map((a) => (
                 <span key={a.id} className="flex items-center gap-2.5">
                   <span className="h-[18px] w-1 flex-none" style={{ background: a.couleur }} />
                   <span className="text-lg font-medium leading-none tracking-tight">{a.nom}</span>
+                </span>
+              ))}
+              {/* Les Projets de la semaine, en dessous : le même trait, plus discret. */}
+              {p.projets.map((a) => (
+                <span key={a.id} className="flex items-center gap-2">
+                  <span className="h-[13px] w-[3px] flex-none" style={{ background: a.couleur }} />
+                  <span className="text-[14px] leading-none tracking-tight text-texte-2">{a.nom}</span>
                 </span>
               ))}
             </div>

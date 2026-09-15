@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, membre, space } from "@/db/schema";
 import { activer, ajouter, auJour, enCours, fermer, fondre, historique, lister, poser, supprimer, surLaPeriode } from "./affectations";
+import * as P from "./projets";
 import { tache } from "@/db/schema";
 import { instant } from "@/relances/temps";
 
@@ -124,5 +125,40 @@ describe("plusieurs passages sur la même Affectation", () => {
 
   it("ne touche pas à deux Affectations différentes", () => {
     expect(fondre([sur("1", "afp", "2026-09-14", null), sur("2", "monka", "2026-09-14", null)])).toHaveLength(2);
+  });
+});
+
+/**
+ * Les Projets : exactement la même mécanique, sur un autre axe. Ce qui compte ici n'est pas de
+ * rejouer tous les cas — c'est le même code — mais de prouver que les deux ne se mélangent pas.
+ */
+describe("les Projets, à côté des Affectations", () => {
+  const ctx = { spaceId };
+  const antoine = a;
+
+  it("vivent sur leur propre liste", async () => {
+    await P.ajouter(ctx, "Refonte du site", "#4EA7FC");
+    expect((await P.lister(ctx)).map((p) => p.nom)).toContain("Refonte du site");
+    expect((await lister(ctx)).map((a) => a.nom)).not.toContain("Refonte du site");
+  });
+
+  it("peuvent porter le nom d'une Affectation : ce sont deux choses", async () => {
+    await ajouter(ctx, "Homonyme", "#4CB782");
+    await expect(P.ajouter(ctx, "Homonyme", "#4CB782")).resolves.toBeTruthy();
+    await expect(P.ajouter(ctx, "Homonyme", "#4CB782")).rejects.toThrow(/existe déjà/);
+  });
+
+  it("se posent sans toucher aux Affectations", async () => {
+    const [projet] = (await P.lister(ctx)).filter((p) => p.nom === "Refonte du site");
+    const avant = await enCours(ctx);
+    await P.poser(ctx, antoine, projet.id);
+    const surProjets = (await P.enCours(ctx)).find((m) => m.membreId === antoine)!;
+    expect(surProjets.affectations.map((a) => a.nom)).toContain("Refonte du site");
+    expect(await enCours(ctx)).toEqual(avant);
+  });
+
+  it("refusent un identifiant d'Affectation : le genre est vérifié", async () => {
+    const [uneAffectation] = await lister(ctx);
+    await expect(P.poser(ctx, antoine, uneAffectation.id)).rejects.toThrow(/Projet/);
   });
 });

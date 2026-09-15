@@ -5,8 +5,10 @@ import { libelleDernierJour, libelleLong } from "@/lib/dates";
 export type TacheFinie = { id: string; titre: string; etat: "termine" | "abandonne"; assigne: Personne | null };
 
 /** Le bloc Hier : les Affectations de la veille, puis ce qui a été Terminé ou Abandonné. Lecture seule. */
-export function Hier({ jour, estLaVeille, affectations, taches }: { jour: string; estLaVeille: boolean; affectations: AffectationsMembre[]; taches: TacheFinie[] }) {
-  const surQuelqueChose = affectations.filter((m) => m.affectations.length > 0);
+export function Hier({ jour, estLaVeille, affectations, projets, taches }: { jour: string; estLaVeille: boolean; affectations: AffectationsMembre[]; projets: AffectationsMembre[]; taches: TacheFinie[] }) {
+  // Les Affectations et les Projets de ce jour-là, dans la même colonne : c'est la même question.
+  const parMembre = affectations.map((m) => ({ ...m, tout: [...m.affectations, ...(projets.find((p) => p.membreId === m.membreId)?.affectations ?? [])] }));
+  const surQuelqueChose = parMembre.filter((m) => m.tout.length > 0);
   return (
     <section className="flex min-h-0 flex-col overflow-y-auto border-r border-bord-2 bg-surface-2 py-4 pl-5 pr-4">
       <header className="flex items-baseline justify-between border-b border-accent pb-1.5">
@@ -23,7 +25,7 @@ export function Hier({ jour, estLaVeille, affectations, taches }: { jour: string
           <div key={m.membreId} className="flex items-center gap-2.5 py-1.5">
             <Initiale nom={m.nom} avatar={m.avatar} />
             <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {m.affectations.map((a) => (
+              {m.tout.map((a) => (
                 <span key={a.id} className="flex items-center gap-1.5"><span className="h-3.5 w-[3px]" style={{ background: a.couleur }} /><span className="text-[13.5px]">{a.nom}</span></span>
               ))}
             </div>
