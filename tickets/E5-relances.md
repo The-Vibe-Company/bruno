@@ -49,6 +49,22 @@ toutes les 15 minutes ; `?apercu=1&quand=2026-09-08T09:15` rejoue un instant san
 - [x] Vérifié sur la démo : trois Points du matin distincts à 09:15, trois Bilans à 17:30, rien
       le samedi
 
+## BRU-25 bis — Les Relances arrivent · **livré (push web)**
+
+Le moteur composait depuis BRU-24 et livrait au journal : personne n'a jamais rien reçu. Le push
+web couvre **l'ordinateur**, sans rien demander à Apple. Sur iPhone, les Relances passeront par
+l'app — c'est BRU-25, et Antoine l'a tranché le 15 septembre : pas de Bruno posé sur l'écran
+d'accueil, l'app.
+
+- [x] `abonnement_push` : un appareil par ligne, endpoint unique — se réabonner remplace
+- [x] Réglages → **Mes Relances** : activer sur cet appareil, la liste des appareils, « Envoyer un essai »
+- [x] Un appareil parti (404/410 du service de push) est effacé tout seul : on ne réécrit pas dans le vide
+- [x] Le cron livre aux appareils **et** au journal — c'est le journal qu'on relit quand quelqu'un
+      dit « je n'ai rien reçu », et il dit maintenant si personne n'était abonné
+- [x] Clés VAPID en variables d'environnement ; sans elles, Bruno se tait comme avant
+- [x] Vérifié de bout en bout : le Point du matin reçu en notification dans un vrai navigateur
+- [ ] Reste à APNs : l'appui long **`Terminé` / `Reporter`**, qu'une notification web ne sait pas faire
+
 ## BRU-25 — Push iOS actionnable · ⛔ **bloqué : il manque l'app iOS et une clé APNs**
 
 Le moteur est prêt et livre à une interface. Pour brancher APNs il faut : l'app iOS (E1, BRU-6),

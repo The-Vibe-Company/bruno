@@ -118,6 +118,16 @@ export const ModifierMoi = z.object({
   avatar: z.string().regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Une image, en data URL").max(200_000, "Trop lourde : 160 px suffisent").nullable(),
 });
 
+/* ------------------------------------------------------------------ les Relances qui arrivent */
+
+/** Ce que le navigateur donne quand on accepte les notifications : une adresse et deux clés. */
+export const AbonnerAppareil = z.object({
+  endpoint: z.string().url().max(1000),
+  p256dh: z.string().min(1).max(200),
+  auth: z.string().min(1).max(200),
+  appareil: z.string().trim().max(60).nullish(),
+});
+
 /* ------------------------------------------------------------------ les Affectations */
 
 export const Affectation = z.object({ id: uuid, nom: z.string(), couleur: z.string(), actif: z.boolean(), periodes: z.number().int() });

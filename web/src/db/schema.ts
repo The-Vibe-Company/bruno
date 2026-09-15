@@ -289,3 +289,27 @@ export const sujet = pgTable("sujet", {
   index("sujet_semaine").on(t.spaceId, t.lundi, t.rubrique),
 ]);
 
+
+/* ------------------------------------------------------------------ les Relances qui arrivent */
+
+/**
+ * Un appareil qui a accepté de recevoir les Relances. Le navigateur donne l'`endpoint` (l'adresse
+ * de son service de push) et deux clés qui chiffrent le contenu ; sans elles, personne d'autre ne
+ * peut lire ce qu'on envoie.
+ *
+ * Un appareil par ligne : le même Membre en a souvent plusieurs (le Mac, le téléphone). L'endpoint
+ * est unique — se réabonner depuis le même navigateur remplace, ça n'empile pas. Quand le service
+ * de push répond « cet abonnement n'existe plus », on efface la ligne : c'est la seule façon de
+ * savoir qu'un appareil est parti.
+ */
+export const abonnementPush = pgTable("abonnement_push", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  /** De quoi reconnaître l'appareil dans les Réglages : « Chrome sur Mac ». Jamais l'agent brut. */
+  appareil: text("appareil"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [unique("abonnement_push_endpoint").on(t.endpoint)]);

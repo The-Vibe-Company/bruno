@@ -1,0 +1,1426 @@
+{
+  "id": "158b362c-57cf-4454-b238-3645acd87156",
+  "prevId": "55e63462-735e-4813-902b-6eaf60f32305",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.abonnement_push": {
+      "name": "abonnement_push",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membre_id": {
+          "name": "membre_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "endpoint": {
+          "name": "endpoint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p256dh": {
+          "name": "p256dh",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "auth": {
+          "name": "auth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "appareil": {
+          "name": "appareil",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "abonnement_push_space_id_space_id_fk": {
+          "name": "abonnement_push_space_id_space_id_fk",
+          "tableFrom": "abonnement_push",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "abonnement_push_membre_id_membre_id_fk": {
+          "name": "abonnement_push_membre_id_membre_id_fk",
+          "tableFrom": "abonnement_push",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "membre_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "abonnement_push_endpoint": {
+          "name": "abonnement_push_endpoint",
+          "nullsNotDistinct": false,
+          "columns": [
+            "endpoint"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.affectation": {
+      "name": "affectation",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "genre": {
+          "name": "genre",
+          "type": "genre_rattachement",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'affectation'"
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "couleur": {
+          "name": "couleur",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actif": {
+          "name": "actif",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "affectation_space_id_space_id_fk": {
+          "name": "affectation_space_id_space_id_fk",
+          "tableFrom": "affectation",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "affectation_nom_unique": {
+          "name": "affectation_nom_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "space_id",
+            "genre",
+            "nom"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.affectation_membre": {
+      "name": "affectation_membre",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membre_id": {
+          "name": "membre_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "affectation_id": {
+          "name": "affectation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "debut": {
+          "name": "debut",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fin": {
+          "name": "fin",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "affectation_membre_courante": {
+          "name": "affectation_membre_courante",
+          "columns": [
+            {
+              "expression": "membre_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "fin",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "affectation_membre_space_id_space_id_fk": {
+          "name": "affectation_membre_space_id_space_id_fk",
+          "tableFrom": "affectation_membre",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "affectation_membre_membre_id_membre_id_fk": {
+          "name": "affectation_membre_membre_id_membre_id_fk",
+          "tableFrom": "affectation_membre",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "membre_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "affectation_membre_affectation_id_affectation_id_fk": {
+          "name": "affectation_membre_affectation_id_affectation_id_fk",
+          "tableFrom": "affectation_membre",
+          "tableTo": "affectation",
+          "columnsFrom": [
+            "affectation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "affectation_membre_periode": {
+          "name": "affectation_membre_periode",
+          "value": "\"affectation_membre\".\"fin\" IS NULL OR \"affectation_membre\".\"fin\" >= \"affectation_membre\".\"debut\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.creneau": {
+      "name": "creneau",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membre_id": {
+          "name": "membre_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "heure": {
+          "name": "heure",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "creneau_space_id_space_id_fk": {
+          "name": "creneau_space_id_space_id_fk",
+          "tableFrom": "creneau",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "creneau_membre_id_membre_id_fk": {
+          "name": "creneau_membre_id_membre_id_fk",
+          "tableFrom": "creneau",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "membre_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "creneau_unique": {
+          "name": "creneau_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "membre_id",
+            "heure"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "creneau_quart_heure": {
+          "name": "creneau_quart_heure",
+          "value": "extract(minute from \"creneau\".\"heure\") IN (0, 15, 30, 45)\n                                   AND extract(second from \"creneau\".\"heure\") = 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.membre": {
+      "name": "membre",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "membre_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'humain'"
+        },
+        "actif": {
+          "name": "actif",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "membre_space_id_space_id_fk": {
+          "name": "membre_space_id_space_id_fk",
+          "tableFrom": "membre",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "membre_email_unique": {
+          "name": "membre_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "space_id",
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recurrence": {
+      "name": "recurrence",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "titre": {
+          "name": "titre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigne_id": {
+          "name": "assigne_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "frequence": {
+          "name": "frequence",
+          "type": "frequence",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jour_semaine": {
+          "name": "jour_semaine",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jour_mois": {
+          "name": "jour_mois",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occurrences": {
+          "name": "occurrences",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "decalages": {
+          "name": "decalages",
+          "type": "smallint[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actif": {
+          "name": "actif",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "derniere_generation": {
+          "name": "derniere_generation",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recurrence_space_id_space_id_fk": {
+          "name": "recurrence_space_id_space_id_fk",
+          "tableFrom": "recurrence",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recurrence_assigne_id_membre_id_fk": {
+          "name": "recurrence_assigne_id_membre_id_fk",
+          "tableFrom": "recurrence",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "assigne_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "recurrence_frequence_coherente": {
+          "name": "recurrence_frequence_coherente",
+          "value": "\n    (\"recurrence\".\"frequence\" = 'hebdomadaire' AND \"recurrence\".\"jour_semaine\" BETWEEN 1 AND 7 AND \"recurrence\".\"jour_mois\" IS NULL)\n OR (\"recurrence\".\"frequence\" = 'mensuelle'    AND \"recurrence\".\"jour_mois\" BETWEEN 1 AND 28 AND \"recurrence\".\"jour_semaine\" IS NULL)"
+        },
+        "recurrence_occurrences": {
+          "name": "recurrence_occurrences",
+          "value": "\"recurrence\".\"occurrences\" BETWEEN 1 AND 12"
+        },
+        "recurrence_decalages_alignes": {
+          "name": "recurrence_decalages_alignes",
+          "value": "array_length(\"recurrence\".\"decalages\", 1) = \"recurrence\".\"occurrences\" AND \"recurrence\".\"decalages\"[1] = 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.relance_envoyee": {
+      "name": "relance_envoyee",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membre_id": {
+          "name": "membre_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jour": {
+          "name": "jour",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "heure": {
+          "name": "heure",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nature": {
+          "name": "nature",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "titre": {
+          "name": "titre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "corps": {
+          "name": "corps",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "relance_envoyee_space_id_space_id_fk": {
+          "name": "relance_envoyee_space_id_space_id_fk",
+          "tableFrom": "relance_envoyee",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "relance_envoyee_membre_id_membre_id_fk": {
+          "name": "relance_envoyee_membre_id_membre_id_fk",
+          "tableFrom": "relance_envoyee",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "membre_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "relance_envoyee_unique": {
+          "name": "relance_envoyee_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "membre_id",
+            "jour",
+            "heure"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.report": {
+      "name": "report",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tache_id": {
+          "name": "tache_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "auteur_id": {
+          "name": "auteur_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raison": {
+          "name": "raison",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ancien_engagement": {
+          "name": "ancien_engagement",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nouvel_engagement": {
+          "name": "nouvel_engagement",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "report_par_tache": {
+          "name": "report_par_tache",
+          "columns": [
+            {
+              "expression": "tache_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "report_space_id_space_id_fk": {
+          "name": "report_space_id_space_id_fk",
+          "tableFrom": "report",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "report_tache_id_tache_id_fk": {
+          "name": "report_tache_id_tache_id_fk",
+          "tableFrom": "report",
+          "tableTo": "tache",
+          "columnsFrom": [
+            "tache_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "report_auteur_id_membre_id_fk": {
+          "name": "report_auteur_id_membre_id_fk",
+          "tableFrom": "report",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "auteur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "report_raison_obligatoire": {
+          "name": "report_raison_obligatoire",
+          "value": "length(btrim(\"report\".\"raison\")) > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.space": {
+      "name": "space",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sujet": {
+      "name": "sujet",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lundi": {
+          "name": "lundi",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rubrique": {
+          "name": "rubrique",
+          "type": "rubrique",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'projects'"
+        },
+        "membre_id": {
+          "name": "membre_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "texte": {
+          "name": "texte",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lien": {
+          "name": "lien",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cree_par_id": {
+          "name": "cree_par_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "sujet_semaine": {
+          "name": "sujet_semaine",
+          "columns": [
+            {
+              "expression": "space_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lundi",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "rubrique",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "sujet_space_id_space_id_fk": {
+          "name": "sujet_space_id_space_id_fk",
+          "tableFrom": "sujet",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "sujet_membre_id_membre_id_fk": {
+          "name": "sujet_membre_id_membre_id_fk",
+          "tableFrom": "sujet",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "membre_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "sujet_cree_par_id_membre_id_fk": {
+          "name": "sujet_cree_par_id_membre_id_fk",
+          "tableFrom": "sujet",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "cree_par_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "sujet_texte_non_vide": {
+          "name": "sujet_texte_non_vide",
+          "value": "length(btrim(\"sujet\".\"texte\")) > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.tache": {
+      "name": "tache",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "titre": {
+          "name": "titre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transcription_brute": {
+          "name": "transcription_brute",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bucket": {
+          "name": "bucket",
+          "type": "bucket",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'a_trier'"
+        },
+        "statut": {
+          "name": "statut",
+          "type": "statut",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rang": {
+          "name": "rang",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigne_id": {
+          "name": "assigne_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "engagement": {
+          "name": "engagement",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reports_count": {
+          "name": "reports_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "raison_blocage": {
+          "name": "raison_blocage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "etat_terminal": {
+          "name": "etat_terminal",
+          "type": "etat_terminal",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "termine_le": {
+          "name": "termine_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recurrence_id": {
+          "name": "recurrence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cree_par_id": {
+          "name": "cree_par_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "tache_board": {
+          "name": "tache_board",
+          "columns": [
+            {
+              "expression": "space_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "bucket",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "etat_terminal",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "rang",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "tache_engagement": {
+          "name": "tache_engagement",
+          "columns": [
+            {
+              "expression": "space_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "assigne_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "engagement",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "tache_space_id_space_id_fk": {
+          "name": "tache_space_id_space_id_fk",
+          "tableFrom": "tache",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tache_assigne_id_membre_id_fk": {
+          "name": "tache_assigne_id_membre_id_fk",
+          "tableFrom": "tache",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "assigne_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "tache_cree_par_id_membre_id_fk": {
+          "name": "tache_cree_par_id_membre_id_fk",
+          "tableFrom": "tache",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "cree_par_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "tache_droit_entree_sur_le_feu": {
+          "name": "tache_droit_entree_sur_le_feu",
+          "value": "\"tache\".\"bucket\" <> 'sur_le_feu' OR (\"tache\".\"assigne_id\" IS NOT NULL AND \"tache\".\"engagement\" IS NOT NULL)"
+        },
+        "tache_statut_sur_le_feu": {
+          "name": "tache_statut_sur_le_feu",
+          "value": "(\"tache\".\"bucket\" = 'sur_le_feu') = (\"tache\".\"statut\" IS NOT NULL)"
+        },
+        "tache_raison_blocage": {
+          "name": "tache_raison_blocage",
+          "value": "\"tache\".\"raison_blocage\" IS NULL OR \"tache\".\"statut\" = 'bloque'"
+        },
+        "tache_fin_datee": {
+          "name": "tache_fin_datee",
+          "value": "(\"tache\".\"etat_terminal\" IS NULL) = (\"tache\".\"termine_le\" IS NULL)"
+        },
+        "tache_titre_non_vide": {
+          "name": "tache_titre_non_vide",
+          "value": "length(btrim(\"tache\".\"titre\")) > 0"
+        },
+        "tache_reports_positifs": {
+          "name": "tache_reports_positifs",
+          "value": "\"tache\".\"reports_count\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.tache_aidant": {
+      "name": "tache_aidant",
+      "schema": "",
+      "columns": {
+        "space_id": {
+          "name": "space_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tache_id": {
+          "name": "tache_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membre_id": {
+          "name": "membre_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tache_aidant_space_id_space_id_fk": {
+          "name": "tache_aidant_space_id_space_id_fk",
+          "tableFrom": "tache_aidant",
+          "tableTo": "space",
+          "columnsFrom": [
+            "space_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tache_aidant_tache_id_tache_id_fk": {
+          "name": "tache_aidant_tache_id_tache_id_fk",
+          "tableFrom": "tache_aidant",
+          "tableTo": "tache",
+          "columnsFrom": [
+            "tache_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tache_aidant_membre_id_membre_id_fk": {
+          "name": "tache_aidant_membre_id_membre_id_fk",
+          "tableFrom": "tache_aidant",
+          "tableTo": "membre",
+          "columnsFrom": [
+            "membre_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "tache_aidant_tache_id_membre_id_pk": {
+          "name": "tache_aidant_tache_id_membre_id_pk",
+          "columns": [
+            "tache_id",
+            "membre_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.bucket": {
+      "name": "bucket",
+      "schema": "public",
+      "values": [
+        "a_trier",
+        "sur_le_feu",
+        "a_venir",
+        "idees"
+      ]
+    },
+    "public.etat_terminal": {
+      "name": "etat_terminal",
+      "schema": "public",
+      "values": [
+        "termine",
+        "abandonne"
+      ]
+    },
+    "public.frequence": {
+      "name": "frequence",
+      "schema": "public",
+      "values": [
+        "hebdomadaire",
+        "mensuelle"
+      ]
+    },
+    "public.genre_rattachement": {
+      "name": "genre_rattachement",
+      "schema": "public",
+      "values": [
+        "affectation",
+        "projet"
+      ]
+    },
+    "public.membre_type": {
+      "name": "membre_type",
+      "schema": "public",
+      "values": [
+        "humain",
+        "agent"
+      ]
+    },
+    "public.rubrique": {
+      "name": "rubrique",
+      "schema": "public",
+      "values": [
+        "skills",
+        "projects",
+        "leads",
+        "posts",
+        "wins"
+      ]
+    },
+    "public.statut": {
+      "name": "statut",
+      "schema": "public",
+      "values": [
+        "a_faire",
+        "en_cours",
+        "bloque"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
