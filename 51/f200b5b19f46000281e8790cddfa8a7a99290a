@@ -1,0 +1,23 @@
+web/src/board/FiltreMembres.tsx
+  s_09427aeab13931::t_d249096d90034c 6-10,29-33
+web/src/app/(bruno)/page.tsx
+  s_09427aeab13931::t_d249096d90034c 80-81
+tickets/E6-affectations.md
+  s_09427aeab13931::t_202f70e53d668a 108-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "51f200b5b19f46000281e8790cddfa8a7a99290a",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
