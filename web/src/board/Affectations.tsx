@@ -48,7 +48,8 @@ export function Affectations({ membres, projets = [], moiId, choix, choixProjets
     <div className="grid flex-none border-b border-bord-2" style={{ gridTemplateColumns: `repeat(${Math.max(membres.length, 1)}, minmax(0, 1fr))` }}>
       {membres.map((m, i) => (
         <div key={m.membreId} className={`flex min-w-0 items-center gap-3 overflow-hidden py-1.5 pl-5 pr-3 ${i < membres.length - 1 ? "border-r border-bord-2" : ""}`}>
-          <span className="flex flex-none items-center gap-1.5 text-[12px] text-texte-sourd"><Initiale nom={m.nom} avatar={m.avatar} />{m.nom}</span>
+          {/* La photo suffit à dire qui : le prénom écrit à côté prenait la place des Affectations. */}
+          <span title={m.nom} className="flex-none"><Initiale nom={m.nom} avatar={m.avatar} grande /></span>
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             {genres.map((genre) => (
               <div key={genre} className="flex h-6 min-w-0 items-center">
