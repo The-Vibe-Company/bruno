@@ -76,3 +76,23 @@ AFP pour Stan ici, on s'en fout, mets-le qu'une fois ».
 - [x] La période retenue va du premier début à la dernière fin — encore en cours si l'un des
       passages l'est. Vaut aussi pour le Daily, qui lit le même jour
 
+## BRU-71 — Les Projets, au même titre que les Affectations · **livré le 15 septembre**
+
+Antoine : « je veux au même titre que Affectations la même feature pour les Projets — exactement
+la même feature, mais avec un nouveau type d'objet ; je veux que toutes les features
+d'Affectations découlent sur Projets ».
+
+- [x] **Un seul code pour les deux.** La mécanique vit dans `api/rattachements.ts`, paramétrée par
+      un `genre` ; `affectations.ts` et `projets.ts` ne font que le fixer. Deux copies auraient
+      divergé au premier correctif — « exactement la même », c'est le même code
+- [x] Même table, colonne `genre` (migration 0007). La clé d'unicité la porte : un Projet peut
+      s'appeler comme une Affectation
+- [x] `/api/projets`, `/api/projets/{id}`, `/api/projets/en-cours`, `.../en-cours/{id}/fin`,
+      `/api/projets/historique` — le miroir exact, documenté dans l'OpenAPI
+- [x] **Réglages** : une liste Projets sous les Affectations, mêmes gestes (ajouter avec sa couleur,
+      Désactiver, Supprimer si ça n'a jamais servi)
+- [x] **Board, Daily, Weekly** : un second bandeau, « Sur quel Projet es-tu ? », un clic suffit
+- [x] **Fait** : les Projets de la semaine à côté des Affectations ; **Daily** : ceux du jour d'avant
+- [x] 4 tests de plus : les deux listes ne se mélangent pas, et poser un identifiant d'Affectation
+      sur un Projet est refusé
+

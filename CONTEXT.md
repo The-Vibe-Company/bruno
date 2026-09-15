@@ -131,6 +131,14 @@ dans les Réglages ; on **désactive** une Affectation, on ne la supprime jamais
 trouer l'historique. Une Affectation ne se pose jamais sur une Tâche.
 _Avoid_: Client, compte, dossier, mission, projet
 
+**Projet**:
+Un second axe de rattachement, **exactement la même chose qu'une Affectation** et géré pareil :
+liste ouverte dans les Réglages, on désactive plutôt que supprimer, on se pose dessus depuis le
+bandeau, plusieurs à la fois, et l'historique garde depuis quand. Un Membre peut être sur une
+Affectation *et* sur des Projets ; les deux listes sont indépendantes, et un Projet peut porter
+le nom d'une Affectation. Comme elle, un Projet ne se pose jamais sur une Tâche.
+_Avoid_: Chantier, mission, epic, initiative
+
 **Être sur une Affectation**:
 Un Membre est sur une ou plusieurs Affectations, à partir d'une date, jusqu'à ce qu'il en
 sorte. Ce n'est pas une Tâche : une Tâche a une fin, être sur une Affectation a une durée.

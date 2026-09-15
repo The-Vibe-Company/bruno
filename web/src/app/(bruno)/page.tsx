@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { lister, terminees } from "@/api/taches";
 import { enCours, lister as listerAffectations } from "@/api/affectations";
-import { Affectations } from "@/board/Affectations";
+import { enCours as projetsEnCours, lister as listerProjets } from "@/api/projets";
+import { Affectations, AXE_PROJET } from "@/board/Affectations";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import type { TacheAttente, TacheFinie } from "@/board/EnAttente";
@@ -23,7 +24,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
   const { membres: filtre } = await searchParams;
 
   const { jour } = instant();
-  const [taches, aTrier, aVenir, idees, finiesRecemment, membres, affectations, choix] = await Promise.all([
+  const [taches, aTrier, aVenir, idees, finiesRecemment, membres, affectations, choix, projets, choixProjets] = await Promise.all([
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
     lister(session, { bucket: "a_trier", inclureTerminees: false }),
     lister(session, { bucket: "a_venir", inclureTerminees: false }),
@@ -34,6 +35,8 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
     enCours(session),
     listerAffectations(session),
+    projetsEnCours(session),
+    listerProjets(session),
   ]);
   const parId = new Map(membres.map((m) => [m.id, m]));
   const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
@@ -75,6 +78,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         <div className="flex-1" />
       </header>
       <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} />
+      <Affectations membres={projets} moiId={session.membreId} choix={choixProjets.filter((c) => c.actif)} axe={AXE_PROJET} />
       <main className="flex min-h-0 flex-1 flex-col">
         <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />
       </main>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { surLaPeriode } from "@/api/affectations";
+import { surLaPeriode as projetsSurLaPeriode } from "@/api/projets";
 import { terminees } from "@/api/taches";
 import { sessionCourante } from "@/auth/serveur";
 import { FiltreMembres } from "@/board/FiltreMembres";
@@ -43,6 +44,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
     lundi, enCours: lundi === cetteSemaine,
     taches: taches.filter((t) => lundiDe(t.jourFin) === lundi).map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigneId: t.assigneId })),
     affectations: await surLaPeriode(session, lundi, dimancheDe(lundi)),
+    projets: await projetsSurLaPeriode(session, lundi, dimancheDe(lundi)),
   })));
 
   const personne = (id: string) => { const m = membres.find((x) => x.id === id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };

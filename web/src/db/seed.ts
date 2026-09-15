@@ -49,7 +49,8 @@ export async function poserBase(membres = membresDeclares(), spaceId = SPACE_ID)
   }
   for (const a of AFFECTATIONS) {
     await db.insert(affectation).values({ spaceId, ...a })
-      .onConflictDoUpdate({ target: [affectation.spaceId, affectation.nom], set: { couleur: a.couleur, actif: a.actif } });
+      // La clé porte aussi le genre depuis les Projets : un Projet peut s'appeler comme une Affectation.
+      .onConflictDoUpdate({ target: [affectation.spaceId, affectation.genre, affectation.nom], set: { couleur: a.couleur, actif: a.actif } });
   }
 
   // Des Créneaux par défaut seulement pour qui n'en a aucun : on ne remet pas ceux qu'un

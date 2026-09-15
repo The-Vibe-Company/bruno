@@ -2,9 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { lister as listerAffectations, surLaPeriode } from "@/api/affectations";
+import { lister as listerProjets, surLaPeriode as projetsSurLaPeriode } from "@/api/projets";
 import { lister, parSemaine } from "@/api/sujets";
 import { sessionCourante } from "@/auth/serveur";
-import { Affectations } from "@/board/Affectations";
+import { Affectations, AXE_PROJET } from "@/board/Affectations";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
 import { dimancheDe, libelleSemaine, lundiDe } from "@/lib/dates";
@@ -36,11 +37,13 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
   // Une semaine inconnue ramène à la courante : l'URL se partage, elle ne se bricole pas.
   const lundi = semaine && lundis.includes(semaine) ? semaine : courante;
 
-  const [affectations, sujets, membres, choix] = await Promise.all([
+  const [affectations, projets, sujets, membres, choix, choixProjets] = await Promise.all([
     surLaPeriode(session, lundi, dimancheDe(lundi)),
+    projetsSurLaPeriode(session, lundi, dimancheDe(lundi)),
     lister(session, lundi),
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
     listerAffectations(session),
+    listerProjets(session),
   ]);
 
   // `lundis` va de la plus récente à la plus ancienne : reculer, c'est avancer dans la liste.
@@ -63,6 +66,7 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
 
       {/* Qui est sur quoi : la réunion commence par là. Une semaine passée se lit, ne se change pas. */}
       <Affectations membres={affectations} moiId={session.membreId} choix={choix.filter((c) => c.actif)} lectureSeule={lundi !== courante} />
+      <Affectations membres={projets} moiId={session.membreId} choix={choixProjets.filter((c) => c.actif)} lectureSeule={lundi !== courante} axe={AXE_PROJET} />
       <main className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} />
       </main>

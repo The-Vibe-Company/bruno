@@ -54,24 +54,30 @@ export const membre = pgTable("membre", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [unique("membre_email_unique").on(t.spaceId, t.email)]);
 
-/* ------------------------------------------------------------------ les affectations */
+/* ------------------------------------------------------ les Affectations et les Projets */
 
 /**
- * Ce à quoi un Membre peut travailler : un client comme MONKA, ou un sujet interne.
- * Le mot est plus large que « client » — `Interne` en est une.
- * On **désactive**, on ne supprime jamais : l'historique ne doit pas se trouer (BRU-26).
+ * Deux choses auxquelles un Membre peut être rattaché, et **exactement la même mécanique** :
+ * une **Affectation** (un client comme MONKA, ou un sujet interne) et un **Projet**. Antoine les
+ * veut identiques ; elles partagent donc la table, et `genre` dit laquelle on regarde. Deux
+ * colonnes de code auraient divergé au premier correctif.
  */
+export const genreRattachementEnum = pgEnum("genre_rattachement", ["affectation", "projet"]);
+
 export const affectation = pgTable("affectation", {
   id: uuid("id").primaryKey().defaultRandom(),
   spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  genre: genreRattachementEnum("genre").notNull().default("affectation"),
   nom: text("nom").notNull(),
   couleur: text("couleur").notNull(),
   actif: boolean("actif").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-}, (t) => [unique("affectation_nom_unique").on(t.spaceId, t.nom)]);
+  // Un Projet et une Affectation peuvent porter le même nom : ce sont deux choses.
+}, (t) => [unique("affectation_nom_unique").on(t.spaceId, t.genre, t.nom)]);
 
 /**
- * La période pendant laquelle un Membre est sur une Affectation.
+ * La période pendant laquelle un Membre est sur une Affectation — ou sur un Projet : le genre
+ * se lit sur la ligne pointée.
  * Ce nom n'apparaît **jamais** dans l'interface — elle dit « Affectation : MONKA ».
  * Ce n'est pas une Tâche : pas d'Engagement, pas de Statut, pas de Rang, pas de Report,
  * et **rien à cocher** (invariant 6). On en sort en posant `fin`.

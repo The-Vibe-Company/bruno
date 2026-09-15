@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { auJour, enCours } from "@/api/affectations";
+import { auJour as projetsAuJour, enCours as projetsEnCours } from "@/api/projets";
 import { SEUIL_SIGNAL, lister, signaux, terminees } from "@/api/taches";
 import { sessionCourante } from "@/auth/serveur";
-import { Affectations } from "@/board/Affectations";
+import { Affectations, AXE_PROJET } from "@/board/Affectations";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import { Hier, type TacheFinie } from "@/daily/Hier";
@@ -27,10 +28,12 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   const { jour } = instant();
   const hier = jourOuvrePrecedent(jour);
 
-  const [sante, dujour, delaVeille, finies, feu, membres] = await Promise.all([
+  const [sante, dujour, projetsDuJour, delaVeille, projetsDeLaVeille, finies, feu, membres] = await Promise.all([
     signaux(session),
     enCours(session),
+    projetsEnCours(session),
     auJour(session, hier),
+    projetsAuJour(session, hier),
     terminees(session, hier),
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
@@ -57,8 +60,9 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
         <Sante aTrier={sante.aTrier} reportees={sante.reportees} seuil={SEUIL_SIGNAL} />
       </header>
       <Affectations membres={deLui(dujour)} moiId="" choix={[]} lectureSeule />
+      <Affectations membres={deLui(projetsDuJour)} moiId="" choix={[]} lectureSeule axe={AXE_PROJET} />
       <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden">
-        <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} taches={tachesHier} />
+        <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} />
         <SurLeFeu taches={tachesFeu} />
       </main>
     </>
