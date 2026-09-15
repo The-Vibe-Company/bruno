@@ -16,6 +16,11 @@ describe("qui est retenu", () => {
     expect([...membresActifs("a,inconnu", membres)]).toEqual(["a"]);
   });
 
+  it("« aucun » veut dire personne : éteindre le dernier visage vide l'écran", () => {
+    expect([...membresActifs("aucun", membres)]).toEqual([]);
+    expect([...membresActifs("aucun", membres, ["a"])]).toEqual([]);
+  });
+
   it("sans URL et sans défaut, c'est tout le monde — le Daily, Fait", () => {
     expect([...membresActifs(undefined, membres)].sort()).toEqual(["a", "s", "v"]);
   });
