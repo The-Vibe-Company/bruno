@@ -67,13 +67,16 @@ final class FileAttente {
 
     /// Envoyer ce qui attend, dans l'ordre, une Capture à la fois. Un refus définitif du serveur sort la Capture de la file ; tout le reste réessaie.
     func envoyer() async {
-        guard !envoiEnCours, enLigne else { return }
+        guard !envoiEnCours, enLigne, Connexion.partagee.active else { return }
         envoiEnCours = true
         defer { envoiEnCours = false }
         while let capture = captures.first {
             do {
                 try await Api.partagee.poster("api/taches", CorpsCapture(titre: capture.titre, transcriptionBrute: capture.transcriptionBrute))
                 retirer(capture)
+            } catch let erreur as Api.Erreur where erreur.statut == 401 {
+                // Garder la capture : la connexion relancera la file quand la session reviendra.
+                return
             } catch let erreur as Api.Erreur where erreur.definitive {
                 retirer(capture)
             } catch {
