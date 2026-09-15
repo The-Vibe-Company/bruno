@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { surLaPeriode } from "@/api/affectations";
@@ -20,10 +21,12 @@ export const dynamic = "force-dynamic";
  * C'est tout ce que « suivi » veut dire. Pas de compteur de jours par Affectation, pas de cumul
  * mensuel : la donnée est là, l'écran viendra si le besoin devient réel.
  */
-export default async function Fait({ searchParams }: { searchParams: Promise<{ membres?: string }> }) {
+export default async function Fait({ searchParams }: { searchParams: Promise<{ membres?: string; abandon?: string }> }) {
   const session = await sessionCourante();
   if (!session) redirect("/api/auth/google"); // le layout l'a déjà fait ; TypeScript veut la garantie
-  const { membres: filtre } = await searchParams;
+  const { membres: filtre, abandon } = await searchParams;
+  // Fait, c'est ce qui a été fait. Les Abandonnées restent consultables, d'un clic.
+  const avecAbandon = abandon === "1";
   const { jour } = instant();
   const cetteSemaine = lundiDe(jour);
 
@@ -33,7 +36,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
   ]);
   const actifs = membresActifs(filtre, membres);
   const visibles = membres.filter((m) => actifs.has(m.id));
-  const taches = finies.filter((t) => t.assigneId && actifs.has(t.assigneId));
+  const taches = finies.filter((t) => t.assigneId && actifs.has(t.assigneId) && (avecAbandon || t.etatTerminal === "termine"));
 
   const lundis = [...new Set([cetteSemaine, ...taches.map((t) => lundiDe(t.jourFin))])].sort().reverse();
   const semaines: SemaineFaite[] = await Promise.all(lundis.map(async (lundi) => ({
@@ -58,6 +61,11 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
         <h1 className="text-[17px] font-medium tracking-tight">Fait</h1>
         <FiltreMembres membres={membres} />
         <div className="flex-1" />
+        {/* Abandonné n'est pas fait — mais ça reste consultable, comme le dit le glossaire. */}
+        <Link href={avecAbandon ? "/fait" : "/fait?abandon=1"} scroll={false}
+          className={`text-[12.5px] ${avecAbandon ? "text-accent" : "text-texte-faible hover:text-texte"}`}>
+          {avecAbandon ? "Masquer les abandonnées" : "Voir aussi les abandonnées"}
+        </Link>
       </header>
       <main className="min-h-0 flex-1 overflow-y-auto px-10 py-4">
         <Historique semaines={semaines} membres={visibles} fiches={fiches} />

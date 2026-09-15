@@ -112,6 +112,8 @@ _Avoid_: Done, fermé, complété, archivé
 **Abandonné**:
 État terminal d'une Tâche qu'on a décidé de ne pas faire. Distinct de Terminé — tuer une
 idée proprement est un acte qui a sa valeur, et une Tâche Abandonnée reste consultable.
+**Elle ne compte pas dans Fait** : Fait, c'est ce qui a été fait. Elle s'y retrouve d'un clic,
+« Voir aussi les abandonnées ».
 _Avoid_: Annulé, rejeté, wontfix
 
 **Supprimer**:

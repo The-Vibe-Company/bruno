@@ -86,3 +86,13 @@ de Victor qui n'en a pas eu ».
 - [x] Chaque Tâche porte la pastille du Board — pleine si Terminé, pointillée si Abandonné — au
       lieu du mot en bout de ligne ; « Rien de fini » quand il n'y a rien
 
+## BRU-70 — Abandonné ne compte pas dans Fait · **livré le 15 septembre**
+
+Antoine : « les tâches abandonnées doivent pas aller dans "Fait" ».
+
+- [x] La section **Fait** du Board ne montre que les Tâches terminées. Une Tâche abandonnée quitte
+      le Board sans y entrer — le « Annuler » de six secondes reste
+- [x] La page **Fait** ne compte plus que les terminées
+- [x] Elles restent consultables, comme le dit le glossaire : **« Voir aussi les abandonnées »**
+      dans l'en-tête les ramène (`/fait?abandon=1`)
+
