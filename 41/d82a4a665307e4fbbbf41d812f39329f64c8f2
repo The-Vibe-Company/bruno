@@ -1,0 +1,37 @@
+.gitignore
+  s_310a01c7c8fc73::t_b1d552ca9ccdca 7-10
+scripts/testflight.sh
+  s_310a01c7c8fc73::t_f4a2c467d14d83 30
+  s_310a01c7c8fc73::t_adf13120f05bca 1-29,31-46
+ios/BrunoWidget/Info.plist
+  s_310a01c7c8fc73::t_610958f825b420 20,22
+.github/workflows/ios.yml
+  s_310a01c7c8fc73::t_ff0eed924f349e 68-69
+  s_310a01c7c8fc73::t_adf13120f05bca 1-67,70-87
+ios/README.md
+  s_310a01c7c8fc73::t_f4a2c467d14d83 15-87
+ios/Bruno/Assets.xcassets/AppIcon.appiconset/Contents.json
+  s_310a01c7c8fc73::t_610958f825b420 1
+ios/Bruno/Info.plist
+  s_310a01c7c8fc73::t_610958f825b420 20,33
+ios/Bruno/Assets.xcassets/Contents.json
+  s_310a01c7c8fc73::t_610958f825b420 1
+ios/project.yml
+  s_310a01c7c8fc73::t_b1d552ca9ccdca 13-14,31,38-39,71-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "41d82a4a665307e4fbbbf41d812f39329f64c8f2",
+  "prompts": {},
+  "sessions": {
+    "s_310a01c7c8fc73": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a3f7-c670-7482-a036-b622647a33a9",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "StanGirard <stan@quivr.app>"
+    }
+  }
+}
