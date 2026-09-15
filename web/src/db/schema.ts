@@ -280,6 +280,8 @@ export const sujet = pgTable("sujet", {
   /** De qui on parle. Un Membre parti emporte ses Sujets : ils ne valent que pour la réunion. */
   membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
   texte: text("texte").notNull(),
+  /** Un skill, un post : un titre et l'adresse où aller voir. Les autres rubriques n'en ont pas. */
+  lien: text("lien"),
   creeParId: uuid("cree_par_id").references(() => membre.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [

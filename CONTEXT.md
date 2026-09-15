@@ -202,10 +202,12 @@ traîne d'une semaine à l'autre.
 _Avoid_: Rétro, rétrospective, bilan hebdo, points divers
 
 **Sujet**:
-Une ligne dans un encart du Weekly : un texte, la personne dont il relève, et sa **Rubrique**
-(skills, projects, wins). N'importe qui écrit sur la liste de n'importe qui — c'est une réunion,
-pas un dossier personnel. Un lien collé dedans devient cliquable : c'est comme ça qu'on montre
-un skill. Un Sujet n'est pas une Tâche : rien à terminer, rien à reporter.
+Une ligne dans un encart du Weekly : un texte, la personne dont il relève, sa **Rubrique**, et
+parfois un lien. Chaque Rubrique dit une chose différente : *Leads* et *Wins* sont **une phrase
+courte** (« on a signé AFP ») ; *Skills* et *Posts* sont **un titre et un lien**. *Projects* ne se
+remplit pas : c'est le **récap** des Projets de la semaine et de qui a bossé dessus, lu des
+Affectations déjà posées. N'importe qui écrit sur la liste de n'importe qui — c'est une réunion,
+pas un dossier personnel. Un Sujet n'est pas une Tâche : rien à terminer, rien à reporter.
 _Avoid_: Point, item, ticket, ordre du jour, todo de réunion
 
 ### La capture

@@ -166,6 +166,7 @@ export const Sujet = z.object({
   rubrique: Rubrique,
   membreId: uuid,
   texte: z.string(),
+  lien: z.string().nullable(),
   auteur: z.string().nullable(),
   createdAt: z.string(),
 });
@@ -176,11 +177,13 @@ export const PoserSujet = z.object({
   rubrique: Rubrique,
   membreId: uuid,
   texte: z.string().trim().min(1, "Un Sujet sans texte n'en est pas un").max(500),
+  lien: z.string().trim().url("Une adresse qui commence par http").max(500).nullish(),
 });
 
 /** Ce qui se change sur un Sujet posé : à qui il est, ce qu'il dit. */
 export const ModifierSujet = z.object({
   membreId: uuid.optional(),
   texte: z.string().trim().min(1).max(500).optional(),
+  lien: z.string().trim().url().max(500).nullish(),
 });
 

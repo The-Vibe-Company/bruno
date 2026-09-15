@@ -56,10 +56,13 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
     <>
       <header className="flex h-12 flex-none items-center gap-3 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Weekly</h1>
-        <Fleche vers={precedente && lien(precedente)} libelle="Semaine précédente" sens="gauche" />
-        <span className="text-[13px] text-texte-sourd">{libelleSemaine(lundi)}</span>
-        <Fleche vers={suivante && lien(suivante)} libelle="Semaine suivante" sens="droite" />
-        {lundi === courante && <span className="text-[12px] text-texte-faible">en cours</span>}
+        {/* Un vrai bouton de navigation, encadré : deux flèches nues au milieu du titre ne se voyaient pas. */}
+        <span className="flex h-8 items-center gap-0.5 rounded-lg border border-bord-2 bg-surface pl-0.5 pr-2.5">
+          <Fleche vers={precedente && lien(precedente)} libelle="Semaine précédente" sens="gauche" />
+          <span className="px-1 text-[13.5px] font-medium tracking-tight">{libelleSemaine(lundi)}</span>
+          <Fleche vers={suivante && lien(suivante)} libelle="Semaine suivante" sens="droite" />
+          {lundi === courante && <span className="ml-1 text-[11.5px] text-texte-faible">en cours</span>}
+        </span>
         <div className="flex-1" />
         <span className="text-[12.5px] text-texte-faible">Un lien collé devient cliquable — un skill, par exemple.</span>
       </header>
@@ -68,7 +71,7 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
       <Affectations membres={affectations} projets={projets} moiId={session.membreId}
         choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} lectureSeule={lundi !== courante} />
       <main className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-        <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} />
+        <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} projets={projets} />
       </main>
     </>
   );
@@ -81,8 +84,8 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
  */
 function Fleche({ vers, libelle, sens }: { vers: string | undefined; libelle: string; sens: "gauche" | "droite" }) {
   const dessin = <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={sens === "gauche" ? "rotate-180" : ""}><path d="M4 2l4 4-4 4" /></svg>;
-  const forme = "flex h-7 w-7 items-center justify-center rounded-md";
-  if (!vers) return <span aria-disabled className={`${forme} text-texte-tres-faible`} title={`${libelle} — il n’y en a pas`}>{dessin}</span>;
+  const forme = "flex h-7 w-7 flex-none items-center justify-center rounded-md";
+  if (!vers) return <span aria-disabled className={`${forme} text-texte-faible opacity-40`} title={`${libelle} — il n’y en a pas`}>{dessin}</span>;
   return <Link href={vers} aria-label={libelle} title={libelle} className={`${forme} text-texte-sourd hover:bg-surface-2 hover:text-texte`}>{dessin}</Link>;
 }
 

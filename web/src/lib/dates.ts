@@ -51,10 +51,13 @@ export function libelleDernierJour(jour: string, ref: string = aujourdhui()): st
   return l.charAt(0).toUpperCase() + l.slice(1);
 }
 
-/** « aujourd'hui », « 3 j », « 2 sem. », « 1 mois » — depuis quand on est dessus, en petit. */
+/**
+ * « auj. », « 3 j », « 2 sem. », « 1 mois » — depuis quand on est dessus, en petit. Court exprès :
+ * ça s'écrit dans des colonnes étroites, et « aujourd'hui » y prenait trois fois la place du reste.
+ */
 export function libelleDuree(depuis: string, ref: string = aujourdhui()): string {
   const j = joursEntre(depuis, ref);
-  if (j <= 0) return "aujourd'hui";
+  if (j <= 0) return "auj.";
   if (j < 7) return `${j} j`;
   if (j < 30) return `${Math.floor(j / 7)} sem.`;
   return `${Math.floor(j / 30)} mois`;

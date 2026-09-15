@@ -68,6 +68,12 @@ Il peut mettre les skills qu'il a codé (le lien skillpack des skills). »
       Une semaine passée se lit, ne se change pas
 - [x] Cinq encarts côte à côte — *Skills*, *Projects*, *Lead*, *Posts*, *Wins of the week* —
       repliables, chacun avec son **+** qui ouvre la saisie *(Lead et Posts ajoutés le 15 septembre)*
+- [x] **Chaque encart dit ce qu'il est** (15 septembre) : *Leads* et *Wins* sont une phrase courte ;
+      *Skills* et *Posts* un titre et un lien (colonne `sujet.lien`, migration 0009) ; ***Projects*
+      ne se remplit pas** — c'est le récap des Projets de la semaine avec les visages de ceux qui
+      ont bossé dessus, lu des Affectations. Pas de statut : Antoine l'a demandé puis retiré
+- [x] Les encarts se **posent en colonnes**, pas en grille : une carte courte ne laisse plus un
+      trou en attendant la plus haute de sa rangée
       *(troisième version : une colonne par personne, puis des encarts empilés, ne convenaient pas)*
 - [x] Des **Sujets** : pour qui, puis quoi. Entrée pour poser, la pastille se reclique pour changer
       de personne, ✕ pour retirer. N'importe qui écrit sur la liste de n'importe qui
