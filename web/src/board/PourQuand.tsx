@@ -23,8 +23,8 @@ export function PourQuand({ demande, onConfirmer, onAnnuler }: {
   return (
     <Dialog.Root open={demande !== null} onOpenChange={(o) => !o && onAnnuler()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-fond-page/70" />
-        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-1/2 flex w-[440px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-2xl border border-bord-fort bg-surface p-6 shadow-2xl outline-none">
+        <Dialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/70" />
+        <Dialog.Content aria-describedby={undefined} className="anime-boite fixed left-1/2 top-1/2 flex w-[440px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-2xl border border-bord-fort bg-surface p-6 shadow-2xl outline-none">
           <div>
             <p className="text-[13px] text-texte-sourd">Passer À venir</p>
             <Dialog.Title className="mt-1.5 text-[21px] font-medium leading-tight tracking-tight">{demande?.titre}</Dialog.Title>

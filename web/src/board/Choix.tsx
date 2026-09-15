@@ -16,7 +16,7 @@ export function Choix({ valeur, options, onChoisir, titre, children, align = "st
     <Popover.Root open={ouvert} onOpenChange={setOuvert}>
       <Popover.Trigger asChild>{children}</Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content align={align} sideOffset={6} onPointerDown={(e) => e.stopPropagation()} className="z-50 w-56 overflow-hidden rounded-xl border border-bord-fort bg-surface py-1 shadow-[0_20px_60px_rgb(0_0_0/0.35)] outline-none">
+        <Popover.Content align={align} sideOffset={6} onPointerDown={(e) => e.stopPropagation()} className="anime-bulle z-50 w-56 overflow-hidden rounded-xl border border-bord-fort bg-surface py-1 shadow-[0_20px_60px_rgb(0_0_0/0.35)] outline-none">
           {titre && <div className="px-3 pb-1 pt-1.5 text-[12px] text-texte-sourd">{titre}</div>}
           <ul className="max-h-72 overflow-y-auto">
             {options.map((o) => {

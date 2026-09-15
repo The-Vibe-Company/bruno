@@ -46,8 +46,8 @@ export function Affectations({ initiales }: { initiales: Affectation[] }) {
             <AlertDialog.Root>
               <AlertDialog.Trigger asChild><button className="text-[13.5px] text-texte-faible hover:text-bloque">Supprimer</button></AlertDialog.Trigger>
               <AlertDialog.Portal>
-                <AlertDialog.Overlay className="fixed inset-0 bg-fond-page/60" />
-                <AlertDialog.Content className="fixed left-1/2 top-1/2 w-[400px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
+                <AlertDialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/60" />
+                <AlertDialog.Content className="anime-boite fixed left-1/2 top-1/2 w-[400px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
                   <AlertDialog.Title className="text-lg font-semibold tracking-tight">Supprimer « {a.nom} » ?</AlertDialog.Title>
                   <AlertDialog.Description className="mt-2 text-[14.5px] text-texte-sourd">Possible seulement si personne n’a jamais été dessus. Sinon, Bruno refusera : désactivez-la, l’historique la nomme.</AlertDialog.Description>
                   <div className="mt-5 flex justify-end gap-2">

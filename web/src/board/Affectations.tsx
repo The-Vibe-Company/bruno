@@ -104,7 +104,7 @@ function Case({ membreId, nom, moi, sur, choix }: { membreId: string; nom: strin
         </button>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content align="start" sideOffset={8} className="z-40 w-80 overflow-hidden rounded-xl border border-bord-fort bg-surface shadow-[0_20px_60px_rgb(0_0_0/0.35)] outline-none">
+        <Popover.Content align="start" sideOffset={8} className="anime-bulle z-40 w-80 overflow-hidden rounded-xl border border-bord-fort bg-surface shadow-[0_20px_60px_rgb(0_0_0/0.35)] outline-none">
           <div className="border-b border-bord-2 px-3.5 pb-2.5 pt-3.5 text-[13px] text-texte-sourd">{question}</div>
           <ul>
             {choix.map((c) => {

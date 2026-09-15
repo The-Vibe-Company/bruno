@@ -46,8 +46,8 @@ export function Report({ demande, onReporter, onAbandonner, onAnnuler }: {
   return (
     <Dialog.Root open={demande !== null} onOpenChange={(o) => { if (!o) { reinit(); onAnnuler(); } }}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-fond-page/70" />
-        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-1/2 flex w-[440px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-2xl border border-bord-fort bg-surface p-6 shadow-2xl outline-none">
+        <Dialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/70" />
+        <Dialog.Content aria-describedby={undefined} className="anime-boite fixed left-1/2 top-1/2 flex w-[440px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-2xl border border-bord-fort bg-surface p-6 shadow-2xl outline-none">
           <div>
             <Dialog.Title className="text-[22px] font-semibold tracking-tight">Reporter</Dialog.Title>
             <p className="mt-1 text-sm text-texte-sourd">

@@ -26,7 +26,7 @@ function Assigne({ tache, membres, onAssigner }: { tache: TacheCarte; membres: M
         </button>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content align="end" sideOffset={6} onPointerDown={(e) => e.stopPropagation()} className="z-40 w-48 overflow-hidden rounded-lg border border-bord-fort bg-surface py-1 shadow-xl outline-none">
+        <Popover.Content align="end" sideOffset={6} onPointerDown={(e) => e.stopPropagation()} className="anime-bulle z-40 w-48 overflow-hidden rounded-lg border border-bord-fort bg-surface py-1 shadow-xl outline-none">
           <div className="px-3 pb-1 pt-1.5 text-[12px] text-texte-sourd">Assigner à</div>
           {membres.map((m) => (
             <button key={m.id} onClick={(e) => { e.stopPropagation(); setOuvert(false); if (m.id !== tache.assigneId) onAssigner(tache.id, m.id); }}
