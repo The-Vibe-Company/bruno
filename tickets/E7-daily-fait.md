@@ -72,6 +72,8 @@ Il peut mettre les skills qu'il a codé (le lien skillpack des skills). »
       *Skills* et *Posts* un titre et un lien (colonne `sujet.lien`, migration 0009) ; ***Projects*
       ne se remplit pas** — c'est le récap des Projets de la semaine avec les visages de ceux qui
       ont bossé dessus, lu des Affectations. Pas de statut : Antoine l'a demandé puis retiré
+- [x] Les encarts se **posent en colonnes**, pas en grille : une carte courte ne laisse plus un
+      trou en attendant la plus haute de sa rangée
       *(troisième version : une colonne par personne, puis des encarts empilés, ne convenaient pas)*
 - [x] Des **Sujets** : pour qui, puis quoi. Entrée pour poser, la pastille se reclique pour changer
       de personne, ✕ pour retirer. N'importe qui écrit sur la liste de n'importe qui

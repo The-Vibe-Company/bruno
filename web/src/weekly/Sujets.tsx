@@ -119,7 +119,13 @@ export function Sujets({ lundi, membres, initiaux, moiId, projets }: {
           {erreur} <button className="ml-2 underline" onClick={() => setErreur(null)}>ok</button>
         </p>
       )}
-      <div className="grid items-start gap-4 lg:grid-cols-3">
+      {/*
+        * En grille, la deuxième rangée attend la carte la plus haute de la première : entre les
+        * Skills et les Posts, ça faisait un trou. En colonnes, chaque carte se pose sous la
+        * précédente de sa colonne. On y perd la lecture de gauche à droite — ce sont cinq encarts
+        * indépendants, ça n'a pas d'importance.
+        */}
+      <div className="gap-4 [column-fill:balance] lg:columns-3">
         {RUBRIQUES.map((r) => (
           <Encart key={r.id} rubrique={r} membres={membres} moiId={moiId} nommer={nommer}
             lignes={sujets.filter((s) => s.rubrique === r.id)} recap={recap}
@@ -159,7 +165,7 @@ function Encart({ rubrique, lignes, recap, membres, moiId, nommer, onAjouter, on
   }
 
   return (
-    <section className="flex flex-col overflow-hidden rounded-xl border border-bord-2 bg-surface">
+    <section className="mb-4 flex break-inside-avoid flex-col overflow-hidden rounded-xl border border-bord-2 bg-surface">
       <header className="flex h-12 flex-none items-center gap-2 px-3">
         <button onClick={() => setOuvert((o) => !o)} className="flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
           <span className={`h-[15px] w-[3px] flex-none rounded-full ${rubrique.teinte}`} />
