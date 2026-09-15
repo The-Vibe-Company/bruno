@@ -1,0 +1,37 @@
+web/src/weekly/Sujets.tsx
+  s_09427aeab13931::t_b97dd21b242dab 4-5,8,12-25,28-31,37,44-46,48-50,52,54-55,66-77,79,82,125-126,134,136,138,146,148-149,154-158,163-165,167,169-174,179-199,201-214,217-236
+web/src/app/(bruno)/weekly/page.tsx
+  s_09427aeab13931::t_b77ea69815424b 71
+web/drizzle/0009_sujet-lien.sql
+  s_09427aeab13931::t_79478207748a68 1
+web/src/api/contrat.ts
+  s_09427aeab13931::t_79478207748a68 169,180,187
+CONTEXT.md
+  s_09427aeab13931::t_980aee3bd3416f 205-210
+web/src/db/schema.ts
+  s_09427aeab13931::t_79478207748a68 283-284
+web/src/api/sujets.ts
+  s_09427aeab13931::t_79478207748a68 17,21,24,49
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_980aee3bd3416f 71-74
+web/drizzle/meta/0009_snapshot.json
+  s_09427aeab13931::t_083305aabe71ac 1-1328
+web/drizzle/meta/_journal.json
+  s_09427aeab13931::t_ed869908b3c2db 67-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9b12972a84a23caa07adb4566360e53fa29e323b",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
