@@ -1,0 +1,21 @@
+web/src/board/Affectations.tsx
+  s_09427aeab13931::t_a6ad70f667cee6 22-23,25-31,50,52-61,69-71,75,78-79,84-88
+tickets/E6-affectations.md
+  s_09427aeab13931::t_86fecb5296093c 94-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "69f91c65848e49f4852663d027983c04fc4a83d0",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
