@@ -53,8 +53,10 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     auteur: t.creeParId ? personne(t.creeParId) : null,
   }));
 
+  // Abandonné n'est pas fait : la Tâche quitte le Board sans rejoindre la section Fait.
+  // Le « Annuler » de six secondes reste, et elle se retrouve dans Fait › abandonnées.
   const finies: TacheFinie[] = finiesRecemment
-    .filter((t) => t.assigneId && actifs.has(t.assigneId))
+    .filter((t) => t.etatTerminal === "termine" && t.assigneId && actifs.has(t.assigneId))
     .map((t) => ({
       id: t.id, titre: t.titre, bucket: t.bucket as TacheFinie["bucket"], statut: t.statut,
       engagement: t.engagement, reportsCount: t.reportsCount,
