@@ -200,3 +200,41 @@ body {
   font-feature-settings: "tnum";
   -webkit-font-smoothing: antialiased;
 }
+
+/* ------------------------------------------------------------------ les mouvements
+ *
+ * Trois gestes, pas plus : un voile qui apparaît, une boîte qui grandit d'un rien, un panneau
+ * qui entre par la droite. Courts — 160 ms à l'aller, 130 ms au retour : au-delà, on attend
+ * l'interface au lieu de s'en servir. Radix pose `data-state` sur ses éléments et attend la fin
+ * de l'animation avant de les retirer, donc la fermeture s'anime comme l'ouverture.
+ *
+ * Tout est enveloppé : qui a demandé moins de mouvement n'en a aucun.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes voile-entre { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes voile-sort  { from { opacity: 1 } to { opacity: 0 } }
+
+  /* Les boîtes sont centrées par une translation : l'animation doit la reprendre, sinon elles sautent. */
+  @keyframes boite-entre { from { opacity: 0; transform: translate(-50%, -48%) scale(.97) } to { opacity: 1; transform: translate(-50%, -50%) scale(1) } }
+  @keyframes boite-sort  { from { opacity: 1; transform: translate(-50%, -50%) scale(1) } to { opacity: 0; transform: translate(-50%, -49%) scale(.98) } }
+
+  @keyframes panneau-entre { from { transform: translateX(100%) } to { transform: translateX(0) } }
+  @keyframes panneau-sort  { from { transform: translateX(0) } to { transform: translateX(100%) } }
+
+  @keyframes bulle-entre { from { opacity: 0; transform: scale(.96) } to { opacity: 1; transform: scale(1) } }
+  @keyframes bulle-sort  { from { opacity: 1; transform: scale(1) } to { opacity: 0; transform: scale(.98) } }
+
+  @keyframes toast-entre { from { opacity: 0; transform: translate(-50%, 8px) } to { opacity: 1; transform: translate(-50%, 0) } }
+
+  .anime-voile[data-state="open"]    { animation: voile-entre 160ms ease-out }
+  .anime-voile[data-state="closed"]  { animation: voile-sort 130ms ease-in }
+  .anime-boite[data-state="open"]    { animation: boite-entre 160ms cubic-bezier(.16, 1, .3, 1) }
+  .anime-boite[data-state="closed"]  { animation: boite-sort 130ms ease-in }
+  .anime-panneau[data-state="open"]  { animation: panneau-entre 200ms cubic-bezier(.16, 1, .3, 1) }
+  .anime-panneau[data-state="closed"]{ animation: panneau-sort 160ms ease-in }
+  /* Une bulle grandit depuis le bouton qui l'ouvre : Radix dit de quel côté elle est sortie. */
+  .anime-bulle[data-state="open"]    { animation: bulle-entre 130ms ease-out; transform-origin: var(--radix-popover-content-transform-origin, center) }
+  .anime-bulle[data-state="closed"]  { animation: bulle-sort 100ms ease-in; transform-origin: var(--radix-popover-content-transform-origin, center) }
+  .anime-toast                       { animation: toast-entre 200ms cubic-bezier(.16, 1, .3, 1) }
+}
+

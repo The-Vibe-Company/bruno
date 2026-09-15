@@ -44,8 +44,8 @@ export function Detail(props: Props) {
   return (
     <Dialog.Root open={tache !== null} onOpenChange={(o) => !o && onFermer()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-fond-page/60" />
-        <Dialog.Content aria-describedby={undefined} className="fixed inset-y-0 right-0 flex w-[440px] max-w-full flex-col border-l border-bord-2 bg-fond shadow-2xl outline-none">
+        <Dialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/60" />
+        <Dialog.Content aria-describedby={undefined} className="anime-panneau fixed inset-y-0 right-0 flex w-[440px] max-w-full flex-col border-l border-bord-2 bg-fond shadow-2xl outline-none">
           {tache && <Fiche key={tache.id} {...props} tache={tache} />}
         </Dialog.Content>
       </Dialog.Portal>
@@ -108,8 +108,8 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
             <button className="text-[13px] text-texte-sourd hover:text-bloque" disabled={occupe}>Supprimer</button>
           </AlertDialog.Trigger>
           <AlertDialog.Portal>
-            <AlertDialog.Overlay className="fixed inset-0 bg-fond-page/60" />
-            <AlertDialog.Content className="fixed left-1/2 top-1/2 w-[380px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
+            <AlertDialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/60" />
+            <AlertDialog.Content className="anime-boite fixed left-1/2 top-1/2 w-[380px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
               <AlertDialog.Title className="text-lg font-semibold tracking-tight">Supprimer cette Tâche ?</AlertDialog.Title>
               <AlertDialog.Description className="mt-2 text-[14.5px] text-texte-sourd">
                 Elle disparaît pour de bon, sans trace. Si vous avez décidé de ne pas la faire, préférez « Abandonner » : ça reste consultable.

@@ -104,3 +104,16 @@ Antoine, pour la troisième fois : « le site est très lent quand on change d'o
 **À savoir :** Next ne précharge **jamais** en mode développement. Sur `localhost:3001`, changer
 d'onglet restera lent ; c'est sur `bruno.thevibecompany.co` que ça se juge.
 
+## BRU-69 — Trois mouvements, pas plus · **livré le 15 septembre**
+
+Antoine : « il n'y a pas beaucoup d'effets, genre un peu mignons, ça s'ouvre — quand les fenêtres
+se ferment à droite, les panneaux, des petits trucs qui fluidifient le site ».
+
+- [x] **Le panneau de droite** (la fiche d'une Tâche) entre par la droite et repart par la droite
+- [x] **Les fenêtres** — droit d'entrée, Report, Pour quand, Blocage, les confirmations — grandissent
+      d'un rien en apparaissant, et le voile se fond
+- [x] **Les menus** (Statut, Assigné, Affectations) grandissent depuis le bouton qui les ouvre
+- [x] Le **« Annuler »** après un Terminé monte au lieu d'apparaître
+- [x] Court : 160 ms à l'aller, 130 ms au retour. Au-delà, on attend l'interface au lieu de s'en servir
+- [x] `prefers-reduced-motion` : qui a demandé moins de mouvement n'en a aucun
+

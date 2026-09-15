@@ -63,8 +63,8 @@ function CarteATrier({ t, onDestination, onSupprimer, onOuvrir }: { t: TacheAtte
             </button>
           </AlertDialog.Trigger>
           <AlertDialog.Portal>
-            <AlertDialog.Overlay className="fixed inset-0 bg-fond-page/60" />
-            <AlertDialog.Content className="fixed left-1/2 top-1/2 w-[380px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
+            <AlertDialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/60" />
+            <AlertDialog.Content className="anime-boite fixed left-1/2 top-1/2 w-[380px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-bord bg-surface p-5 shadow-2xl outline-none">
               <AlertDialog.Title className="text-lg font-semibold tracking-tight">Supprimer cette Tâche ?</AlertDialog.Title>
               <AlertDialog.Description className="mt-2 text-[14.5px] text-texte-sourd">Elle disparaît pour de bon, sans trace. Pour une Capture ratée ou un doublon, c’est le bon geste.</AlertDialog.Description>
               <div className="mt-5 flex justify-end gap-2">

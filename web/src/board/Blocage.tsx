@@ -25,8 +25,8 @@ function Feuille({ demande, onConfirmer, onAnnuler }: { demande: NonNullable<Dem
   return (
     <Dialog.Root open onOpenChange={(o) => !o && onAnnuler()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-fond-page/70" />
-        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-1/2 flex w-[420px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-2xl border border-bord-fort bg-surface p-5 shadow-2xl outline-none">
+        <Dialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/70" />
+        <Dialog.Content aria-describedby={undefined} className="anime-boite fixed left-1/2 top-1/2 flex w-[420px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-2xl border border-bord-fort bg-surface p-5 shadow-2xl outline-none">
           <div>
             <Dialog.Title className="text-[19px] font-semibold tracking-tight">Pourquoi c’est bloqué ?</Dialog.Title>
             <p className="mt-1 text-[13px] text-texte-sourd">{demande.titre}</p>

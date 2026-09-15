@@ -275,7 +275,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
       />
       <Blocage demande={demandeBlocage} onConfirmer={bloquer} onAnnuler={annulerBlocage} />
       {derniereFin && (
-        <div role="status" className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-bord-fort bg-surface px-4 py-2.5 text-sm shadow-2xl">
+        <div role="status" className="anime-toast fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-bord-fort bg-surface px-4 py-2.5 text-sm shadow-2xl">
           <span>« {derniereFin.titre} » {derniereFin.libelle}</span>
           <button onClick={() => { const id = derniereFin.id; setDerniereFin(null); setParties((p) => { const n = new Set(p); n.delete(id); return n; }); action(rouvrir)(id); }} className="font-medium text-accent">Annuler</button>
         </div>
