@@ -1,0 +1,26 @@
+web/src/app/(bruno)/fait/page.tsx
+  s_09427aeab13931::t_96a6cc02032917 24,27-29,39
+  s_09427aeab13931::t_937a42ed970173 1,64-68
+web/src/app/(bruno)/page.tsx
+  s_09427aeab13931::t_96a6cc02032917 56-57,59
+CONTEXT.md
+  s_09427aeab13931::t_68ef8af8dda776 115-116
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_623a7acbd35dd7 89-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ff15c780c313a1a3b4bf39ff868ff0a0fe861ce7",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
