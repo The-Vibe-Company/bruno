@@ -1,0 +1,25 @@
+web/src/daily/Hier.tsx
+  s_09427aeab13931::t_19c0000b41ad0e 38-43,45-50
+web/src/board/FiltreMembres.tsx
+  s_09427aeab13931::t_3a3d180a9a3a23 3,15-23,28,31-33,39
+web/src/app/(bruno)/daily/page.tsx
+  s_09427aeab13931::t_19c0000b41ad0e 46,48
+tickets/E7-daily-fait.md
+  s_09427aeab13931::t_d8b8edc770bd78 117-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "47a7d3f6b84215de52d33eecf7bde599e7a2248d",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
