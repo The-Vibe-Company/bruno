@@ -69,9 +69,9 @@ export function Affectations({ membres, projets = [], moiId, choix, choixProjets
 }
 
 /**
- * Une ligne : ce à quoi une personne est rattachée sur cet axe, côte à côte. L'Affectation porte
- * le trait plein et le nom en gras, le Projet un trait fin et un nom plus léger — vide, la ligne
- * se nomme elle-même.
+ * Une ligne : ce à quoi une personne est rattachée sur cet axe, côte à côte. Les deux lignes
+ * s'écrivent pareil — c'est la position qui les distingue, pas la taille. Rapetisser les Projets
+ * les faisait passer pour secondaires, et ils ne le sont pas. Vide, la ligne se nomme elle-même.
  */
 function Lignes({ sur, genre, choisir = false }: { sur: Ligne[]; genre: Genre; choisir?: boolean }) {
   return (
@@ -79,15 +79,15 @@ function Lignes({ sur, genre, choisir = false }: { sur: Ligne[]; genre: Genre; c
       {sur.length === 0 && (
         <span className="flex items-center gap-2">
           <span className="h-[12px] w-[3px] flex-none border border-dashed border-texte-tres-faible" />
-          <span className={`truncate leading-none tracking-tight text-texte-sourd ${genre === "affectation" ? "text-[14px] font-medium" : "text-[13px]"}`}>{VIDE[genre]}</span>
+          <span className="truncate text-[14px] font-medium leading-none tracking-tight text-texte-sourd">{VIDE[genre]}</span>
           {choisir && <span className="ml-1 text-xs text-accent">Choisir</span>}
         </span>
       )}
       {sur.map((a) => (
         <span key={cle(a.genre, a.affectationId)} className="flex min-w-0 items-center gap-1.5">
-          <span className={a.genre === "affectation" ? "h-[13px] w-[3px] flex-none" : "h-[11px] w-[2px] flex-none"} style={{ background: a.couleur }} />
+          <span className="h-[13px] w-[3px] flex-none" style={{ background: a.couleur }} />
           {/* La place reste comptée : un nom coupé se relit au survol, avec depuis quand. */}
-          <span title={`${a.nom} · depuis ${libelleJour(a.depuis)}`} className={`truncate leading-none tracking-tight ${a.genre === "affectation" ? "text-[14px] font-medium" : "text-[13px] text-texte-2"}`}>{a.nom}</span>
+          <span title={`${a.nom} · depuis ${libelleJour(a.depuis)}`} className="truncate text-[14px] font-medium leading-none tracking-tight">{a.nom}</span>
           <span className="flex-none text-[10.5px] text-texte-faible">{libelleDuree(a.depuis)}</span>
         </span>
       ))}

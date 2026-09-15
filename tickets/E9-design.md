@@ -117,3 +117,12 @@ se ferment à droite, les panneaux, des petits trucs qui fluidifient le site ».
 - [x] Court : 160 ms à l'aller, 130 ms au retour. Au-delà, on attend l'interface au lieu de s'en servir
 - [x] `prefers-reduced-motion` : qui a demandé moins de mouvement n'en a aucun
 
+## BRU-72 — Deux détails d'identité · **livré le 15 septembre**
+
+- [x] Dans le bandeau, les Projets s'écrivaient plus petit et plus pâle que les Affectations : ça
+      les faisait passer pour secondaires, et ils ne le sont pas. C'est la ligne qui distingue les
+      deux axes, pas la taille
+- [x] **L'icône de l'app iOS** était un « b » orange minuscule sur fond noir — l'inverse du logo.
+      Elle reprend maintenant le même dessin que le favicon et que le rail : un « B. » d'encre sur
+      un carré orange, Hanken Grotesk SemiBold, sans transparence (iOS arrondit lui-même)
+
