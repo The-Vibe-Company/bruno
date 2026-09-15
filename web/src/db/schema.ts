@@ -268,7 +268,7 @@ export const recurrence = pgTable("recurrence", {
  * une semaine (son lundi), écrit par n'importe qui — comme les Affectations, on ne verrouille
  * pas qui touche à quoi. Rien de plus qu'une ligne de texte : les liens y vivent en clair.
  */
-export const rubriqueEnum = pgEnum("rubrique", ["skills", "projects", "wins"]);
+export const rubriqueEnum = pgEnum("rubrique", ["skills", "projects", "leads", "posts", "wins"]);
 
 export const sujet = pgTable("sujet", {
   id: uuid("id").primaryKey().defaultRandom(),

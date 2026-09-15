@@ -11,6 +11,8 @@ export type MembreWeekly = { id: string; nom: string; avatar: string | null };
 const RUBRIQUES: { id: Rubrique; titre: string; vide: string; exemple: string }[] = [
   { id: "skills", titre: "Skills of the week", vide: "Aucun skill.", exemple: "Un skill, son lien… ⏎" },
   { id: "projects", titre: "Projects of the week", vide: "Aucun projet.", exemple: "Un projet, où il en est… ⏎" },
+  { id: "leads", titre: "Lead of the week", vide: "Aucun lead.", exemple: "Un lead, où il en est… ⏎" },
+  { id: "posts", titre: "Posts of the week", vide: "Aucun post.", exemple: "Un post, son lien… ⏎" },
   { id: "wins", titre: "Wins of the week", vide: "Aucune victoire.", exemple: "Une victoire, même petite… ⏎" },
 ];
 

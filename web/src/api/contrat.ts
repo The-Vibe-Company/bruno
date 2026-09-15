@@ -158,7 +158,7 @@ export const PoserRecurrence = z.object({
 
 /* ------------------------------------------------------------------ le Weekly */
 
-export const Rubrique = z.enum(["skills", "projects", "wins"]);
+export const Rubrique = z.enum(["skills", "projects", "leads", "posts", "wins"]);
 
 export const Sujet = z.object({
   id: uuid,
