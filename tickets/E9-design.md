@@ -88,3 +88,19 @@ puis le rendu) : ~340 ms avant que l'écran bouge.
 **Reste, hors code :** pour descendre vraiment, il faut la base **en Europe** et les fonctions à
 `cdg1`. C'est une migration de la base de production — la décision est à Antoine.
 
+## BRU-68 — Changer d'onglet n'attend plus rien · **livré le 15 septembre**
+
+Antoine, pour la troisième fois : « le site est très lent quand on change d'onglet ».
+
+- [x] Les six pages du rail sont **préchargées en entier** (`prefetch`), pas seulement leur
+      squelette : Next ne précharge une page dynamique que si on le lui demande
+- [x] Le **cache du navigateur** garde une page visitée cinq minutes (`staleTimes`) — par défaut
+      Next ne garde rien d'une page dynamique, donc chaque retour repayait l'aller-retour
+- [x] Une modification appelle `router.refresh()`, qui vide ce cache : on ne lit jamais longtemps
+      des données mortes
+- [x] Mesuré sur une build de production : le Board s'affiche **150 ms** après le clic, le Daily
+      **200 ms** — sans requête au serveur
+
+**À savoir :** Next ne précharge **jamais** en mode développement. Sur `localhost:3001`, changer
+d'onglet restera lent ; c'est sur `bruno.thevibecompany.co` que ça se juge.
+

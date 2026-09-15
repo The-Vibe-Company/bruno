@@ -40,13 +40,15 @@ export function Rail({ initiale, avatar }: { initiale: string; avatar?: string |
         B<span className="ml-px mt-2 inline-block h-1 w-1 rounded-full bg-sur-accent" />
       </Link>
       {ENTREES.map((e) => (
-        <Link key={e.href} href={e.href} aria-label={e.libelle} aria-current={actif(e.href) ? "page" : undefined}
+        // `prefetch` : la page entière est préparée d'avance, pas seulement son squelette. Les six
+          // entrées sont toujours à l'écran, donc les six pages sont prêtes avant qu'on clique.
+          <Link key={e.href} href={e.href} prefetch aria-label={e.libelle} aria-current={actif(e.href) ? "page" : undefined}
           className={`group relative flex h-11 w-14 items-center justify-center border-l-2 ${actif(e.href) ? "border-accent text-texte" : "border-transparent text-texte-faible hover:text-texte"}`}>
           {e.icone}
           <Infobulle>{e.libelle}</Infobulle>
         </Link>
       ))}
-      <Link href="/reglages" aria-label="Mon compte" className="group relative mt-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-bord-faible text-xs font-medium">
+      <Link href="/reglages" prefetch aria-label="Mon compte" className="group relative mt-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-bord-faible text-xs font-medium">
         <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
           {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}
           {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initiale}
