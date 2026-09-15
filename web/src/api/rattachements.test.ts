@@ -96,13 +96,27 @@ describe("la liste des Affectations", () => {
 });
 
 describe("supprimer une Affectation", () => {
-  it("passe pour une faute de frappe jamais servie, se refuse dès que l'historique la nomme", async () => {
-    const ctx = { spaceId };
+  const ctx = { spaceId };
+
+  it("emporte ses périodes, et seulement les siennes", async () => {
     await ajouter(ctx, "jb,b", "#000000");
-    const faute = (await lister(ctx)).find((a) => a.nom === "jb,b")!;
-    expect((await supprimer(ctx, faute.id)).map((a) => a.nom)).not.toContain("jb,b");
-    await expect(supprimer(ctx, monka)).rejects.toMatchObject({ code: "requete_invalide", statut: 422 });
-    expect((await lister(ctx)).map((a) => a.nom)).toContain("MONKA");
+    const faute = (await lister(ctx)).find((x) => x.nom === "jb,b")!;
+    expect(faute.periodes).toBe(0);
+    await poser(ctx, a, faute.id);
+    expect((await lister(ctx)).find((x) => x.nom === "jb,b")!.periodes).toBe(1);
+
+    const reste = await supprimer(ctx, faute.id);
+    expect(reste.map((x) => x.nom)).not.toContain("jb,b");
+    expect(await db.select().from(affectationMembre).where(eq(affectationMembre.affectationId, faute.id))).toHaveLength(0);
+    // MONKA garde les siennes : Antoine dessus, plus le passage clos de Stan.
+    expect(reste.find((x) => x.nom === "MONKA")!.periodes).toBe(2);
+  });
+
+  it("ne va pas chercher un Projet du même identifiant", async () => {
+    await P.ajouter(ctx, "À jeter", "#000000");
+    const projet = (await P.lister(ctx)).find((x) => x.nom === "À jeter")!;
+    await expect(supprimer(ctx, projet.id)).rejects.toMatchObject({ code: "introuvable", statut: 404 });
+    expect((await P.lister(ctx)).map((x) => x.nom)).toContain("À jeter");
   });
 });
 

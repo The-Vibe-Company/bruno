@@ -20,7 +20,7 @@ le schéma uniquement, zéro UI (PRD §11).
       statut, reports_count, etat_terminal, created_at
 - [x] `tache_aidant` (plusieurs Aidants par Tâche)
 - [x] `report` : tache_id, raison, ancien_engagement, nouvel_engagement, auteur, date
-- [x] `affectation` avec `actif` (on désactive, on ne supprime jamais)
+- [x] `affectation` avec `actif` (désactiver = la sortie propre ; supprimer emporte les périodes)
 - [x] `affectation_membre` : membre_id, affectation_id, debut, fin nullable
 - [x] `creneau` : membre_id, heure
 - [x] `recurrence` : la règle, avec ses décalages

@@ -151,7 +151,7 @@ export function documentOpenApi() {
       "/api/affectations/{id}": {
         parameters: [idTache],
         patch: { summary: "Désactiver ou réactiver", description: "Le geste normal : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
-        delete: { summary: "Supprimer", description: "Seulement une Affectation qui n'a jamais servi (faute de frappe, doublon). Sinon : 422, désactivez-la.", responses: { 200: { description: "La liste" }, 422: { description: "Elle a servi" } } },
+        delete: { summary: "Supprimer", description: "Définitif : les périodes qui la nomment partent avec. Pour l'enlever sans trouer l'historique, désactivez-la (PATCH).", responses: { 200: { description: "La liste" } } },
       },
       "/api/recurrences": {
         get: { summary: "Les Récurrences", responses: { 200: { description: "Les règles", content: { "application/json": { schema: { type: "array", items: ref("Recurrence") } } } } } },
@@ -170,7 +170,7 @@ export function documentOpenApi() {
       "/api/projets/{id}": {
         parameters: [idTache],
         patch: { summary: "Désactiver ou réactiver un Projet", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "Les Projets" } } },
-        delete: { summary: "Supprimer un Projet", description: "Seulement s'il n'a jamais servi : l'historique ne doit pas se trouer.", responses: { 200: { description: "Les Projets" }, 422: { description: "Il a servi — désactivez-le" } } },
+        delete: { summary: "Supprimer un Projet", description: "Définitif : les périodes qui le nomment partent avec. Sinon, désactivez-le (PATCH).", responses: { 200: { description: "Les Projets" } } },
       },
       "/api/projets/en-cours": {
         get: { summary: "Qui est sur quel Projet", responses: { 200: { description: "Par Membre", content: { "application/json": { schema: { type: "array", items: ref("AffectationsMembre") } } } } } },
