@@ -68,7 +68,7 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
       <Affectations membres={affectations} projets={projets} moiId={session.membreId}
         choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} lectureSeule={lundi !== courante} />
       <main className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-        <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} />
+        <Sujets key={lundi} lundi={lundi} membres={membres} initiaux={sujets} moiId={session.membreId} projets={projets} />
       </main>
     </>
   );

@@ -14,14 +14,14 @@ import { traduire } from "./erreurs";
 
 type Ctx = { spaceId: string; membreId: string };
 export type Rubrique = z.infer<typeof C.Rubrique>;
-export type SujetLu = { id: string; lundi: string; rubrique: Rubrique; membreId: string; texte: string; auteur: string | null; createdAt: string };
+export type SujetLu = { id: string; lundi: string; rubrique: Rubrique; membreId: string; texte: string; lien: string | null; auteur: string | null; createdAt: string };
 
 const colonnes = {
   id: sujet.id, lundi: sujet.lundi, rubrique: sujet.rubrique, membreId: sujet.membreId, texte: sujet.texte,
-  auteur: membre.nom, createdAt: sujet.createdAt,
+  lien: sujet.lien, auteur: membre.nom, createdAt: sujet.createdAt,
 };
 
-const lu = (l: { id: string; lundi: string; rubrique: Rubrique; membreId: string; texte: string; auteur: string | null; createdAt: Date }): SujetLu =>
+const lu = (l: { id: string; lundi: string; rubrique: Rubrique; membreId: string; texte: string; lien: string | null; auteur: string | null; createdAt: Date }): SujetLu =>
   ({ ...l, createdAt: l.createdAt.toISOString() });
 
 /** Les Sujets d'une semaine, du plus ancien au plus récent : l'ordre où on les a posés. */
@@ -46,7 +46,7 @@ export async function poser(ctx: Ctx, entree: z.infer<typeof C.PoserSujet>): Pro
       .where(and(eq(membre.id, entree.membreId), eq(membre.spaceId, ctx.spaceId), eq(membre.actif, true)));
     if (!m) throw introuvable("Membre");
     const [cree] = await db.insert(sujet)
-      .values({ spaceId: ctx.spaceId, lundi: entree.lundi, rubrique: entree.rubrique, membreId: entree.membreId, texte: entree.texte, creeParId: ctx.membreId })
+      .values({ spaceId: ctx.spaceId, lundi: entree.lundi, rubrique: entree.rubrique, membreId: entree.membreId, texte: entree.texte, lien: entree.lien ?? null, creeParId: ctx.membreId })
       .returning({ id: sujet.id });
     const [ligne] = await db.select(colonnes).from(sujet)
       .leftJoin(membre, eq(membre.id, sujet.creeParId))
