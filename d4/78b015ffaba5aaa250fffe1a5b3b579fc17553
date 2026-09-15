@@ -1,0 +1,19 @@
+ios/Bruno/Capture/FileAttente.swift
+  s_310a01c7c8fc73::t_f891ed3e1b3dbd 70,77-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d478b015ffaba5aaa250fffe1a5b3b579fc17553",
+  "prompts": {},
+  "sessions": {
+    "s_310a01c7c8fc73": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a3f7-c670-7482-a036-b622647a33a9",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "StanGirard <stan@quivr.app>"
+    }
+  }
+}
