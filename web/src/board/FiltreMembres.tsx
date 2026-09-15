@@ -9,12 +9,15 @@ import { membresActifs } from "@/lib/filtre-membres";
  * Qui est retenu porte un **anneau d'accent** ; les autres passent en gris et rapetissent d'un
  * cheveu. Une simple différence d'opacité ne se voyait pas : on ne savait pas qui était filtré.
  */
-export function FiltreMembres({ membres }: { membres: { id: string; nom: string; avatar?: string | null }[] }) {
+export function FiltreMembres({ membres, defaut }: { membres: { id: string; nom: string; avatar?: string | null }[]; defaut?: string[] }) {
   const router = useRouter(); const chemin = usePathname(); const params = useSearchParams();
-  const actifs = membresActifs(params.get("membres") ?? undefined, membres);
+  const actifs = membresActifs(params.get("membres") ?? undefined, membres, defaut);
+  /** Revenir au défaut, c'est retirer le paramètre : l'URL ne porte que ce qui s'écarte de lui. */
+  const parDefaut = new Set(defaut?.length ? defaut : membres.map((m) => m.id));
+  const memeQueLeDefaut = (s: Set<string>) => s.size === parDefaut.size && [...s].every((id) => parDefaut.has(id));
   const poser = (suivant: Set<string>) => {
     const p = new URLSearchParams(params.toString());
-    if (suivant.size === 0 || suivant.size === membres.length) p.delete("membres"); else p.set("membres", [...suivant].join(","));
+    if (suivant.size === 0 || memeQueLeDefaut(suivant)) p.delete("membres"); else p.set("membres", [...suivant].join(","));
     router.replace(p.size ? `${chemin}?${p}` : chemin);
   };
   /** Un clic bascule ; ⌘-clic (ou Ctrl) garde celui-là seul. */

@@ -34,7 +34,8 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
     projetsEnCours(session),
     auJour(session, hier),
     projetsAuJour(session, hier),
-    terminees(session, hier),
+    // Depuis la dernière fois qu'on s'est vus, aujourd'hui compris : on le dit au point du matin.
+    terminees(session, hier, jour),
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
   ]);
@@ -44,7 +45,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   const deLui = <T extends { membreId: string }>(l: T[]) => l.filter((m) => actifs.has(m.membreId));
   const tachesHier: TacheFinie[] = finies
     .filter((t) => t.assigneId && actifs.has(t.assigneId))
-    .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, assigne: t.assigneId ? personne(t.assigneId) : null }));
+    .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigne: t.assigneId ? personne(t.assigneId) : null }));
   const tachesFeu: TacheDuJour[] = feu.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement, reportsCount: t.reportsCount,
     assigne: t.assigneId ? personne(t.assigneId) : null, raisonBlocage: t.raisonBlocage,

@@ -102,3 +102,15 @@ Antoine : « les tâches abandonnées doivent pas aller dans "Fait" ».
 - [x] Elles restent consultables, comme le dit le glossaire : **« Voir aussi les abandonnées »**
       dans l'en-tête les ramène (`/fait?abandon=1`)
 
+## BRU-74 — Le Board s'ouvre sur moi, le Daily montre aussi aujourd'hui · **livré le 15 septembre**
+
+Antoine : « par défaut ne sélectionne que le user actif sur la première page » et « dans le Daily
+faut les tâches finies hier et aujourd'hui ».
+
+- [x] Le **Board s'ouvre sur moi seul** : on y vient pour son propre travail. Les écrans d'équipe
+      — Daily, Fait — gardent tout le monde. Cocher quelqu'un d'autre écrit le filtre dans l'URL ;
+      revenir au défaut l'efface
+- [x] Le **Daily** montre les Tâches finies depuis le dernier jour ouvré, **aujourd'hui compris** :
+      au point du matin, ce qui vient d'être coché compte aussi. Chaque ligne dit son jour
+- [x] 6 tests sur le filtre par Membre
+
