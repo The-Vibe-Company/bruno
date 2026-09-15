@@ -28,6 +28,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.thevibecompany.bruno
+        PROVISIONING_PROFILE_SPECIFIER: "$(BRUNO_APP_PROFILE)"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIUserInterfaceStyle: Dark
@@ -62,6 +63,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.thevibecompany.bruno.widget
+        PROVISIONING_PROFILE_SPECIFIER: "$(BRUNO_WIDGET_PROFILE)"
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_CFBundleDisplayName: Bruno
     info:

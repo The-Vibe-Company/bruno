@@ -9,6 +9,8 @@ cd "$(dirname "$0")/.."
 : "${ASC_ISSUER_ID:?Missing ASC_ISSUER_ID}"
 : "${ASC_PRIVATE_KEY_PATH:?Missing ASC_PRIVATE_KEY_PATH}"
 : "${TESTFLIGHT_GROUP_ID:?Missing TESTFLIGHT_GROUP_ID}"
+: "${ASC_APP_PROFILE_ID:?Missing ASC_APP_PROFILE_ID}"
+: "${ASC_WIDGET_PROFILE_ID:?Missing ASC_WIDGET_PROFILE_ID}"
 test -s "$ASC_PRIVATE_KEY_PATH"
 
 xcodegen generate --spec ios/project.yml
@@ -16,23 +18,40 @@ asc xcode version edit --project ios/Bruno.xcodeproj \
   --next-build-number --app "$ASC_APP_ID" --platform IOS
 
 artifacts="$(mktemp -d "${RUNNER_TEMP:-/tmp}/bruno-testflight.XXXXXX")"
-auth_flags=(
-  --xcodebuild-flag=-allowProvisioningUpdates
-  --xcodebuild-flag=-authenticationKeyPath --xcodebuild-flag="$ASC_PRIVATE_KEY_PATH"
-  --xcodebuild-flag=-authenticationKeyID --xcodebuild-flag="$ASC_KEY_ID"
-  --xcodebuild-flag=-authenticationKeyIssuerID --xcodebuild-flag="$ASC_ISSUER_ID"
-)
+asc profiles download --id "$ASC_APP_PROFILE_ID" --output "$artifacts/app.mobileprovision"
+asc profiles download --id "$ASC_WIDGET_PROFILE_ID" --output "$artifacts/widget.mobileprovision"
+asc profiles local install --path "$artifacts/app.mobileprovision" --force
+asc profiles local install --path "$artifacts/widget.mobileprovision" --force
+# Read UUIDs from Apple's signed profiles; app and widget have distinct profiles.
+app_profile=$(security cms -D -i "$artifacts/app.mobileprovision" | plutil -extract UUID raw -o - -)
+widget_profile=$(security cms -D -i "$artifacts/widget.mobileprovision" | plutil -extract UUID raw -o - -)
 
 asc xcode archive --project ios/Bruno.xcodeproj --scheme Bruno \
   --configuration Release --archive-path "$artifacts/Bruno.xcarchive" \
   --xcodebuild-flag=-destination --xcodebuild-flag=generic/platform=iOS \
   --xcodebuild-flag="DEVELOPMENT_TEAM=$APPLE_TEAM_ID" \
   --xcodebuild-flag='CODE_SIGN_IDENTITY=Apple Distribution' \
-  "${auth_flags[@]}"
+  --xcodebuild-flag=CODE_SIGN_STYLE=Manual \
+  --xcodebuild-flag="BRUNO_APP_PROFILE=$app_profile" \
+  --xcodebuild-flag="BRUNO_WIDGET_PROFILE=$widget_profile"
 
+python3 - "$artifacts/ExportOptions.plist" "$APPLE_TEAM_ID" "$app_profile" "$widget_profile" <<'PY'
+import plistlib, sys
+path, team, app, widget = sys.argv[1:]
+with open(path, "wb") as output:
+    plistlib.dump({
+        "method": "app-store-connect", "destination": "export",
+        "teamID": team, "signingStyle": "manual",
+        "signingCertificate": "Apple Distribution",
+        "manageAppVersionAndBuildNumber": False,
+        "provisioningProfiles": {
+            "co.thevibecompany.bruno": app,
+            "co.thevibecompany.bruno.widget": widget,
+        },
+    }, output)
+PY
 asc xcode export --archive-path "$artifacts/Bruno.xcarchive" \
-  --ipa-path "$artifacts/Bruno.ipa" --team-id "$APPLE_TEAM_ID" \
-  "${auth_flags[@]}"
+  --ipa-path "$artifacts/Bruno.ipa" --export-options "$artifacts/ExportOptions.plist"
 
 # Explicit internal group: wait for Apple's processing before distributing.
 asc publish testflight --app "$ASC_APP_ID" --ipa "$artifacts/Bruno.ipa" \

@@ -10,7 +10,8 @@ cd ios && xcodegen generate && open Bruno.xcodeproj
 
 En `DEBUG`, l'app parle au serveur du Mac (`http://localhost:3001`, le simulateur partage son
 `localhost`) et se connecte par `/api/auth/dev` — lancer le web avec `BRUNO_DEV_LOGIN=1`. En
-production, l'URL vient de `BrunoApiUrl` dans l'Info.plist et la session de Google (BRU-4).
+production, l'URL vient de `BrunoApiUrl` dans l'Info.plist (par défaut
+`https://bruno.thevibecompany.co`) et la connexion Google passe par le navigateur système.
 
 Pour compiler sans signature :
 
@@ -52,22 +53,26 @@ Configurer les paramètres suivants dans les Actions du dépôt :
 | Variable | `ASC_APP_ID` | Identifiant numérique de la fiche Bruno |
 | Variable | `APPLE_TEAM_ID` | Identifiant de l'équipe Apple Developer |
 | Variable | `TESTFLIGHT_GROUP_ID` | Identifiant du groupe interne |
+| Variable | `ASC_APP_PROFILE_ID` | Profil App Store de l'app |
+| Variable | `ASC_WIDGET_PROFILE_ID` | Profil App Store du widget |
 | Secret | `ASC_KEY_ID` | Identifiant de la clé API |
 | Secret | `ASC_ISSUER_ID` | Issuer de la clé API d'équipe |
 | Secret | `ASC_PRIVATE_KEY_B64` | Contenu du fichier P8 encodé en base64 |
 | Secret | `APPLE_CERTIFICATE_P12_B64` | Certificat et clé privée exportés en P12, encodés en base64 |
 | Secret | `APPLE_CERTIFICATE_PASSWORD` | Mot de passe non vide du P12 |
 
-Le runner importe le certificat dans un trousseau temporaire. Xcode récupère les profils
-avec la clé API ; `asc` archive, exporte, envoie et attend le traitement Apple, puis affecte
+Le runner importe le certificat dans un trousseau temporaire. `asc` télécharge les deux
+profils App Store, puis archive et exporte avec une signature manuelle propre à chaque
+cible. Il envoie et attend le traitement Apple, puis affecte
 le build au groupe interne. Les secrets temporaires sont supprimés même en cas d'échec.
-Renouveler le certificat et les secrets avant expiration. Les testeurs externes et la
+Renouveler le certificat, les profils et les secrets avant expiration. Les testeurs externes et la
 publication App Store demandent une configuration et une validation Apple distinctes.
 
 ### Publication locale
 
 Avec le certificat installé dans le trousseau, définir `ASC_APP_ID`, `APPLE_TEAM_ID`,
-`TESTFLIGHT_GROUP_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID` et `ASC_PRIVATE_KEY_PATH`
+`TESTFLIGHT_GROUP_ID`, `ASC_APP_PROFILE_ID`, `ASC_WIDGET_PROFILE_ID`, `ASC_KEY_ID`,
+`ASC_ISSUER_ID` et `ASC_PRIVATE_KEY_PATH`
 (chemin absolu du P8), puis lancer depuis la racine :
 
 ```bash
@@ -79,12 +84,26 @@ calculé au début de la publication. Les archives et le résultat JSON sont con
 un dossier temporaire indiqué par le script. La version marketing se règle dans
 `ios/project.yml`.
 
-### Limite fonctionnelle actuelle
+### Connexion Google
 
-Le code Release contacte `https://bruno.thevibecompany.co`, mais le parcours de connexion
-Google iOS reste à implémenter. Une installation TestFlight ne valide donc pas encore
-l'accès authentifié aux données du serveur. L'icône initiale reprend le « b » orange
-sur fond sombre de l'identité visuelle de l'app.
+L'app Release ouvre `/api/auth/google` dans `ASWebAuthenticationSession`, avec une preuve
+PKCE S256 et un état aléatoires. Le callback web vérifie le cookie d'état puis rend un
+code Google à usage unique à `bruno://auth`. L'iPhone vérifie son état et transmet le code
+et sa preuve à `/api/auth/ios`. Le serveur utilise les paramètres Google déjà configurés
+dans Vercel, vérifie l'identité et le domaine Workspace, puis renvoie une session Bruno.
+Le secret Google ne quitte jamais le serveur. La session reste dans le trousseau de cet
+iPhone et est envoyée en `Authorization: Bearer`. Un refus 401 ramène à la connexion.
+
+Le compte Apple de distribution peut être un Gmail personnel ; la connexion à Bruno
+requiert toujours un compte `@thevibecompany.co`, comme sur le web. L'icône initiale
+reprend un « b » orange sur fond sombre.
+
+### Ressources configurées
+
+- Équipe Apple : `K28B69CWQ7` (Stanislas Girard).
+- App Store Connect : `6812242544` (« Bruno - bruno », le nom « Bruno » étant déjà pris).
+- Groupe interne : `a9fe3300-d986-4e59-aad9-0c1e500b98c1`.
+- Certificat de distribution et profils créés pour cette CI ; certificat à renouveler avant septembre 2027.
 
 - `App/` — l'entrée, la barre d'onglets, le micro au centre.
 - `Capture/` — l'écran Capture (BRU-6), la file d'attente hors ligne (BRU-7), le micro et la transcription (BRU-8).
