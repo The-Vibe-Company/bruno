@@ -91,11 +91,13 @@ d'Affectations découlent sur Projets ».
       `/api/projets/historique` — le miroir exact, documenté dans l'OpenAPI
 - [x] **Réglages** : une liste Projets sous les Affectations, mêmes gestes (ajouter avec sa couleur,
       Désactiver, Supprimer si ça n'a jamais servi)
-- [x] **Board, Daily, Weekly** : **un seul bandeau**, une ligne par personne, le nom écrit une
-      fois, puis **deux colonnes** séparées d'un filet — les Affectations, les Projets. Chacune
-      s'ouvre sur son propre sélecteur. L'Affectation porte le trait plein et le nom en gras, le
-      Projet un trait fin et plus léger. *(Deux bandeaux superposés répétaient les mêmes noms pour
-      rien ; tout mélanger dans une case ne laissait plus voir les deux axes.)*
+- [x] **Board, Daily, Weekly** : **une case par personne**, son nom écrit une fois, et dedans
+      **deux lignes** — ses Affectations, puis ses Projets. Chacune s'ouvre sur son propre
+      sélecteur ; l'Affectation porte le trait plein et le nom en gras, le Projet un trait fin et
+      plus léger. *(Trois essais : deux bandeaux répétaient les trois noms ; tout mélanger dans une
+      case ne laissait plus voir les deux axes ; deux colonnes côte à côte laissaient 150 px par
+      colonne, où deux Affectations et un Projet s'écrasaient jusqu'à l'illisible. La place manque
+      en largeur, elle existe en hauteur.)*
 - [x] **Fait** : les Projets de la semaine à côté des Affectations ; **Daily** : ceux du jour d'avant
 - [x] 4 tests de plus : les deux listes ne se mélangent pas, et poser un identifiant d'Affectation
       sur un Projet est refusé
