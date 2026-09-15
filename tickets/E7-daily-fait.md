@@ -114,3 +114,17 @@ faut les tâches finies hier et aujourd'hui ».
       au point du matin, ce qui vient d'être coché compte aussi. Chaque ligne dit son jour
 - [x] 6 tests sur le filtre par Membre
 
+## BRU-75 — Le filtre répond au clic, et la colonne Hier se tient · **livré le 15 septembre**
+
+Antoine : « quand je clique sur les cercles oranges c'est lent de ouf », « je veux un padding entre
+les cercles », « n'affiche pas les tâches abandonnées », « enlève le titre Affectations de la
+veille », « l'affichage des tâches terminées est moche as fuck ».
+
+- [x] **L'anneau bouge au clic**, la page suit. Avant, le clic attendait l'aller-retour vers le
+      serveur — qui est à Washington — avant que rien ne change à l'écran
+- [x] De l'air entre les visages : l'anneau et son écart avaient besoin de place
+- [x] La colonne Hier ne montre plus les **Abandonnées** : elle dit ce qui a avancé
+- [x] Le titre « Affectations de la veille » s'en va — les Projets sont déjà dans la même liste
+- [x] Les Tâches finies deviennent une **liste, pas des cartes** : dans 300 px, un encadré par
+      Tâche coupait les titres en trois. Un rond, le titre sur toute la largeur, le jour dessous
+

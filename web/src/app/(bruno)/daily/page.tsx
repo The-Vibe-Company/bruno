@@ -43,8 +43,9 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
   const actifs = membresActifs(filtre, membres);
   const deLui = <T extends { membreId: string }>(l: T[]) => l.filter((m) => actifs.has(m.membreId));
+  // Abandonné n'est pas fait : le Daily dit ce qui a avancé, pas ce qu'on a enterré.
   const tachesHier: TacheFinie[] = finies
-    .filter((t) => t.assigneId && actifs.has(t.assigneId))
+    .filter((t) => t.etatTerminal === "termine" && t.assigneId && actifs.has(t.assigneId))
     .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigne: t.assigneId ? personne(t.assigneId) : null }));
   const tachesFeu: TacheDuJour[] = feu.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement, reportsCount: t.reportsCount,

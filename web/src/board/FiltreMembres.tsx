@@ -1,5 +1,6 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
 import { membresActifs } from "@/lib/filtre-membres";
 
 /**
@@ -11,20 +12,31 @@ import { membresActifs } from "@/lib/filtre-membres";
  */
 export function FiltreMembres({ membres, defaut }: { membres: { id: string; nom: string; avatar?: string | null }[]; defaut?: string[] }) {
   const router = useRouter(); const chemin = usePathname(); const params = useSearchParams();
-  const actifs = membresActifs(params.get("membres") ?? undefined, membres, defaut);
+  const [, demarrer] = useTransition();
+  /**
+   * L'anneau bouge tout de suite, la page suit. Avant, le clic attendait l'aller-retour vers le
+   * serveur avant que quoi que ce soit change à l'écran — et le serveur est à Washington.
+   */
+  const brut = params.get("membres");
+  const [actifs, setActifs] = useState(() => membresActifs(brut ?? undefined, membres, defaut));
+  const [base, setBase] = useState(brut);
+  if (base !== brut) { setBase(brut); setActifs(membresActifs(brut ?? undefined, membres, defaut)); }
   /** Revenir au défaut, c'est retirer le paramètre : l'URL ne porte que ce qui s'écarte de lui. */
   const parDefaut = new Set(defaut?.length ? defaut : membres.map((m) => m.id));
   const memeQueLeDefaut = (s: Set<string>) => s.size === parDefaut.size && [...s].every((id) => parDefaut.has(id));
   const poser = (suivant: Set<string>) => {
+    setActifs(suivant);
     const p = new URLSearchParams(params.toString());
     if (suivant.size === 0 || memeQueLeDefaut(suivant)) p.delete("membres"); else p.set("membres", [...suivant].join(","));
-    router.replace(p.size ? `${chemin}?${p}` : chemin);
+    const url = p.size ? `${chemin}?${p}` : chemin;
+    setBase(p.get("membres"));
+    demarrer(() => router.replace(url));
   };
   /** Un clic bascule ; ⌘-clic (ou Ctrl) garde celui-là seul. */
   const basculer = (id: string) => { const s = new Set(actifs); if (s.has(id)) s.delete(id); else s.add(id); poser(s); };
   const seul = (id: string) => poser(new Set([id]));
   return (
-    <div role="group" aria-label="Membres" className="flex items-center gap-1.5">
+    <div role="group" aria-label="Membres" className="flex items-center gap-3">
       {membres.map((m) => {
         const actif = actifs.has(m.id);
         return (

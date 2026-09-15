@@ -23,7 +23,6 @@ export function Hier({ jour, estLaVeille, affectations, projets, taches }: { jou
         <span className="text-xs text-texte-sourd">{taches.length}</span>
       </header>
       <div className="border-b border-bord-2 py-2">
-        <div className="py-1 text-[12px] text-texte-sourd">{estLaVeille ? "Affectations de la veille" : "Affectations ce jour-là"}</div>
         {surQuelqueChose.length === 0 && <div className="py-1.5 text-[13.5px] text-texte-faible">—</div>}
         {surQuelqueChose.map((m) => (
           <div key={m.membreId} className="flex items-center gap-2.5 py-1.5">
@@ -36,12 +35,19 @@ export function Hier({ jour, estLaVeille, affectations, projets, taches }: { jou
           </div>
         ))}
       </div>
-      {taches.length === 0 && <p className="mt-2.5 text-[13.5px] text-texte-faible">Rien de fini.</p>}
+      {taches.length === 0 && <p className="py-2.5 text-[13.5px] text-texte-faible">Rien de fini.</p>}
+      {/*
+        * Une liste, pas des cartes : dans une colonne de 300 px, un encadré par Tâche mangeait la
+        * largeur et coupait les titres en trois. Le rond dit « fait », le titre a toute la place,
+        * le jour et le visage tiennent en dessous.
+        */}
       {taches.map((t) => (
-        <div key={t.id} className="mt-1.5 flex items-center gap-2.5 rounded-lg border border-bord-2 bg-surface-3 px-3 py-2">
-          <span className={`flex-1 text-[13.5px] ${t.etat === "abandonne" ? "text-texte-sourd" : ""}`}>{t.titre}</span>
-          <span className="text-[11.5px] text-texte-faible">{libelleJour(t.jour)}</span>
-          <span className={`text-[12px] ${t.etat === "termine" ? "text-accent" : "text-texte-faible"}`}>{t.etat === "termine" ? "Terminé" : "Abandonné"}</span>
+        <div key={t.id} className="flex items-start gap-2.5 border-b border-bord-2 py-2.5">
+          <span className="mt-[3px] h-[13px] w-[13px] flex-none rounded-full border-[1.5px] border-accent bg-accent-voile" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] leading-snug">{t.titre}</span>
+            <span className="text-[11.5px] text-texte-faible">{libelleJour(t.jour)}</span>
+          </span>
           {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} />}
         </div>
       ))}
