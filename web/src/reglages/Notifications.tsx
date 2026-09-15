@@ -121,7 +121,7 @@ export function Notifications({ clePublique, initiaux }: { clePublique: string; 
       )}
 
       <p className="mt-3.5 text-[13.5px] leading-relaxed text-texte-faible">
-        Sur iPhone, les Relances passeront par l’app — pas par le navigateur. C’est BRU-25, et il y faut une clé Apple.
+        Sur iPhone, c’est l’app qui les reçoit : elle demande l’autorisation à son lancement, et apparaît alors dans cette liste.
       </p>
     </section>
   );

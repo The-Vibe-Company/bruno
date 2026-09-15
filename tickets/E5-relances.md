@@ -65,17 +65,22 @@ d'accueil, l'app.
 - [x] Vérifié de bout en bout : le Point du matin reçu en notification dans un vrai navigateur
 - [ ] Reste à APNs : l'appui long **`Terminé` / `Reporter`**, qu'une notification web ne sait pas faire
 
-## BRU-25 — Push iOS actionnable · ⛔ **bloqué : il manque l'app iOS et une clé APNs**
+## BRU-25 — Push iOS actionnable · ⏳ **le code est là, il manque la clé APNs**
 
-Le moteur est prêt et livre à une interface. Pour brancher APNs il faut : l'app iOS (E1, BRU-6),
-et une **clé d'authentification APNs** (fichier `.p8`, `Key ID`, `Team ID`, `Bundle ID`) créée
-dans le compte développeur Apple — à poser dans Vercel, jamais dans le code.
+Tout le chemin est écrit : l'app demande l'autorisation au lancement, renvoie son jeton à chaque
+fois (Apple le change quand il veut), et le serveur signe un jeton ES256 avec la clé `.p8` pour
+parler à APNs en HTTP/2. Vérifié dans le simulateur avec la charge exacte que le serveur envoie.
+
+Il manque **une clé d'authentification APNs** (`.p8` + `Key ID`) créée dans le compte Apple
+Developer — à poser dans Vercel, jamais dans le code. Et, avant toute publication TestFlight :
+**Push Notifications** activé sur l'identifiant `co.thevibecompany.bruno`, puis le profil App
+Store régénéré — sinon la signature refuse l'entitlement `aps-environment`.
 
 Maquette : `Bruno iOS v2` → écran « Relance · écran verrouillé ».
 
-- [ ] Appui long sur la notification : **`Terminé`** et **`Reporter`**
-- [ ] `Terminé` ne demande rien et n'ouvre pas l'app
-- [ ] `Reporter` ouvre une extension légère avec la raison, **sans charger l'app entière**
+- [x] Appui long sur la notification : **`Terminé`** et **`Reporter`** (catégorie `RELANCE`)
+- [x] `Terminé` ne demande rien et n'ouvre pas l'app : il ferme la première Tâche nommée
+- [ ] `Reporter` ouvre l'app pour l'instant ; l'extension légère avec la raison reste à faire
 - [ ] Le corps rappelle la Tâche nommée et le reste (« 1 autre engagement encore ouvert »)
 - [ ] C'est la différence entre un système de relance et du spam *(règle 14)* — si ce ticket
       est bâclé, coupez le pilier 2 et assumez-le

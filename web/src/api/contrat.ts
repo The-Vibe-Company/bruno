@@ -125,6 +125,12 @@ export const Battre = z.object({ page: z.string().trim().regex(/^\/[a-z0-9/-]*$/
 
 /* ------------------------------------------------------------------ les Relances qui arrivent */
 
+/** Ce que l'app iPhone donne quand on accepte les notifications : son jeton APNs. */
+export const AbonnerIphone = z.object({
+  jeton: z.string().trim().regex(/^[0-9a-fA-F]{64,200}$/, "Un jeton APNs"),
+  appareil: z.string().trim().max(60).nullish(),
+});
+
 /** Ce que le navigateur donne quand on accepte les notifications : une adresse et deux clés. */
 export const AbonnerAppareil = z.object({
   endpoint: z.string().url().max(1000),
