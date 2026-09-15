@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { AffectationsMembre, Sur } from "@/api/affectations";
 import { libelleDuree } from "@/lib/dates";
+import { PALETTE } from "@/reglages/palette";
 import { Initiale } from "./visuel";
 
 export type Choix = { id: string; nom: string; couleur: string };
@@ -11,6 +12,7 @@ export type Genre = "affectation" | "projet";
 
 /** Les deux axes. Même mécanique, deux chemins — et deux poids à l'écran. */
 const CHEMIN: Record<Genre, string> = { affectation: "/api/affectations", projet: "/api/projets" };
+const AJOUTER: Record<Genre, string> = { affectation: "Nouvelle Affectation", projet: "Nouveau Projet" };
 
 /** Une ligne du bandeau : d'où elle vient, pour savoir quoi fermer et comment l'écrire. */
 type Ligne = Sur & { genre: Genre };
@@ -101,6 +103,12 @@ async function poster(chemin: string, corps?: unknown): Promise<AffectationsMemb
 /** Une colonne cliquable, avec son sélecteur en dessous. */
 function Case({ membreId, nom, moi, genre, sur, choix }: { membreId: string; nom: string; moi: boolean; genre: Genre; sur: Ligne[]; choix: Choix[] }) {
   const router = useRouter();
+  // La liste vit en local : créer depuis ici la fait grandir sans attendre le rendu du serveur.
+  const [options, setOptions] = useState(choix);
+  const [base, setBase] = useState(choix);
+  if (base !== choix) { setBase(choix); setOptions(choix); }
+  const [saisie, setSaisie] = useState(false);
+  const [nouveau, setNouveau] = useState("");
   const [, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
   /** Ce qui est coché, et pour chaque coche la période en cours qu'elle a ouverte — c'est elle qu'on ferme. */
@@ -112,7 +120,30 @@ function Case({ membreId, nom, moi, genre, sur, choix }: { membreId: string; nom
     : (moi ? "Sur quel Projet es-tu ?" : `Sur quel Projet est ${nom} ?`);
 
   const depuisLeServeur = () => new Map(sur.map((a) => [cle(a.genre, a.affectationId), a.id]));
-  const ouvrir = (o: boolean) => { if (o) { setCoches(depuisLeServeur()); setErreur(null); } setOuvert(o); };
+  const ouvrir = (o: boolean) => { if (o) { setCoches(depuisLeServeur()); setErreur(null); setSaisie(false); setNouveau(""); } setOuvert(o); };
+
+  /**
+   * Créer sans quitter le bandeau : le nom suffit. La couleur se prend dans la palette, la
+   * première encore libre — on la change dans les Réglages si elle ne va pas. Créer ici, c'est
+   * vouloir y être : la nouvelle se coche dans la foulée.
+   */
+  async function creer() {
+    const n = nouveau.trim();
+    if (!n) return;
+    setErreur(null);
+    const prises = new Set(options.map((o) => o.couleur));
+    const couleur = PALETTE.find((c) => !prises.has(c)) ?? PALETTE[options.length % PALETTE.length];
+    try {
+      const r = await fetch(CHEMIN[genre], { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ nom: n, couleur }) });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message ?? `Erreur ${r.status}`);
+      const liste: Choix[] = await r.json();
+      setOptions(liste.filter((o) => (o as Choix & { actif?: boolean }).actif !== false));
+      setNouveau(""); setSaisie(false);
+      const cree = liste.find((o) => o.nom === n);
+      if (cree) await basculer(cree.id);
+      else demarrer(() => router.refresh());
+    } catch (e) { setErreur((e as Error).message); }
+  }
 
   /**
    * Un clic suffit : cocher, c'est commencer aujourd'hui ; décocher, c'est ne plus être dessus.
@@ -158,10 +189,10 @@ function Case({ membreId, nom, moi, genre, sur, choix }: { membreId: string; nom
       <Popover.Portal>
         <Popover.Content align="start" sideOffset={8} className="anime-bulle z-40 max-h-[70vh] w-80 overflow-y-auto rounded-xl border border-bord-fort bg-surface shadow-[0_20px_60px_rgb(0_0_0/0.35)] outline-none">
           <div className="border-b border-bord-2 px-3.5 pb-2.5 pt-3.5 text-[13px] text-texte-sourd">{question}</div>
-          {choix.length === 0 && <p className="px-3.5 py-3 text-sm text-texte-sourd">Rien d’actif — ajoutez-en dans les Réglages.</p>}
-          {choix.length > 0 && (
+          {options.length === 0 && !saisie && <p className="px-3.5 py-3 text-sm text-texte-sourd">Rien encore — le « + » en bas en crée un.</p>}
+          {options.length > 0 && (
             <ul>
-              {choix.map((c) => {
+              {options.map((c) => {
                 const k = cle(genre, c.id);
                 const coche = coches.has(k);
                 return (
@@ -180,8 +211,19 @@ function Case({ membreId, nom, moi, genre, sur, choix }: { membreId: string; nom
             </ul>
           )}
           {erreur && <p role="alert" className="px-3.5 pt-3 text-sm text-bloque">{erreur}</p>}
-          <div className="flex justify-end p-2.5">
-            <Popover.Close className="h-9 rounded-lg px-3 text-sm text-texte-sourd hover:bg-surface-2 hover:text-texte">Fermer</Popover.Close>
+          <div className="flex items-center gap-2 p-2.5">
+            {saisie ? (
+              <input autoFocus value={nouveau} onChange={(e) => setNouveau(e.target.value)} aria-label={AJOUTER[genre]} placeholder={`${AJOUTER[genre]}… ⏎`} maxLength={40}
+                onKeyDown={(e) => { if (e.key === "Enter") creer(); if (e.key === "Escape") { setNouveau(""); setSaisie(false); } }}
+                onBlur={() => { if (!nouveau.trim()) setSaisie(false); }}
+                className="h-9 min-w-0 flex-1 rounded-lg border border-bord-fort bg-fond px-2.5 text-[14px] outline-none placeholder:text-texte-faible focus:border-accent" />
+            ) : (
+              <button onClick={() => setSaisie(true)} className="flex h-9 flex-1 items-center gap-1.5 rounded-lg px-2 text-left text-[13.5px] text-texte-faible hover:bg-surface-2 hover:text-texte">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M6 1.5v9M1.5 6h9" /></svg>
+                {AJOUTER[genre]}
+              </button>
+            )}
+            <Popover.Close className="h-9 flex-none rounded-lg px-3 text-sm text-texte-sourd hover:bg-surface-2 hover:text-texte">Fermer</Popover.Close>
           </div>
         </Popover.Content>
       </Popover.Portal>
