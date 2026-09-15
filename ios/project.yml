@@ -9,11 +9,9 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    # Pas d'équipe Apple pour l'instant : on ne signe pas, le simulateur s'en passe.
-    CODE_SIGNING_REQUIRED: "NO"
-    CODE_SIGN_IDENTITY: ""
     CODE_SIGN_STYLE: Automatic
-    DEVELOPMENT_TEAM: ""
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
 targets:
   Bruno:
     type: application
@@ -30,12 +28,15 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.thevibecompany.bruno
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIUserInterfaceStyle: Dark
     info:
       path: Bruno/Info.plist
       properties:
         CFBundleDisplayName: Bruno
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         ITSAppUsesNonExemptEncryption: false
@@ -67,5 +68,7 @@ targets:
       path: BrunoWidget/Info.plist
       properties:
         CFBundleDisplayName: Bruno
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
