@@ -4,7 +4,7 @@ import { useDraggable } from "@dnd-kit/core";
 import Link from "next/link";
 import { useState } from "react";
 import { libelleJour } from "@/lib/dates";
-import { Initiale, type Personne } from "./visuel";
+import { Coche, Initiale, type Personne } from "./visuel";
 import type { TacheFiche } from "./Detail";
 import { poserReplie, useReplie } from "./replie";
 import { BoutonPlus, NouvelleTache } from "./NouvelleTache";
@@ -181,7 +181,7 @@ function Fait({ taches, ouvert, onBasculer, onRouvrir, onOuvrir }: { taches: Tac
       {ouvert && taches.length === 0 && <p className="py-2.5 text-[13px] text-texte-faible">Rien de fini depuis deux jours.</p>}
       {ouvert && taches.map((t) => (
         <div key={t.id} className="mt-1.5 flex items-center gap-2 rounded-lg px-1 py-1.5">
-          <span className={`h-[15px] w-[15px] flex-none rounded-full border-[1.5px] ${t.fin.etat === "termine" ? "border-accent bg-accent-voile" : "border-dashed border-texte-tres-faible"}`} />
+          <Coche etat={t.fin.etat} />
           <button onClick={() => onOuvrir(t.id)} className="min-w-0 flex-1 truncate text-left text-[13.5px] text-texte-sourd hover:text-texte" title={t.titre}>{t.titre}</button>
           <span className="flex-none text-[12px] text-texte-faible">{libelleJour(t.fin.jour)}</span>
           <button onClick={() => onRouvrir(t.id)} className="flex-none text-[12px] text-texte-faible hover:text-accent">Rouvrir</button>

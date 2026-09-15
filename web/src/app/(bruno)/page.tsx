@@ -48,7 +48,9 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
     notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
   }));
-  const enAttente: TacheAttente[] = [...aTrier, ...aVenir, ...idees].map((t) => ({
+  // En attente est une pile commune — on y trie ce que n'importe qui a capturé, assigné ou non.
+  // Elle ne suit donc pas le filtre… sauf quand plus personne n'est retenu : là on ne veut rien voir.
+  const enAttente: TacheAttente[] = (actifs.size === 0 ? [] : [...aTrier, ...aVenir, ...idees]).map((t) => ({
     id: t.id, titre: t.titre, bucket: t.bucket as TacheAttente["bucket"], statut: t.statut,
     engagement: t.engagement, reportsCount: t.reportsCount,
     assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
@@ -78,9 +80,12 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         <FiltreMembres membres={membres} defaut={[session.membreId]} />
         <div className="flex-1" />
       </header>
-      {/* Le bandeau suit le filtre : filtrer sur Antoine et lire les trois n'aurait pas de sens. */}
-      <Affectations membres={affectations.filter((m) => actifs.has(m.membreId))} projets={projets} moiId={session.membreId}
-        choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
+      {/* Le bandeau suit le filtre : filtrer sur Antoine et lire les trois n'aurait pas de sens.
+          Personne de retenu, pas de bandeau — une bande vide n'apprend rien. */}
+      {actifs.size > 0 && (
+        <Affectations membres={affectations.filter((m) => actifs.has(m.membreId))} projets={projets} moiId={session.membreId}
+          choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
+      )}
       <main className="flex min-h-0 flex-1 flex-col">
         <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />
       </main>

@@ -1,5 +1,5 @@
 import type { AffectationsMembre } from "@/api/affectations";
-import { Initiale, type Personne } from "@/board/visuel";
+import { Coche, Initiale, type Personne } from "@/board/visuel";
 import { libelleDernierJour, libelleJour, libelleLong } from "@/lib/dates";
 
 export type TacheFinie = { id: string; titre: string; etat: "termine" | "abandonne"; jour: string; assigne: Personne | null };
@@ -43,7 +43,7 @@ export function Hier({ jour, estLaVeille, affectations, projets, taches }: { jou
         */}
       {taches.map((t) => (
         <div key={t.id} className="flex items-start gap-2.5 border-b border-bord-2 py-2.5">
-          <span className="mt-[3px] h-[13px] w-[13px] flex-none rounded-full border-[1.5px] border-accent bg-accent-voile" />
+          <span className="mt-[3px]"><Coche etat="termine" taille={13} /></span>
           <span className="min-w-0 flex-1">
             <span className="block text-[13.5px] leading-snug">{t.titre}</span>
             <span className="text-[11.5px] text-texte-faible">{libelleJour(t.jour)}</span>

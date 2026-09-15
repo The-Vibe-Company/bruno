@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
-import { membresActifs } from "@/lib/filtre-membres";
+import { AUCUN, membresActifs } from "@/lib/filtre-membres";
 
 /**
  * Les visages de chacun, actif ou inactif au clic. Le même filtre sur Sur le feu, le Daily et
@@ -27,7 +27,9 @@ export function FiltreMembres({ membres, defaut }: { membres: { id: string; nom:
   const poser = (suivant: Set<string>) => {
     setActifs(suivant);
     const p = new URLSearchParams(params.toString());
-    if (suivant.size === 0 || memeQueLeDefaut(suivant)) p.delete("membres"); else p.set("membres", [...suivant].join(","));
+    // Éteindre tout le monde est un choix, pas l'absence de choix : l'URL le dit, l'écran se vide.
+    if (memeQueLeDefaut(suivant)) p.delete("membres");
+    else p.set("membres", suivant.size === 0 ? AUCUN : [...suivant].join(","));
     const url = p.size ? `${chemin}?${p}` : chemin;
     setBase(p.get("membres"));
     demarrer(() => router.replace(url));

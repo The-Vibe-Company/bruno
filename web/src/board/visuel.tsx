@@ -34,6 +34,23 @@ export function Initiale({ nom, avatar, grande = false }: { nom: string; avatar?
   );
 }
 
+/**
+ * Une Tâche finie. Le rond vide se lisait « pas encore fait » — c'est une coche qu'on attend
+ * devant quelque chose de terminé. Abandonné n'en porte pas : ce n'est pas un succès, juste un
+ * point final, et le trait discontinu le dit sans le juger.
+ */
+export function Coche({ etat, taille = 15 }: { etat: "termine" | "abandonne"; taille?: number }) {
+  if (etat !== "termine") {
+    return <span role="img" aria-label="Abandonné" style={{ width: taille, height: taille }} className="flex-none rounded-full border-[1.5px] border-dashed border-texte-tres-faible" />;
+  }
+  return (
+    <svg role="img" aria-label="Terminé" width={taille} height={taille} viewBox="0 0 16 16" className="flex-none text-sur-accent">
+      <circle cx="8" cy="8" r="7.25" className="fill-accent" />
+      <path d="M4.6 8.4l2.3 2.3 4.5-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /** La ligne du bas d'une carte : la raison du blocage s'il y en a une, l'Engagement, les Reports — sur une seule ligne, toujours. */
 export function Meta({ tache }: { tache: { statut: Statut; engagement: string | null; reportsCount: number; raisonBlocage: string | null } }) {
   return (

@@ -3,9 +3,15 @@
  * sur le défaut — tout le monde sur les écrans d'équipe (le Daily, Fait), **moi seul sur le
  * Board** : on y vient pour son propre travail, pas pour celui des autres.
  *
+ * `?membres=aucun` dit **personne**, et l'écran reste vide. Sans ce mot, éteindre le dernier
+ * visage revenait à ne rien demander — donc à tout rallumer, ce qui se lisait comme un bug.
+ *
  * Un identifiant inconnu est ignoré ; une liste vide vaut le défaut.
  */
+export const AUCUN = "aucun";
+
 export function membresActifs(param: string | undefined, membres: { id: string }[], defaut?: string[]): Set<string> {
+  if (param === AUCUN) return new Set();
   const ids = new Set(membres.map((m) => m.id));
   const choisis = (param ?? "").split(",").filter((id) => ids.has(id));
   if (choisis.length) return new Set(choisis);
