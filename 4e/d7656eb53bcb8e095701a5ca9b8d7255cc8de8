@@ -1,0 +1,29 @@
+web/src/app/api/direct/route.ts
+  s_09427aeab13931::t_e0215b2456536a 1-20,23-74
+  s_09427aeab13931::t_6ad17400aeb6c6 21-22
+web/src/api/presence.ts
+  s_09427aeab13931::t_6ad17400aeb6c6 26-37
+  s_09427aeab13931::t_e0215b2456536a 12-13,40-56,60
+web/src/api/openapi.ts
+  s_09427aeab13931::t_5cd51a25138c9a 157-159
+web/src/app/(bruno)/Pouls.tsx
+  s_09427aeab13931::t_4e85af2087b808 6-7,12,14-20,36,40,49-53,55-61,63,65-69
+  s_09427aeab13931::t_61e27ffe887d23 28,30-33,35,39,44-48,62
+  s_09427aeab13931::t_3f796f708972f7 3,29,34,54,70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4ed7656eb53bcb8e095701a5ca9b8d7255cc8de8",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
