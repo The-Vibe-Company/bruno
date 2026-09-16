@@ -14,7 +14,7 @@ const composants = {
   Reordonner: C.Reordonner, Reporter: C.Reporter,
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
-  AbonnerAppareil: C.AbonnerAppareil, Battre: C.Battre,
+  AbonnerAppareil: C.AbonnerAppareil, AbonnerIphone: C.AbonnerIphone, Battre: C.Battre,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
   Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
@@ -167,6 +167,9 @@ export function documentOpenApi() {
       "/api/push/abonnements/{id}": {
         parameters: [idTache],
         delete: { summary: "Ne plus rien recevoir sur cet appareil", responses: { 200: { description: "Les appareils restants" } } },
+      },
+      "/api/push/iphone": {
+        post: { summary: "Abonner l'iPhone", description: "Le jeton APNs de l'app. Renvoyé à chaque lancement : Apple le change quand il veut.", requestBody: corps("AbonnerIphone"), responses: { 200: { description: "Les appareils" } } },
       },
       "/api/push/essai": {
         post: { summary: "Envoyer un essai", description: "La même notification qu'une Relance, tout de suite, à moi seul. Rien n'est tracé : on peut recommencer.", responses: { 200: { description: "Combien sont parties" }, 422: { description: "Aucun appareil abonné" } } },

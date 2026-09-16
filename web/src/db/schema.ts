@@ -292,13 +292,20 @@ export const sujet = pgTable("sujet", {
 
 /* ------------------------------------------------------------------ les Relances qui arrivent */
 
+/** Par où une Relance arrive : le navigateur d'un ordinateur, ou l'app sur l'iPhone. */
+export const canalPushEnum = pgEnum("canal_push", ["web", "ios"]);
+
 /**
- * Un appareil qui a accepté de recevoir les Relances. Le navigateur donne l'`endpoint` (l'adresse
- * de son service de push) et deux clés qui chiffrent le contenu ; sans elles, personne d'autre ne
- * peut lire ce qu'on envoie.
+ * Un appareil qui a accepté de recevoir les Relances.
+ *
+ * Deux canaux, une seule table : c'est la même chose — « voilà où me joindre ». En `web`,
+ * `endpoint` est l'adresse du service de push du navigateur, et les deux clés chiffrent le
+ * contenu ; en `ios`, `endpoint` est le jeton APNs de l'appareil, et il n'y a pas de clés —
+ * Apple chiffre le canal lui-même. La contrainte le dit, pour qu'on ne puisse pas écrire un
+ * abonnement web à moitié.
  *
  * Un appareil par ligne : le même Membre en a souvent plusieurs (le Mac, le téléphone). L'endpoint
- * est unique — se réabonner depuis le même navigateur remplace, ça n'empile pas. Quand le service
+ * est unique — se réabonner depuis le même appareil remplace, ça n'empile pas. Quand le service
  * de push répond « cet abonnement n'existe plus », on efface la ligne : c'est la seule façon de
  * savoir qu'un appareil est parti.
  */
@@ -306,13 +313,17 @@ export const abonnementPush = pgTable("abonnement_push", {
   id: uuid("id").primaryKey().defaultRandom(),
   spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
   membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
+  canal: canalPushEnum("canal").notNull().default("web"),
   endpoint: text("endpoint").notNull(),
-  p256dh: text("p256dh").notNull(),
-  auth: text("auth").notNull(),
-  /** De quoi reconnaître l'appareil dans les Réglages : « Chrome sur Mac ». Jamais l'agent brut. */
+  p256dh: text("p256dh"),
+  auth: text("auth"),
+  /** De quoi reconnaître l'appareil dans les Réglages : « Chrome sur Mac », « iPhone ». */
   appareil: text("appareil"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-}, (t) => [unique("abonnement_push_endpoint").on(t.endpoint)]);
+}, (t) => [
+  unique("abonnement_push_endpoint").on(t.endpoint),
+  check("abonnement_push_cles_web", sql`${t.canal} <> 'web' OR (${t.p256dh} IS NOT NULL AND ${t.auth} IS NOT NULL)`),
+]);
 
 /* ------------------------------------------------------------------ qui est là */
 

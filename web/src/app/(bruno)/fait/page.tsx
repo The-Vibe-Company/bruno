@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { surLaPeriode } from "@/api/affectations";
@@ -62,13 +61,8 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
     <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Fait</h1>
-        <FiltreMembres membres={membres} retenus={[...actifs]} />
         <div className="flex-1" />
-        {/* Abandonné n'est pas fait — mais ça reste consultable, comme le dit le glossaire. */}
-        <Link href={avecAbandon ? "/fait" : "/fait?abandon=1"} scroll={false}
-          className={`text-[12.5px] ${avecAbandon ? "text-accent" : "text-texte-faible hover:text-texte"}`}>
-          {avecAbandon ? "Masquer les abandonnées" : "Voir aussi les abandonnées"}
-        </Link>
+        <FiltreMembres membres={membres} retenus={[...actifs]} />
       </header>
       <main className="min-h-0 flex-1 overflow-y-auto px-10 py-4">
         <Historique semaines={semaines} membres={visibles} fiches={fiches} />

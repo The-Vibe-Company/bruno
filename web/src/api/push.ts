@@ -9,10 +9,10 @@ import { abonnementPush } from "@/db/schema";
 import { appareils, envoyer, oublier } from "@/relances/push";
 
 type Ctx = { spaceId: string; membreId: string };
-export type Appareil = { id: string; appareil: string | null; depuis: string; endpoint: string };
+export type Appareil = { id: string; appareil: string | null; canal: "web" | "ios"; depuis: string; endpoint: string };
 
 const mesAppareils = async (ctx: Ctx): Promise<Appareil[]> =>
-  (await appareils(ctx.membreId)).map((a) => ({ id: a.id, appareil: a.appareil, depuis: a.createdAt.toISOString(), endpoint: a.endpoint }));
+  (await appareils(ctx.membreId)).map((a) => ({ id: a.id, appareil: a.appareil, canal: a.canal, depuis: a.createdAt.toISOString(), endpoint: a.endpoint }));
 
 /**
  * Poser un abonnement. Le même navigateur qui redemande renvoie le même `endpoint` : on écrase
@@ -24,6 +24,21 @@ async function poser(ctx: Ctx, e: { endpoint: string; p256dh: string; auth: stri
     .onConflictDoUpdate({
       target: abonnementPush.endpoint,
       set: { membreId: ctx.membreId, spaceId: ctx.spaceId, p256dh: e.p256dh, auth: e.auth, appareil: e.appareil ?? null },
+    });
+  return mesAppareils(ctx);
+}
+
+/**
+ * L'iPhone. Le jeton APNs tient lieu d'endpoint : il désigne une app sur un appareil, et Apple
+ * le change parfois — le même téléphone peut donc revenir sous un autre jeton. C'est pour ça
+ * qu'on remplace sur l'endpoint et qu'on nettoie sur « Unregistered ».
+ */
+async function poserIphone(ctx: Ctx, e: { jeton: string; appareil?: string | null }): Promise<Appareil[]> {
+  await db.insert(abonnementPush)
+    .values({ spaceId: ctx.spaceId, membreId: ctx.membreId, canal: "ios", endpoint: e.jeton.toLowerCase(), appareil: e.appareil ?? "iPhone" })
+    .onConflictDoUpdate({
+      target: abonnementPush.endpoint,
+      set: { membreId: ctx.membreId, spaceId: ctx.spaceId, canal: "ios", appareil: e.appareil ?? "iPhone" },
     });
   return mesAppareils(ctx);
 }
@@ -40,8 +55,8 @@ async function essai(ctx: Ctx): Promise<{ partis: number }> {
     corps: "Les Relances arriveront ici : le Point du matin, les Rappels, le Bilan.",
     tag: "essai",
   });
-  if (partis === 0) throw new ErreurApi("requete_invalide", 422, "Aucun appareil abonné : activez les notifications sur celui-ci.");
+  if (partis === 0) throw new ErreurApi("requete_invalide", 422, "Aucun appareil abonné : activez les notifications ici, ou dans l'app.");
   return { partis };
 }
 
-export const abonner = { mesAppareils, poser, retirer, essai };
+export const abonner = { mesAppareils, poser, poserIphone, retirer, essai };
