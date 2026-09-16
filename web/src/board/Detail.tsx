@@ -229,7 +229,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
               {historique.map((h) => (
                 <li key={h.id} className="flex items-baseline gap-2">
                   <span className="flex-1">« {h.raison} »</span>
-                  <span className="whitespace-nowrap text-[12.5px] text-texte-sourd">{libelleJour(h.ancienEngagement)} → {libelleJour(h.nouvelEngagement)}{h.auteur ? ` · ${h.auteur}` : ""}</span>
+                  <span className="whitespace-nowrap text-[12.5px] text-texte-sourd">{libelleJour(h.ancienEngagement)} → {libelleJour(h.nouvelEngagement)} · {h.auteur ?? "Bruno"}</span>
                 </li>
               ))}
             </ol>
