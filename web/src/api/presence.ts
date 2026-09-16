@@ -9,8 +9,8 @@ import { and, eq, gt, ne, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { affectationMembre, membre, presence, sujet, tache } from "@/db/schema";
 
-/** Trois battements manqués : on n'est plus là. Assez long pour survivre à un réseau qui hoquette. */
-const FENETRE = "15 seconds";
+/** Deux annonces manquées : on n'est plus là. Assez long pour survivre à un réseau qui hoquette. */
+const FENETRE = "20 seconds";
 
 export type Present = { membreId: string; nom: string; avatar: string | null; page: string };
 export type Pouls = { version: string; presents: Present[] };
@@ -23,30 +23,39 @@ type Ctx = { spaceId: string; membreId: string };
  * rien en coûterait trois.
  */
 async function empreinte(spaceId: string): Promise<string> {
-  const [r] = await db.select({
-    taches: sql<string>`coalesce(max(${tache.updatedAt})::text, '') || ':' || count(${tache.id})`,
-  }).from(tache).where(eq(tache.spaceId, spaceId));
-  const [b] = await db.select({
-    bandeau: sql<string>`count(*)::text || ':' || coalesce(max(${affectationMembre.fin})::text, '') || ':' || count(${affectationMembre.fin})`,
-  }).from(affectationMembre).where(eq(affectationMembre.spaceId, spaceId));
-  const [s] = await db.select({
-    sujets: sql<string>`count(*)::text || ':' || coalesce(max(${sujet.createdAt})::text, '')`,
-  }).from(sujet).where(eq(sujet.spaceId, spaceId));
-  return `${r.taches}|${b.bandeau}|${s.sujets}`;
+  // Une seule requête : elle tourne toutes les demi-secondes pour chaque personne connectée.
+  const lignes = await db.execute<{ version: string }>(sql`
+    select
+      coalesce((select max(${tache.updatedAt})::text from ${tache} where ${tache.spaceId} = ${spaceId}), '')
+      || ':' || (select count(*) from ${tache} where ${tache.spaceId} = ${spaceId})
+      || '|' || (select count(*) from ${affectationMembre} where ${affectationMembre.spaceId} = ${spaceId})
+      || ':' || coalesce((select max(${affectationMembre.fin})::text from ${affectationMembre} where ${affectationMembre.spaceId} = ${spaceId}), '')
+      || ':' || (select count(${affectationMembre.fin}) from ${affectationMembre} where ${affectationMembre.spaceId} = ${spaceId})
+      || '|' || (select count(*) from ${sujet} where ${sujet.spaceId} = ${spaceId})
+      || ':' || coalesce((select max(${sujet.createdAt})::text from ${sujet} where ${sujet.spaceId} = ${spaceId}), '')
+      as version`);
+  return lignes[0]?.version ?? "";
 }
 
+/** Qui d'autre est là. Se voir soi-même n'apprend rien : on s'exclut. */
+const lesAutres = (ctx: Ctx) =>
+  db.select({ membreId: presence.membreId, nom: membre.nom, avatar: membre.avatar, page: presence.page })
+    .from(presence).innerJoin(membre, eq(membre.id, presence.membreId))
+    .where(and(
+      eq(presence.spaceId, ctx.spaceId),
+      ne(presence.membreId, ctx.membreId),
+      gt(presence.vuLe, sql`now() - interval ${sql.raw(`'${FENETRE}'`)}`),
+    ));
+
+/** L'état du moment : ce qui a changé, et qui est là. C'est ce que le flux envoie. */
+export async function etat(ctx: Ctx): Promise<Pouls> {
+  const [version, presents] = await Promise.all([empreinte(ctx.spaceId), lesAutres(ctx)]);
+  return { version, presents };
+}
+
+/** « Je suis là, sur cette page. » Une écriture, et l'état en retour. */
 export async function battre(ctx: Ctx, page: string): Promise<Pouls> {
   await db.insert(presence).values({ membreId: ctx.membreId, spaceId: ctx.spaceId, page })
     .onConflictDoUpdate({ target: presence.membreId, set: { page, spaceId: ctx.spaceId, vuLe: sql`now()` } });
-  const [version, presents] = await Promise.all([
-    empreinte(ctx.spaceId),
-    db.select({ membreId: presence.membreId, nom: membre.nom, avatar: membre.avatar, page: presence.page })
-      .from(presence).innerJoin(membre, eq(membre.id, presence.membreId))
-      .where(and(
-        eq(presence.spaceId, ctx.spaceId),
-        ne(presence.membreId, ctx.membreId), // les autres : se voir soi-même n'apprend rien
-        gt(presence.vuLe, sql`now() - interval ${sql.raw(`'${FENETRE}'`)}`),
-      )),
-  ]);
-  return { version, presents };
+  return etat(ctx);
 }

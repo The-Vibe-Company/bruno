@@ -154,6 +154,9 @@ export function documentOpenApi() {
         patch: { summary: "Désactiver ou réactiver", description: "Le geste normal : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
         delete: { summary: "Supprimer", description: "Définitif : les périodes qui la nomment partent avec. Pour l'enlever sans trouer l'historique, désactivez-la (PATCH).", responses: { 200: { description: "La liste" } } },
       },
+      "/api/direct": {
+        get: { summary: "Le direct", description: "Un flux qui reste ouvert (SSE). Le serveur envoie l'état — empreinte et présents — dès qu'il change, et se referme au bout de quatre minutes : le navigateur rouvre seul.", responses: { 200: { description: "text/event-stream" } } },
+      },
       "/api/pouls": {
         post: { summary: "Je suis là", description: "Dit où l'on regarde, et rapporte qui d'autre est là plus une empreinte de ce qui est affiché : si elle change, la page se redemande.", requestBody: corps("Battre"), responses: { 200: { description: "Les présents et l'empreinte" } } },
       },
