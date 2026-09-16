@@ -7,6 +7,7 @@ import { sessionCourante } from "@/auth/serveur";
 import { Affectations } from "@/board/Affectations";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
+import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import { Hier, type TacheFinie } from "@/daily/Hier";
 import { Sante } from "@/daily/Sante";
 import { SurLeFeu, type TacheDuJour } from "@/daily/SurLeFeu";
@@ -18,8 +19,9 @@ import { instant } from "@/relances/temps";
 export const dynamic = "force-dynamic";
 
 /**
- * Le Daily : l'interface de la réunion du matin. Lecture seule, projetable, une seule page.
- * Aucune donnée nouvelle — il n'agrège que ce qui existe déjà.
+ * Le Daily : l'interface de la réunion du matin, projetable, une seule page. Il n'invente aucune
+ * donnée — il montre ce qui existe. La colonne d'hier se lit ; celles du jour se travaillent :
+ * c'est pendant le Daily qu'on coche, qu'on ouvre une fiche et qu'on ajoute ce qui vient de sortir.
  */
 export default async function Daily({ searchParams }: { searchParams: Promise<{ membres?: string }> }) {
   const session = await sessionCourante();
@@ -41,7 +43,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   ]);
   const parId = new Map(membres.map((m) => [m.id, m]));
   const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
-  const actifs = membresActifs(filtre, membres);
+  const actifs = membresActifs(await filtreMembres(filtre), membres);
   const deLui = <T extends { membreId: string }>(l: T[]) => l.filter((m) => actifs.has(m.membreId));
   // Abandonné n'est pas fait : le Daily dit ce qui a avancé, pas ce qu'on a enterré.
   const tachesHier: TacheFinie[] = finies
@@ -49,22 +51,26 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
     .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigne: t.assigneId ? personne(t.assigneId) : null }));
   const tachesFeu: TacheDuJour[] = feu.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement, reportsCount: t.reportsCount,
-    assigne: t.assigneId ? personne(t.assigneId) : null, raisonBlocage: t.raisonBlocage,
+    assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
+    aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
   }));
+  // Ce qu'on ajoute au Daily revient à la personne qu'on regarde — à moi quand on les regarde tous.
+  const assigneParDefaut = actifs.size === 1 ? [...actifs][0] : session.membreId;
 
   return (
     <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Daily</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong(jour)}</span>
-        <FiltreMembres membres={membres} />
+        <FiltreMembres membres={membres} retenus={[...actifs]} />
         <div className="flex-1" />
         <Sante aTrier={sante.aTrier} reportees={sante.reportees} seuil={SEUIL_SIGNAL} />
       </header>
       <Affectations membres={deLui(dujour)} projets={deLui(projetsDuJour)} moiId="" choix={[]} lectureSeule />
       <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden">
         <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} />
-        <SurLeFeu taches={tachesFeu} />
+        <SurLeFeu taches={tachesFeu} membres={membres} assigneParDefaut={assigneParDefaut} />
       </main>
     </>
   );

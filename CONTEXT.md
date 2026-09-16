@@ -122,6 +122,12 @@ ratée, une transcription incompréhensible. Rien à voir avec Abandonné, qui e
 décision. Supprimer n'enregistre rien : la Tâche n'a jamais eu lieu.
 _Avoid_: Archiver, corbeille, effacer
 
+**Présence**:
+Qui regarde Bruno en ce moment, et sur quelle page. Périssable : elle se perd au bout de
+quelques secondes sans signe de vie. Elle ne dit pas ce que la personne fait — seulement
+qu'elle est là, pour qu'on sache avec qui l'on travaille.
+_Avoid_: statut, connecté, en ligne
+
 ### Les affectations
 
 **Affectation**:
