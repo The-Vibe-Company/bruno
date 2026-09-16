@@ -1,0 +1,26 @@
+web/src/app/(bruno)/daily/page.tsx
+  s_09427aeab13931::t_3076cc438d816e 65
+  s_09427aeab13931::t_da5330e1d62d0a 5,32
+web/src/app/globals.css
+  s_09427aeab13931::t_102e87ababbf82 217-225,230-231,233-234
+web/src/app/(bruno)/page.tsx
+  s_09427aeab13931::t_3076cc438d816e 82
+web/src/app/(bruno)/fait/page.tsx
+  s_09427aeab13931::t_3076cc438d816e 65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "660f349d932b7af90846b4e9a00e4c447e32a5ab",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
