@@ -2,7 +2,7 @@
  * Les opérations sur les Tâches. Toute la logique métier vit ici ; les routes ne font que
  * valider l'entrée, appeler ces fonctions et sérialiser la sortie.
  */
-import { and, asc, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import { FUSEAU } from "@/relances/temps";
 import { z } from "zod";
 import { db } from "@/db/client";
@@ -268,6 +268,52 @@ export async function reporter(ctx: Ctx, id: string, entree: z.infer<typeof C.Re
     });
     return obtenir(ctx, id);
   });
+}
+
+/**
+ * Le glissement du matin : une Tâche Sur le feu qu'on devait finir avant aujourd'hui revient sur
+ * la table du jour, et **compte un Report**.
+ *
+ * Bruno ne bougeait rien tout seul : l'Engagement restait au jour dit, et il fallait quelqu'un,
+ * avec une raison, pour le déplacer. Antoine a tranché autrement le 16 septembre 2026 — ce qui
+ * n'a pas été fait revient de soi-même. Le Report qui l'accompagne n'est pas une punition : c'est
+ * ce qui fait qu'une Tâche qui glisse trois fois finit par se dire au Point du matin, au lieu de
+ * vieillir en silence.
+ *
+ * Deux garde-fous. **Jamais le week-end** : personne ne travaille, donc rien ne glisse — un
+ * Engagement du vendredi arrive au lundi avec un seul Report, pas trois. Et c'est **idempotent
+ * par construction** : une fois posé à aujourd'hui, l'Engagement n'est plus antérieur au jour,
+ * le cron peut repasser tous les quarts d'heure.
+ */
+export const RAISON_GLISSEMENT = "pas fait le jour dit";
+
+export async function glisser(jour: string, spaceId?: string): Promise<{ glissees: number }> {
+  const restees = await db.select({ id: tache.id, spaceId: tache.spaceId, engagement: tache.engagement })
+    .from(tache)
+    .where(and(
+      eq(tache.bucket, "sur_le_feu"),
+      isNull(tache.etatTerminal),
+      lt(tache.engagement, jour),
+      spaceId ? eq(tache.spaceId, spaceId) : undefined,
+    ));
+  if (!restees.length) return { glissees: 0 };
+
+  // Le Report et le compteur dans la même transaction : jamais l'un sans l'autre (règle 11).
+  await db.transaction(async (tx) => {
+    await tx.insert(report).values(restees.map((t) => ({
+      spaceId: t.spaceId,
+      tacheId: t.id,
+      // Personne ne l'a reporté : c'est le temps qui a passé. La fiche l'écrit « Bruno ».
+      auteurId: null,
+      raison: RAISON_GLISSEMENT,
+      ancienEngagement: t.engagement!,
+      nouvelEngagement: jour,
+    })));
+    await tx.update(tache)
+      .set({ engagement: jour, reportsCount: sql`${tache.reportsCount} + 1`, updatedAt: new Date() })
+      .where(inArray(tache.id, restees.map((t) => t.id)));
+  });
+  return { glissees: restees.length };
 }
 
 /** L'historique des Reports d'une Tâche — visible de tous, avec qui a reporté et pourquoi (règle 11). */

@@ -38,9 +38,12 @@ toutes les 15 minutes ; `?apercu=1&quand=2026-09-08T09:15` rejoue un instant san
 - [x] **Bilan** : *« Tu devais finir X. N autres engagements encore ouverts. »* — la première par Rang
 - [x] Les Tâches **Bloqué sont exclues** des Rappels et du Bilan *(règle 16)* — et mentionnées au
       Point du matin
-- [x] **Aucune Relance le samedi ni le dimanche** *(règle 15)*. Un Engagement du week-end est
-      simplement « ≤ aujourd'hui » le lundi : il glisse sans Report, et sans écriture — rien ne
-      bouge tout seul
+- [x] **Aucune Relance le samedi ni le dimanche** *(règle 15)* — et rien ne glisse non plus : un
+      Engagement du vendredi arrive au lundi avec **un** Report, pas trois
+- [x] **Le glissement du matin** (16 septembre 2026) : une Tâche Sur le feu qu'on devait finir
+      avant aujourd'hui revient au jour même, et compte un Report sans auteur (« pas fait le jour
+      dit »). Antoine l'a demandé ainsi ; auparavant l'Engagement restait au jour dit et rien ne
+      bougeait sans qu'un humain donne une raison
 - [x] Aucun mode vacances *(règle 17)*
 - [x] Rien à envoyer ⇒ **rien n'est envoyé**
 - [x] **Jamais deux fois** : une table `relance_envoyee` (Membre × jour × Créneau, unique) fait

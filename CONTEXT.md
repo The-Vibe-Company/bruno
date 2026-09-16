@@ -164,9 +164,13 @@ Report explicite. Il vaut le jour même par défaut quand une Tâche entre Sur l
 _Avoid_: Échéance, deadline, due date, date limite
 
 **Report**:
-L'acte de repousser l'Engagement d'une Tâche. Toujours explicite, toujours motivé par une
-raison écrite, jamais silencieux. Le nombre de Reports d'une Tâche est visible de tous —
-c'est le seul indicateur de santé de Bruno.
+L'acte de repousser l'Engagement d'une Tâche. Toujours motivé par une raison écrite, jamais
+silencieux. Le nombre de Reports d'une Tâche est visible de tous — c'est le seul indicateur de
+santé de Bruno.
+
+Presque toujours le geste de quelqu'un. L'exception est le **glissement du matin** : une Tâche
+Sur le feu qu'on devait finir avant aujourd'hui revient au jour même avec un Report sans auteur,
+« pas fait le jour dit ». Elle ne disparaît donc pas du jour, et ce qui glisse se compte.
 _Avoid_: Snooze, reporter à plus tard, décaler, ajourner
 
 **Relance**:

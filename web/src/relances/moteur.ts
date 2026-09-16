@@ -7,6 +7,7 @@ import { natures } from "@/api/creneaux";
 import { db } from "@/db/client";
 import { affectation, affectationMembre, creneau, membre, relanceEnvoyee, tache } from "@/db/schema";
 import { generer } from "@/recurrences/moteur";
+import { glisser } from "@/api/taches";
 import { composer, type Message, type Nature, type Situation } from "./composer";
 import { joursEntre } from "@/lib/dates";
 import { estJourOuvre, instant, type Instant } from "./temps";
@@ -57,9 +58,13 @@ export async function relancesDues(i: Instant = instant(), spaceId?: string): Pr
 
 /**
  * Livre ce qui est dû, une fois et une seule : la trace en base fait barrage à tout doublon.
- * Les Récurrences du jour sont fabriquées d'abord, pour que le Point du matin les voie (BRU-33).
+ *
+ * Deux choses passent avant, pour que le Point du matin dise le vrai : ce qui n'a pas été fait
+ * glisse sur aujourd'hui, et les Récurrences du jour sont fabriquées (BRU-33).
  */
-export async function relancer(livreur: Livreur = livreurJournal, i: Instant = instant(), spaceId?: string): Promise<{ dues: number; envoyees: number; dejaEnvoyees: number; generees: number }> {
+export async function relancer(livreur: Livreur = livreurJournal, i: Instant = instant(), spaceId?: string): Promise<{ dues: number; envoyees: number; dejaEnvoyees: number; generees: number; glissees: number }> {
+  // Le week-end ne fait rien glisser : `relancer` n'y va pas non plus (voir plus bas).
+  const { glissees } = estJourOuvre(i) ? await glisser(i.jour, spaceId) : { glissees: 0 };
   const { taches: generees } = await generer(i, spaceId);
   const dues = await relancesDues(i, spaceId);
   let envoyees = 0, dejaEnvoyees = 0;
@@ -71,7 +76,7 @@ export async function relancer(livreur: Livreur = livreurJournal, i: Instant = i
     await livreur.livrer(r);
     envoyees++;
   }
-  return { dues: dues.length, envoyees, dejaEnvoyees, generees };
+  return { dues: dues.length, envoyees, dejaEnvoyees, generees, glissees };
 }
 
 /** Pour le Daily et le dépannage : ce qui est parti aujourd'hui. */
