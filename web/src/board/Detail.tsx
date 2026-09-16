@@ -3,6 +3,7 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import { libelleJour } from "@/lib/dates";
+import { Calendrier, IconeCalendrier } from "./Calendrier";
 import type { Patch } from "./api";
 import type { Membre, TacheCarte } from "./Carte";
 import { Chevron, Choix } from "./Choix";
@@ -175,17 +176,17 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
               ) : surLeFeu ? (
                 <>
                   {tache.engagement ? libelleJour(tache.engagement) : "—"}
-                  {tache.engagement && <button onClick={() => onReporter?.(tache)} className="text-[12.5px] text-texte-sourd hover:text-texte">par un Report</button>}
+                  {tache.engagement && <button onClick={() => onReporter?.(tache)} className="text-[12.5px] text-texte-sourd hover:text-texte">Reporter</button>}
                 </>
               ) : (
                 <>
-                  <span className="relative flex h-7 items-center gap-1.5 rounded-md px-1 hover:bg-surface-2">
-                    <span className={tache.engagement ? "" : "text-texte-faible"}>{tache.engagement ? libelleJour(tache.engagement) : "quand ?"}</span>
-                    <Chevron />
-                    <input type="date" value={tache.engagement ?? ""} onChange={(e) => onModifier(tache.id, { engagement: e.target.value || null })} aria-label="Engagement"
-                      className="absolute inset-0 cursor-pointer opacity-0 [color-scheme:dark]" />
-                  </span>
-                  {tache.engagement && <button onClick={() => onModifier(tache.id, { engagement: null })} className="text-[12.5px] text-texte-sourd hover:text-texte">retirer</button>}
+                  <Calendrier valeur={tache.engagement} onChoisir={(jour) => onModifier(tache.id, { engagement: jour })}
+                    onEffacer={tache.engagement ? () => onModifier(tache.id, { engagement: null }) : undefined}>
+                    <button type="button" aria-label="Engagement" className="flex h-7 items-center gap-1.5 rounded-md px-1.5 hover:bg-surface-2">
+                      <IconeCalendrier />
+                      <span className={tache.engagement ? "" : "text-texte-faible"}>{tache.engagement ? libelleJour(tache.engagement) : "quand ?"}</span>
+                    </button>
+                  </Calendrier>
                 </>
               )}
             </dd>

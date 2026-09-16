@@ -2,6 +2,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { aujourdhui, demain, lundiProchain } from "@/lib/dates";
+import { Calendrier, IconeCalendrier } from "./Calendrier";
 
 export type DemandeAVenir = { id: string; titre: string } | null;
 
@@ -34,11 +35,14 @@ export function PourQuand({ demande, onConfirmer, onAnnuler }: {
             <div className="flex gap-2">
               <Choix libelle="demain" sous={libelleLongCourt(demain())} valeur={demain()} occupe={occupe} onChoisir={choisir} />
               <Choix libelle="lundi" sous={libelleLongCourt(lundiProchain())} valeur={lundiProchain()} occupe={occupe} onChoisir={choisir} />
-              <label className="flex h-[54px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl border border-bord-fort text-[15px] font-medium hover:border-accent">
-                autre
-                <input type="date" min={aujourdhui()} value={autre} onChange={(e) => { setAutre(e.target.value); if (e.target.value) choisir(e.target.value); }}
-                  aria-label="Autre date" className="w-24 bg-transparent text-center text-[12.5px] font-normal text-texte-sourd outline-none [color-scheme:dark]" />
-              </label>
+              <Calendrier valeur={autre || null} min={aujourdhui()} align="end"
+                onChoisir={(jour) => { setAutre(jour); choisir(jour); }}>
+                <button type="button" disabled={occupe} aria-label="Autre date"
+                  className="flex h-[54px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl border border-bord-fort text-[15px] font-medium hover:border-accent disabled:opacity-60">
+                  <span className="flex items-center gap-1.5">autre<IconeCalendrier /></span>
+                  {autre && <span className="text-[12.5px] font-normal text-texte-sourd">{libelleLongCourt(autre)}</span>}
+                </button>
+              </Calendrier>
             </div>
           </div>
           <div className="flex items-center justify-between">

@@ -86,3 +86,31 @@ export function libelleSemaine(lundi: string): string {
 export function libelleDate(jour: string): string {
   return new Date(jour + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "UTC" });
 }
+
+/** Le mois d'un jour, au premier : « 2026-09-17 » → « 2026-09-01 ». */
+export const moisDe = (jour: string): string => `${jour.slice(0, 7)}-01`;
+
+/** Le mois d'avant, le mois d'après — en restant sur le 1er, qui existe tous les mois. */
+export function decalerMois(mois: string, n: number): string {
+  const total = +mois.slice(0, 4) * 12 + (+mois.slice(5, 7) - 1) + n;
+  return `${String(Math.floor(total / 12)).padStart(4, "0")}-${String((total % 12) + 1).padStart(2, "0")}-01`;
+}
+
+/** « septembre 2026 », pour l'en-tête du calendrier. */
+export const libelleMois = (mois: string): string =>
+  new Date(mois + "T12:00:00Z").toLocaleDateString("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" });
+
+/**
+ * Les six semaines d'un calendrier, lundi en tête. Six et pas cinq : un mois de 31 jours qui
+ * commence un dimanche en occupe six, et une grille qui change de hauteur d'un mois à l'autre
+ * fait sauter le reste de la fenêtre.
+ *
+ * Les jours des mois voisins y sont : une grille trouée se lit moins bien qu'une grille grise.
+ */
+export function grilleDuMois(mois: string): string[][] {
+  const premier = new Date(mois + "T12:00:00Z");
+  const depuisLundi = (premier.getUTCDay() + 6) % 7; // 0 = lundi
+  const debut = decale(-depuisLundi, premier.toISOString().slice(0, 10));
+  return Array.from({ length: 6 }, (_, semaine) =>
+    Array.from({ length: 7 }, (_, jour) => decale(semaine * 7 + jour, debut)));
+}

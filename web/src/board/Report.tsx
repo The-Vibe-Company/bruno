@@ -2,6 +2,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { aujourdhui, demain, libelleJour, libelleReport, lundiProchain } from "@/lib/dates";
+import { Calendrier, IconeCalendrier } from "./Calendrier";
 
 export type DemandeReport = { id: string; titre: string; reportsCount: number } | null;
 const RAISONS = ["pas eu le temps", "bloqué par quelqu’un", "plus prioritaire"];
@@ -78,11 +79,13 @@ export function Report({ demande, onReporter, onAbandonner, onAnnuler }: {
                   {c.libelle}<span className="text-[12.5px] font-normal text-texte-sourd">{c.sous}</span>
                 </button>
               ))}
-              <label className={`flex h-[54px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl border text-[15.5px] font-medium ${autre ? "border-accent bg-accent-voile" : "border-bord-fort"}`}>
-                autre
-                <input type="date" min={aujourdhui()} value={autre ? quand : ""} onChange={(e) => e.target.value && setQuand(e.target.value)} aria-label="Autre date"
-                  className="w-24 bg-transparent text-center text-[12.5px] font-normal text-texte-sourd outline-none [color-scheme:dark]" />
-              </label>
+              <Calendrier valeur={autre ? quand : null} min={aujourdhui()} onChoisir={setQuand} align="end">
+                <button type="button" aria-label="Autre date"
+                  className={`flex h-[54px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl border text-[15.5px] font-medium ${autre ? "border-accent bg-accent-voile" : "border-bord-fort hover:border-accent"}`}>
+                  <span className="flex items-center gap-1.5">autre<IconeCalendrier /></span>
+                  {autre && <span className="text-[12.5px] font-normal text-texte-sourd">{libelleCourt(quand)}</span>}
+                </button>
+              </Calendrier>
             </div>
           </div>
 
