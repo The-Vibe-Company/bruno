@@ -214,17 +214,24 @@ body {
   @keyframes voile-entre { from { opacity: 0 } to { opacity: 1 } }
   @keyframes voile-sort  { from { opacity: 1 } to { opacity: 0 } }
 
-  /* Les boîtes sont centrées par une translation : l'animation doit la reprendre, sinon elles sautent. */
-  @keyframes boite-entre { from { opacity: 0; transform: translate(-50%, -48%) scale(.97) } to { opacity: 1; transform: translate(-50%, -50%) scale(1) } }
-  @keyframes boite-sort  { from { opacity: 1; transform: translate(-50%, -50%) scale(1) } to { opacity: 0; transform: translate(-50%, -49%) scale(.98) } }
+  /*
+   * Les boîtes sont centrées par `translate: -50% -50%` (c'est ce que Tailwind v4 écrit, la
+   * propriété à part, pas un `transform`). Une animation qui touche à `transform` s'ajoutait donc
+   * au centrage au lieu de le remplacer : la boîte apparaissait une demi-largeur trop à gauche,
+   * puis sautait à sa place à la fin de l'animation — et repartait pareil en se fermant.
+   * On n'anime que l'échelle, et le centrage n'est plus jamais en jeu.
+   */
+  @keyframes boite-entre { from { opacity: 0; scale: .97 } to { opacity: 1; scale: 1 } }
+  @keyframes boite-sort  { from { opacity: 1; scale: 1 } to { opacity: 0; scale: .98 } }
 
   @keyframes panneau-entre { from { transform: translateX(100%) } to { transform: translateX(0) } }
   @keyframes panneau-sort  { from { transform: translateX(0) } to { transform: translateX(100%) } }
 
-  @keyframes bulle-entre { from { opacity: 0; transform: scale(.96) } to { opacity: 1; transform: scale(1) } }
-  @keyframes bulle-sort  { from { opacity: 1; transform: scale(1) } to { opacity: 0; transform: scale(.98) } }
+  @keyframes bulle-entre { from { opacity: 0; scale: .96 } to { opacity: 1; scale: 1 } }
+  @keyframes bulle-sort  { from { opacity: 1; scale: 1 } to { opacity: 0; scale: .98 } }
 
-  @keyframes toast-entre { from { opacity: 0; transform: translate(-50%, 8px) } to { opacity: 1; transform: translate(-50%, 0) } }
+  /* Le bandeau du bas est centré de la même façon : on anime la même propriété, pas une autre. */
+  @keyframes toast-entre { from { opacity: 0; translate: -50% 8px } to { opacity: 1; translate: -50% 0 } }
 
   .anime-voile[data-state="open"]    { animation: voile-entre 160ms ease-out }
   .anime-voile[data-state="closed"]  { animation: voile-sort 130ms ease-in }

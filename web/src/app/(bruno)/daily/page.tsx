@@ -2,14 +2,13 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { auJour, enCours } from "@/api/affectations";
 import { auJour as projetsAuJour, enCours as projetsEnCours } from "@/api/projets";
-import { SEUIL_SIGNAL, lister, signaux, terminees } from "@/api/taches";
+import { lister, terminees } from "@/api/taches";
 import { sessionCourante } from "@/auth/serveur";
 import { Affectations } from "@/board/Affectations";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import { Hier, type TacheFinie } from "@/daily/Hier";
-import { Sante } from "@/daily/Sante";
 import { SurLeFeu, type TacheDuJour } from "@/daily/SurLeFeu";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
@@ -30,8 +29,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   const { jour } = instant();
   const hier = jourOuvrePrecedent(jour);
 
-  const [sante, dujour, projetsDuJour, delaVeille, projetsDeLaVeille, finies, feu, membres] = await Promise.all([
-    signaux(session),
+  const [dujour, projetsDuJour, delaVeille, projetsDeLaVeille, finies, feu, membres] = await Promise.all([
     enCours(session),
     projetsEnCours(session),
     auJour(session, hier),
@@ -63,9 +61,8 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Daily</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong(jour)}</span>
-        <FiltreMembres membres={membres} retenus={[...actifs]} />
         <div className="flex-1" />
-        <Sante aTrier={sante.aTrier} reportees={sante.reportees} seuil={SEUIL_SIGNAL} />
+        <FiltreMembres membres={membres} retenus={[...actifs]} />
       </header>
       <Affectations membres={deLui(dujour)} projets={deLui(projetsDuJour)} moiId="" choix={[]} lectureSeule />
       <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden">

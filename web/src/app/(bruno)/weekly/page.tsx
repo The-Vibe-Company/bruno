@@ -64,7 +64,6 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
           {lundi === courante && <span className="ml-1 text-[11.5px] text-texte-faible">en cours</span>}
         </span>
         <div className="flex-1" />
-        <span className="text-[12.5px] text-texte-faible">Un lien collé devient cliquable — un skill, par exemple.</span>
       </header>
 
       {/* Qui est sur quoi : la réunion commence par là. Une semaine passée se lit, ne se change pas. */}

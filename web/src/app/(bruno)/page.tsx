@@ -78,8 +78,8 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Sur le feu</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong()}</span>
-        <FiltreMembres membres={membres} retenus={[...actifs]} />
         <div className="flex-1" />
+        <FiltreMembres membres={membres} retenus={[...actifs]} />
       </header>
       {/* Le bandeau suit le filtre : filtrer sur Antoine et lire les trois n'aurait pas de sens.
           Personne de retenu, pas de bandeau — une bande vide n'apprend rien. */}
