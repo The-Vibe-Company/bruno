@@ -10,6 +10,13 @@
  */
 export const AUCUN = "aucun";
 
+/**
+ * Le dernier choix, gardé d'une page à l'autre. Sans lui, filtrer sur Antoine dans le Daily puis
+ * passer Sur le feu rallumait tout le monde : le filtre avait l'air de ne pas tenir.
+ * L'URL passe devant quand elle dit quelque chose — un lien partagé montre ce qu'il promet.
+ */
+export const COOKIE_MEMBRES = "bruno_membres";
+
 export function membresActifs(param: string | undefined, membres: { id: string }[], defaut?: string[]): Set<string> {
   if (param === AUCUN) return new Set();
   const ids = new Set(membres.map((m) => m.id));

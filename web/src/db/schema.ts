@@ -313,3 +313,21 @@ export const abonnementPush = pgTable("abonnement_push", {
   appareil: text("appareil"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [unique("abonnement_push_endpoint").on(t.endpoint)]);
+
+/* ------------------------------------------------------------------ qui est là */
+
+/**
+ * Qui regarde Bruno en ce moment, et quelle page. Une ligne par Membre, réécrite à chaque pouls :
+ * la présence est une information périssable, elle ne s'accumule pas.
+ *
+ * Personne ne se « déconnecte » proprement — on ferme un onglet, on ferme un Mac. C'est donc
+ * l'ancienneté du dernier pouls qui décide : passé trois battements manqués, la personne n'est
+ * plus là.
+ */
+export const presence = pgTable("presence", {
+  membreId: uuid("membre_id").primaryKey().references(() => membre.id, { onDelete: "cascade" }),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  /** Le chemin regardé — « /daily ». De quoi dire « Stan est sur le Daily », rien de plus. */
+  page: text("page").notNull(),
+  vuLe: timestamp("vu_le", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("presence_par_space").on(t.spaceId, t.vuLe)]);

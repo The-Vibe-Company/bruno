@@ -7,6 +7,7 @@ import { terminees } from "@/api/taches";
 import { sessionCourante } from "@/auth/serveur";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
+import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
 import type { TacheFiche } from "@/board/Detail";
@@ -35,7 +36,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
     terminees(session, "2000-01-01", jour),
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
   ]);
-  const actifs = membresActifs(filtre, membres);
+  const actifs = membresActifs(await filtreMembres(filtre), membres);
   const visibles = membres.filter((m) => actifs.has(m.id));
   const taches = finies.filter((t) => t.assigneId && actifs.has(t.assigneId) && (avecAbandon || t.etatTerminal === "termine"));
 
@@ -61,7 +62,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
     <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Fait</h1>
-        <FiltreMembres membres={membres} />
+        <FiltreMembres membres={membres} retenus={[...actifs]} />
         <div className="flex-1" />
         {/* Abandonné n'est pas fait — mais ça reste consultable, comme le dit le glossaire. */}
         <Link href={avecAbandon ? "/fait" : "/fait?abandon=1"} scroll={false}

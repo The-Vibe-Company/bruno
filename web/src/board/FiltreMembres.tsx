@@ -1,42 +1,51 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
-import { AUCUN, membresActifs } from "@/lib/filtre-membres";
+import { AUCUN } from "@/lib/filtre-membres";
+import { retenirMembres } from "@/lib/filtre-membres-client";
 
 /**
  * Les visages de chacun, actif ou inactif au clic. Le même filtre sur Sur le feu, le Daily et
- * Fait, à droite de la date, porté par l'URL.
+ * Fait, à droite de la date.
+ *
+ * C'est le **serveur** qui dit qui est retenu (`retenus`) : lui seul connaît l'URL, le cookie et
+ * le défaut de la page. Le composant n'a plus à le deviner — c'est ce qui faisait rallumer tout
+ * le monde en changeant d'onglet.
  *
  * Qui est retenu porte un **anneau d'accent** ; les autres passent en gris et rapetissent d'un
  * cheveu. Une simple différence d'opacité ne se voyait pas : on ne savait pas qui était filtré.
  */
-export function FiltreMembres({ membres, defaut }: { membres: { id: string; nom: string; avatar?: string | null }[]; defaut?: string[] }) {
+export function FiltreMembres({ membres, retenus }: {
+  membres: { id: string; nom: string; avatar?: string | null }[];
+  retenus: string[];
+}) {
   const router = useRouter(); const chemin = usePathname(); const params = useSearchParams();
   const [, demarrer] = useTransition();
   /**
    * L'anneau bouge tout de suite, la page suit. Avant, le clic attendait l'aller-retour vers le
    * serveur avant que quoi que ce soit change à l'écran — et le serveur est à Washington.
    */
-  const brut = params.get("membres");
-  const [actifs, setActifs] = useState(() => membresActifs(brut ?? undefined, membres, defaut));
-  const [base, setBase] = useState(brut);
-  if (base !== brut) { setBase(brut); setActifs(membresActifs(brut ?? undefined, membres, defaut)); }
-  /** Revenir au défaut, c'est retirer le paramètre : l'URL ne porte que ce qui s'écarte de lui. */
-  const parDefaut = new Set(defaut?.length ? defaut : membres.map((m) => m.id));
-  const memeQueLeDefaut = (s: Set<string>) => s.size === parDefaut.size && [...s].every((id) => parDefaut.has(id));
+  const venuDuServeur = retenus.join(",");
+  const [actifs, setActifs] = useState(() => new Set(retenus));
+  const [base, setBase] = useState(venuDuServeur);
+  if (base !== venuDuServeur) { setBase(venuDuServeur); setActifs(new Set(retenus)); }
+
   const poser = (suivant: Set<string>) => {
     setActifs(suivant);
-    const p = new URLSearchParams(params.toString());
     // Éteindre tout le monde est un choix, pas l'absence de choix : l'URL le dit, l'écran se vide.
-    if (memeQueLeDefaut(suivant)) p.delete("membres");
-    else p.set("membres", suivant.size === 0 ? AUCUN : [...suivant].join(","));
-    const url = p.size ? `${chemin}?${p}` : chemin;
-    setBase(p.get("membres"));
-    demarrer(() => router.replace(url));
+    const choix = suivant.size === 0 ? AUCUN : [...suivant].join(",");
+    const p = new URLSearchParams(params.toString());
+    p.set("membres", choix);
+    setBase(choix);
+    // Le cookie est ce que les autres pages liront ; `refresh` vide le cache du routeur, sinon
+    // l'onglet d'à côté sortirait tel qu'il était avant le clic.
+    retenirMembres(choix);
+    demarrer(() => { router.replace(`${chemin}?${p}`); router.refresh(); });
   };
   /** Un clic bascule ; ⌘-clic (ou Ctrl) garde celui-là seul. */
   const basculer = (id: string) => { const s = new Set(actifs); if (s.has(id)) s.delete(id); else s.add(id); poser(s); };
   const seul = (id: string) => poser(new Set([id]));
+
   return (
     <div role="group" aria-label="Membres" className="flex items-center gap-3">
       {membres.map((m) => {

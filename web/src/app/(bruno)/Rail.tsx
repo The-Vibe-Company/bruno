@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { Pouls } from "./Pouls";
 
 /**
  * Le rail de gauche. Il vit dans le layout : il ne se re-rend pas quand on change de page, et
@@ -48,7 +49,10 @@ export function Rail({ initiale, avatar }: { initiale: string; avatar?: string |
           <Infobulle>{e.libelle}</Infobulle>
         </Link>
       ))}
-      <Link href="/reglages" prefetch aria-label="Mon compte" className="group relative mt-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-bord-faible text-xs font-medium">
+      {/* Qui d'autre est là, juste au-dessus de soi : le rail est la seule chose qui ne change jamais de page. */}
+      <div className="mt-auto" />
+      <Pouls />
+      <Link href="/reglages" prefetch aria-label="Mon compte" className="group relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-bord-faible text-xs font-medium">
         <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
           {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}
           {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initiale}

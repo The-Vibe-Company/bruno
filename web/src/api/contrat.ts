@@ -118,6 +118,11 @@ export const ModifierMoi = z.object({
   avatar: z.string().regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Une image, en data URL").max(200_000, "Trop lourde : 160 px suffisent").nullable(),
 });
 
+/* ------------------------------------------------------------------ qui est là */
+
+/** Le pouls dit d'où il bat : un chemin de l'application, rien d'autre. */
+export const Battre = z.object({ page: z.string().trim().regex(/^\/[a-z0-9/-]*$/i, "Un chemin").max(100) });
+
 /* ------------------------------------------------------------------ les Relances qui arrivent */
 
 /** Ce que le navigateur donne quand on accepte les notifications : une adresse et deux clés. */

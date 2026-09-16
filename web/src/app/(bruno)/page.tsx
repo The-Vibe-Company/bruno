@@ -5,6 +5,7 @@ import { enCours as projetsEnCours, lister as listerProjets } from "@/api/projet
 import { Affectations } from "@/board/Affectations";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
+import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import type { TacheAttente, TacheFinie } from "@/board/EnAttente";
 import { sessionCourante } from "@/auth/serveur";
 import { db } from "@/db/client";
@@ -41,7 +42,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
   const parId = new Map(membres.map((m) => [m.id, m]));
   const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
   // Sur le Board, on arrive pour son propre travail : par défaut, moi seul.
-  const actifs = membresActifs(filtre, membres, [session.membreId]);
+  const actifs = membresActifs(await filtreMembres(filtre), membres, [session.membreId]);
   const cartes: TacheCarte[] = taches.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
     reportsCount: t.reportsCount, assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
@@ -77,7 +78,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
         <h1 className="text-[17px] font-medium tracking-tight">Sur le feu</h1>
         <span className="text-[13px] text-texte-sourd">{libelleLong()}</span>
-        <FiltreMembres membres={membres} defaut={[session.membreId]} />
+        <FiltreMembres membres={membres} retenus={[...actifs]} />
         <div className="flex-1" />
       </header>
       {/* Le bandeau suit le filtre : filtrer sur Antoine et lire les trois n'aurait pas de sens.

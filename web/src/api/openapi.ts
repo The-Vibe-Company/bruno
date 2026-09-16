@@ -14,7 +14,7 @@ const composants = {
   Reordonner: C.Reordonner, Reporter: C.Reporter,
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
-  AbonnerAppareil: C.AbonnerAppareil,
+  AbonnerAppareil: C.AbonnerAppareil, Battre: C.Battre,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
   Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
@@ -153,6 +153,9 @@ export function documentOpenApi() {
         parameters: [idTache],
         patch: { summary: "Désactiver ou réactiver", description: "Le geste normal : l'historique ne doit pas se trouer.", requestBody: corps("ActiverAffectation"), responses: { 200: { description: "La liste" } } },
         delete: { summary: "Supprimer", description: "Définitif : les périodes qui la nomment partent avec. Pour l'enlever sans trouer l'historique, désactivez-la (PATCH).", responses: { 200: { description: "La liste" } } },
+      },
+      "/api/pouls": {
+        post: { summary: "Je suis là", description: "Dit où l'on regarde, et rapporte qui d'autre est là plus une empreinte de ce qui est affiché : si elle change, la page se redemande.", requestBody: corps("Battre"), responses: { 200: { description: "Les présents et l'empreinte" } } },
       },
       "/api/push/abonnements": {
         get: { summary: "Mes appareils abonnés", description: "Ceux qui recevront mes Relances en notification.", responses: { 200: { description: "Les appareils" } } },
