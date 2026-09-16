@@ -2,6 +2,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { aujourdhui, libelleJour, libelleLong } from "@/lib/dates";
+import { Calendrier, IconeCalendrier } from "./Calendrier";
 import { RAISONS_BLOCAGE } from "./raisons-blocage";
 import { Chevron, Choix } from "./Choix";
 import { Initiale } from "./visuel";
@@ -71,11 +72,13 @@ export function DroitEntree({ demande, membres, moiId, onConfirmer, onAnnuler }:
             </label>
             <label className="flex flex-col gap-1.5 text-[13px] text-texte-sourd">
               Engagement
-              <span className="flex h-11 items-center justify-between rounded-lg border border-bord-fort bg-fond px-3 text-[15.5px] text-texte">
-                <span className="flex-1">{libelleLong(engagement)}</span>
-                <input type="date" value={engagement} min={aujourdhui()} onChange={(e) => e.target.value && setEngagement(e.target.value)} className="w-8 bg-transparent text-transparent outline-none [color-scheme:dark]" aria-label="Choisir une date" />
-                <span className="text-[13px] text-texte-faible">{libelleJour(engagement)}</span>
-              </span>
+              <Calendrier valeur={engagement} min={aujourdhui()} onChoisir={setEngagement}>
+                <button type="button" className="flex h-11 items-center gap-2 rounded-lg border border-bord-fort bg-fond px-3 text-left text-[15.5px] text-texte hover:border-bord">
+                  <IconeCalendrier />
+                  <span className="flex-1 first-letter:uppercase">{libelleLong(engagement)}</span>
+                  <span className="text-[13px] text-texte-faible">{libelleJour(engagement)}</span>
+                </button>
+              </Calendrier>
             </label>
             {versBloque && (
               <label className="flex flex-col gap-1.5 text-[13px] text-texte-sourd">
