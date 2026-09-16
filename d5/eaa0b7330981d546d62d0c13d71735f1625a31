@@ -1,0 +1,70 @@
+web/src/app/api/auth/dev/route.ts
+  s_09427aeab13931::t_3675e4b0cebd34 5-7,9,19-24
+web/src/api/contrat.ts
+  s_09427aeab13931::t_6d03b645fd1c30 121-125
+web/src/api/presence.test.ts
+  s_09427aeab13931::t_ab9be318096b8e 1-47,49-59
+  s_09427aeab13931::t_f6491cd87395a6 48
+web/src/app/(bruno)/fait/page.tsx
+  s_09427aeab13931::t_d9bedebbf79dd1 10,39
+  s_09427aeab13931::t_5b571724f8100f 65
+web/src/lib/filtre-membres-serveur.ts
+  s_09427aeab13931::t_d9bedebbf79dd1 1-12
+web/src/api/presence.ts
+  s_09427aeab13931::t_6d03b645fd1c30 1-52
+web/src/lib/filtre-membres.ts
+  s_09427aeab13931::t_d9bedebbf79dd1 13-19
+web/src/db/schema.ts
+  s_09427aeab13931::t_6d03b645fd1c30 316-333
+web/src/app/api/pouls/route.ts
+  s_09427aeab13931::t_6d03b645fd1c30 1-6
+web/drizzle/0011_presence.sql
+  s_09427aeab13931::t_6d03b645fd1c30 1-10
+web/src/daily/SurLeFeu.tsx
+  s_09427aeab13931::t_e0debe5c990a26 1-2,4-10,12,14,20-26,29-35,40-44,46-49,51,53-103,107,113,116-131,138-155
+  s_09427aeab13931::t_a333bacc5df572 3,36-39,50,52
+  s_09427aeab13931::t_8fc63ca3eb1d43 27-28,45,132-133
+web/src/app/(bruno)/page.tsx
+  s_09427aeab13931::t_5b571724f8100f 81
+  s_09427aeab13931::t_d9bedebbf79dd1 8,45
+web/src/board/FiltreMembres.tsx
+  s_09427aeab13931::t_5b571724f8100f 4,9-13,18-21,28-32,38-41,43,48
+  s_09427aeab13931::t_d9bedebbf79dd1 36
+  s_09427aeab13931::t_8a27ce6eb5efbd 5,42
+  s_09427aeab13931::t_9a840f2760a671 37
+web/src/lib/filtre-membres-client.ts
+  s_09427aeab13931::t_8a27ce6eb5efbd 1-6
+web/src/api/openapi.ts
+  s_09427aeab13931::t_995a1fdb2813c8 17,157-158
+  s_09427aeab13931::t_56ab6a5937ee29 159
+web/src/app/(bruno)/daily/page.tsx
+  s_09427aeab13931::t_d9bedebbf79dd1 10,46
+  s_09427aeab13931::t_8fc63ca3eb1d43 22-24,54-56,58-59,73
+  s_09427aeab13931::t_5b571724f8100f 66
+web/src/app/(bruno)/Pouls.tsx
+  s_09427aeab13931::t_995a1fdb2813c8 1-63
+web/src/app/(bruno)/Rail.tsx
+  s_09427aeab13931::t_995a1fdb2813c8 5,52-55
+CONTEXT.md
+  s_09427aeab13931::t_543677043ed79a 125-130
+web/drizzle/meta/0011_snapshot.json
+  s_09427aeab13931::t_cfc4a1e7ef5d47 1-1513
+web/drizzle/meta/_journal.json
+  s_09427aeab13931::t_ecff1fca8b8793 81-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d5eaa0b7330981d546d62d0c13d71735f1625a31",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
