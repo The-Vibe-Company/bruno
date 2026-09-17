@@ -51,7 +51,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement, reportsCount: t.reportsCount,
     assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
     aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
   }));
   // Ce qu'on ajoute au Daily revient à la personne qu'on regarde — à moi quand on les regarde tous.
   const assigneParDefaut = actifs.size === 1 ? [...actifs][0] : session.membreId;

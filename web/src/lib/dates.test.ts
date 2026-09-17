@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { demain, dimancheDe, jourOuvrePrecedent, libelleDernierJour, libelleDuree, libelleJour, libelleLong, libelleReport, libelleSemaine, lundiDe, lundiProchain, veille } from "./dates";
+import { demain, dimancheDe, jourOuvrePrecedent, libelleBlocage, libelleDernierJour, libelleDuree, libelleJour, libelleLong, libelleReport, libelleSemaine, lundiDe, lundiProchain, veille } from "./dates";
 
 describe("le nom d'un jour", () => {
   const ref = "2026-09-08";
@@ -69,5 +69,17 @@ describe("le nom du dernier jour travaillé", () => {
   });
   it("nomme le jour, un lundi matin — le Daily se lit à voix haute", () => {
     expect(libelleDernierJour("2026-09-11", "2026-09-14")).toBe("Vendredi 11 septembre");
+  });
+});
+
+/** « bloqué depuis » : ce qu'on écrit à la place de la date du jour quand une Tâche attend. */
+describe("depuis quand c'est bloqué", () => {
+  it("dit le jour même sans compter", () => {
+    expect(libelleBlocage("2026-09-17T09:00:00Z", "2026-09-17")).toBe("bloqué aujourd'hui");
+  });
+
+  it("compte en jours, puis en semaines", () => {
+    expect(libelleBlocage("2026-09-14T09:00:00Z", "2026-09-17")).toBe("bloqué depuis 3 j");
+    expect(libelleBlocage("2026-09-01T09:00:00Z", "2026-09-17")).toBe("bloqué depuis 2 sem.");
   });
 });

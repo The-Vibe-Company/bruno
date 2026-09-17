@@ -171,6 +171,11 @@ santé de Bruno.
 Presque toujours le geste de quelqu'un. L'exception est le **glissement du matin** : une Tâche
 Sur le feu qu'on devait finir avant aujourd'hui revient au jour même avec un Report sans auteur,
 « pas fait le jour dit ». Elle ne disparaît donc pas du jour, et ce qui glisse se compte.
+
+Deux réserves. Une Tâche **Bloquée** ne glisse pas et ne compte rien : elle attend quelqu'un, et
+c'est l'attente qu'elle affiche — « bloqué depuis 3 j ». Et reporter à la main une Tâche que le
+matin venait de faire glisser **remplace** ce Report au lieu de s'y ajouter : un seul report vécu
+ne se compte qu'une fois.
 _Avoid_: Snooze, reporter à plus tard, décaler, ajourner
 
 **Relance**:

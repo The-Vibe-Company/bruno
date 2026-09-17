@@ -53,7 +53,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
     engagement: t.engagement, reportsCount: t.reportsCount,
     assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
     aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
     fin: { etat: t.etatTerminal!, jour: t.jourFin },
   }));
 

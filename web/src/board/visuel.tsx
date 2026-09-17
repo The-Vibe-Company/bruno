@@ -1,4 +1,4 @@
-import { libelleJour } from "@/lib/dates";
+import { libelleBlocage, libelleJour } from "@/lib/dates";
 import type { Statut } from "./deplacement";
 
 /**
@@ -51,13 +51,22 @@ export function Coche({ etat, taille = 15 }: { etat: "termine" | "abandonne"; ta
   );
 }
 
-/** La ligne du bas d'une carte : la raison du blocage s'il y en a une, l'Engagement, les Reports — sur une seule ligne, toujours. */
-export function Meta({ tache }: { tache: { statut: Statut; engagement: string | null; reportsCount: number; raisonBlocage: string | null } }) {
+/**
+ * La ligne du bas d'une carte — sur une seule ligne, toujours.
+ *
+ * Bloquée, elle dit **depuis quand** plutôt que la date du jour : une Tâche bloquée n'a pas
+ * glissé, elle attend quelqu'un, et c'est l'attente qui se mesure. Ailleurs, l'Engagement et les
+ * Reports, comme avant.
+ */
+export function Meta({ tache }: { tache: { statut: Statut; engagement: string | null; reportsCount: number; raisonBlocage: string | null; bloqueLe?: string | null } }) {
+  const bloquee = tache.statut === "bloque";
   return (
     <span className="flex-1 truncate text-[12px] text-texte-sourd">
-      {tache.statut === "bloque" && <span className={tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}>{tache.raisonBlocage ?? "raison à préciser"} · </span>}
-      {tache.engagement ? libelleJour(tache.engagement) : "—"}
-      {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
+      {bloquee && <span className={tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}>{tache.raisonBlocage ?? "raison à préciser"} · </span>}
+      {bloquee && tache.bloqueLe ? libelleBlocage(tache.bloqueLe) : tache.engagement ? libelleJour(tache.engagement) : "—"}
+      {/* Bloquée, on s'arrête là : la raison et l'attente tiennent déjà toute la largeur, et ses
+          Reports ne bougent plus — ils sont dans la fiche, avec qui et pourquoi. */}
+      {!bloquee && tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
     </span>
   );
 }
