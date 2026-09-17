@@ -2,7 +2,7 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
-import { libelleJour } from "@/lib/dates";
+import { libelleBlocage, libelleJour } from "@/lib/dates";
 import { Calendrier, IconeCalendrier } from "./Calendrier";
 import type { Patch } from "./api";
 import type { Membre, TacheCarte } from "./Carte";
@@ -201,9 +201,11 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
                   <span className={`h-[7px] w-[7px] rounded-full ${POINT[tache.statut]}`} />{STATUT[tache.statut]}<Chevron />
                 </button>
               </Choix>
-              {tache.statut === "bloque" && (
+              {tache.statut === "bloque" && (<>
                 <button onClick={() => onRaison?.(tache)} className={`truncate text-[13.5px] ${tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}`} title="Changer la raison">{tache.raisonBlocage ?? "raison à préciser"}</button>
-              )}
+                {/* Depuis quand elle attend : c'est ce qui compte, plus que le jour où on l'a bloquée. */}
+                {tache.bloqueLe && <span className="flex-none text-[12.5px] text-texte-sourd">{libelleBlocage(tache.bloqueLe)}</span>}
+              </>)}
             </dd>
           </div>}
           <div className={ligne}>

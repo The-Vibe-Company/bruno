@@ -285,7 +285,9 @@ describe("Bloqué, avec une raison", () => {
     expect(() => C.DeplacerTache.parse({ bucket: "sur_le_feu", assigneId: antoine, engagement: "2026-09-08", statut: "bloque" })).toThrow(/pourquoi/);
     const b = await T.deplacer(ctx, t.id, C.DeplacerTache.parse({ bucket: "sur_le_feu", assigneId: antoine, engagement: "2026-09-08", statut: "bloque", raison: "Il manque une info" }));
     expect(b.raisonBlocage).toBe("Il manque une info");
-    await expect(db.update(tache).set({ statut: "a_faire" }).where(eq(tache.id, t.id))).rejects.toMatchObject({ cause: { constraint_name: "tache_raison_blocage" } });
+    // La base refuse une Tâche à moitié débloquée : la raison et la date de blocage s'en vont avec le Statut.
+    await expect(db.update(tache).set({ statut: "a_faire" }).where(eq(tache.id, t.id)))
+      .rejects.toMatchObject({ cause: { constraint_name: expect.stringMatching(/^tache_(raison_blocage|blocage_date)$/) } });
   });
 });
 

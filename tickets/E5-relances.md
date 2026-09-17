@@ -44,6 +44,10 @@ toutes les 15 minutes ; `?apercu=1&quand=2026-09-08T09:15` rejoue un instant san
       avant aujourd'hui revient au jour même, et compte un Report sans auteur (« pas fait le jour
       dit »). Antoine l'a demandé ainsi ; auparavant l'Engagement restait au jour dit et rien ne
       bougeait sans qu'un humain donne une raison
+- [x] **Sauf ce qui est bloqué** (17 septembre) : une Tâche bloquée n'a pas glissé, elle attend
+      quelqu'un. Elle garde sa date, ne compte aucun Report, et dit « bloqué depuis 3 j »
+- [x] **Un seul report vécu, un seul compté** : reporter à la main une Tâche que le matin venait
+      de faire glisser **remplace** le Report automatique — même date de départ, compteur inchangé
 - [x] Aucun mode vacances *(règle 17)*
 - [x] Rien à envoyer ⇒ **rien n'est envoyé**
 - [x] **Jamais deux fois** : une table `relance_envoyee` (Membre × jour × Créneau, unique) fait

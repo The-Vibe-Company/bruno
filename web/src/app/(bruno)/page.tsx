@@ -47,7 +47,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
     reportsCount: t.reportsCount, assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
     aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
   }));
   // En attente est une pile commune — on y trie ce que n'importe qui a capturé, assigné ou non.
   // Elle ne suit donc pas le filtre… sauf quand plus personne n'est retenu : là on ne veut rien voir.
@@ -56,7 +56,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     engagement: t.engagement, reportsCount: t.reportsCount,
     assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
     aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
     auteur: t.creeParId ? personne(t.creeParId) : null,
   }));
 
@@ -69,7 +69,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       engagement: t.engagement, reportsCount: t.reportsCount,
       assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
       aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-      notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+      notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
       fin: { etat: t.etatTerminal!, jour: t.jourFin },
     }));
 

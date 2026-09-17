@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { membre, report, space, tache } from "@/db/schema";
+import * as T from "@/api/taches";
 import { glisser } from "@/api/taches";
 
 /**
@@ -12,10 +13,13 @@ import { glisser } from "@/api/taches";
  */
 const spaceId = randomUUID(); const moi = randomUUID();
 
-const poser = async (bucket: "sur_le_feu" | "a_venir", engagement: string | null, etatTerminal: "termine" | null = null) => {
+const poser = async (bucket: "sur_le_feu" | "a_venir", engagement: string | null, etatTerminal: "termine" | null = null,
+                     statut: "a_faire" | "bloque" = "a_faire") => {
   const [t] = await db.insert(tache).values({
-    spaceId, titre: `t-${randomUUID().slice(0, 8)}`, bucket, rang: "1", statut: bucket === "sur_le_feu" ? "a_faire" : null,
+    spaceId, titre: `t-${randomUUID().slice(0, 8)}`, bucket, rang: "1", statut: bucket === "sur_le_feu" ? statut : null,
     assigneId: moi, engagement, etatTerminal, termineLe: etatTerminal ? new Date() : null,
+    raisonBlocage: statut === "bloque" ? "en attente de quelqu'un" : null,
+    bloqueLe: bucket === "sur_le_feu" && statut === "bloque" ? new Date("2026-09-14T09:00:00Z") : null,
   }).returning({ id: tache.id });
   return t.id;
 };
@@ -68,5 +72,46 @@ describe("le glissement du matin", () => {
     const apres = await relire(vendredi);
     expect(apres.engagement).toBe("2026-09-21");
     expect(apres.reportsCount).toBe(1);
+  });
+});
+
+describe("ce qui est bloqué ne glisse pas", () => {
+  it("attend quelqu'un, ce n'est pas un Report — elle garde sa date et son compteur", async () => {
+    const bloquee = await poser("sur_le_feu", "2026-09-15", null, "bloque");
+    expect((await glisser("2026-09-16", spaceId)).glissees).toBe(0);
+    const apres = await relire(bloquee);
+    expect(apres.engagement).toBe("2026-09-15");
+    expect(apres.reportsCount).toBe(0);
+    expect(await reportsDe(bloquee)).toEqual([]);
+  });
+});
+
+describe("reporter à la main après un glissement", () => {
+  it("remplace le Report du matin au lieu de s'y ajouter : un seul report vécu, un seul compté", async () => {
+    const t = await poser("sur_le_feu", "2026-09-15");
+    await glisser("2026-09-16", spaceId);
+    expect((await relire(t)).reportsCount).toBe(1);
+
+    await T.reporter({ spaceId, membreId: moi }, t, { raison: "pas le temps", nouvelEngagement: "2026-09-21" });
+
+    const apres = await relire(t);
+    expect(apres.engagement).toBe("2026-09-21");
+    expect(apres.reportsCount).toBe(1); // et non 2
+
+    const traces = await reportsDe(t);
+    expect(traces).toHaveLength(1);
+    // La date de départ est celle d'avant le glissement : « 15 → 21 », pas « 16 → 21 ».
+    expect(traces[0].ancienEngagement).toBe("2026-09-15");
+    expect(traces[0].nouvelEngagement).toBe("2026-09-21");
+    expect(traces[0].auteurId).toBe(moi);
+  });
+
+  it("un Report ordinaire, lui, compte normalement", async () => {
+    const t = await poser("sur_le_feu", "2026-09-30");
+    await T.reporter({ spaceId, membreId: moi }, t, { raison: "pas le temps", nouvelEngagement: "2026-10-01" });
+    expect((await relire(t)).reportsCount).toBe(1);
+    await T.reporter({ spaceId, membreId: moi }, t, { raison: "toujours pas", nouvelEngagement: "2026-10-02" });
+    expect((await relire(t)).reportsCount).toBe(2);
+    expect(await reportsDe(t)).toHaveLength(2);
   });
 });

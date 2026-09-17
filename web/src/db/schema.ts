@@ -124,6 +124,9 @@ export const tache = pgTable("tache", {
   reportsCount: integer("reports_count").notNull().default(0),
   /** Pourquoi c'est Bloqué — « en attente de réponse »… Obligatoire pour bloquer, effacée en sortant. */
   raisonBlocage: text("raison_blocage"),
+  /** Depuis quand elle est bloquée. C'est ce qu'on affiche à la place du compte des Reports :
+   *  une Tâche bloquée n'a pas glissé, elle attend quelqu'un. */
+  bloqueLe: timestamp("bloque_le", { withTimezone: true }),
   etatTerminal: etatTerminalEnum("etat_terminal"),
   termineLe: timestamp("termine_le", { withTimezone: true }),
 
@@ -144,6 +147,8 @@ export const tache = pgTable("tache", {
   check("tache_statut_sur_le_feu",
     sql`(${t.bucket} = 'sur_le_feu') = (${t.statut} IS NOT NULL)`),
   check("tache_raison_blocage", sql`${t.raisonBlocage} IS NULL OR ${t.statut} = 'bloque'`),
+  /** Bloquée depuis un moment daté, ou pas bloquée du tout. */
+  check("tache_blocage_date", sql`(${t.statut} = 'bloque') = (${t.bloqueLe} IS NOT NULL)`),
 
   /** Terminé et Abandonné datent ; les Tâches vivantes non. */
   check("tache_fin_datee",

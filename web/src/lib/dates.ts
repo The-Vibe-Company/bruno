@@ -63,6 +63,15 @@ export function libelleDuree(depuis: string, ref: string = aujourdhui()): string
   return `${Math.floor(j / 30)} mois`;
 }
 
+/**
+ * « bloqué aujourd'hui », « bloqué depuis 3 j ». Une Tâche bloquée ne dit pas sa date du jour :
+ * ce qu'on veut savoir, c'est depuis combien de temps elle attend quelqu'un.
+ */
+export function libelleBlocage(depuis: string, ref: string = aujourdhui()): string {
+  const jour = depuis.slice(0, 10);
+  return joursEntre(jour, ref) <= 0 ? "bloqué aujourd'hui" : `bloqué depuis ${libelleDuree(jour, ref)}`;
+}
+
 export const veille = (ref: string = aujourdhui()): string => decale(-1, ref);
 /** Le jour ouvré d'avant — le vendredi quand on est lundi. C'est lui que le Daily appelle « hier ». */
 export function jourOuvrePrecedent(ref: string = aujourdhui()): string {

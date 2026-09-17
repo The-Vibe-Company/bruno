@@ -87,7 +87,9 @@ export async function poserDemo(spaceId = SPACE_ID) {
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const jour = (delta: number) => { const d = new Date(); d.setDate(d.getDate() + delta); return d.toISOString().slice(0, 10); };
   const feu = (titre: string, statut: "a_faire" | "en_cours" | "bloque", assigne: string, engagement = aujourdhui, extra = {}) =>
-    ({ bucket: "sur_le_feu" as const, statut, assigneId: id[assigne], engagement, titre, ...extra });
+    // Bloquée depuis le jour où elle devait être finie : c'est ce que raconte la démo.
+    ({ bucket: "sur_le_feu" as const, statut, assigneId: id[assigne], engagement, titre,
+       ...(statut === "bloque" ? { bloqueLe: new Date(`${engagement}T09:00:00Z`) } : {}), ...extra });
   const hier = jourOuvrePrecedent(aujourdhui);
   const fini = (titre: string, assigne: string, etatTerminal: "termine" | "abandonne", jourFin: string) =>
     ({ ...feu(titre, "a_faire" as const, assigne, jourFin), etatTerminal, termineLe: new Date(`${jourFin}T14:00:00Z`) });

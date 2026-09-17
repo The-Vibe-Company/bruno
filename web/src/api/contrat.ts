@@ -30,6 +30,8 @@ export const Tache = z.object({
   engagement: jour.nullable(),
   reportsCount: z.number().int(),
   raisonBlocage: z.string().nullable(),
+  /** Depuis quand elle est bloquée — c'est ce que la carte dit, à la place de la date du jour. */
+  bloqueLe: z.string().nullable(),
   etatTerminal: EtatTerminal.nullable(),
   createdAt: z.string(),
 });

@@ -2,7 +2,7 @@
  * Les opérations sur les Tâches. Toute la logique métier vit ici ; les routes ne font que
  * valider l'entrée, appeler ces fonctions et sérialiser la sortie.
  */
-import { and, asc, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, lt, ne, or, sql } from "drizzle-orm";
 import { FUSEAU } from "@/relances/temps";
 import { z } from "zod";
 import { db } from "@/db/client";
@@ -160,6 +160,7 @@ export async function deplacer(ctx: Ctx, id: string, cible: z.infer<typeof C.Dep
         // l'appelant ne l'a pas précisé.
         statut: surLeFeu ? (cible.statut ?? "a_faire") : null,
         raisonBlocage: surLeFeu && cible.statut === "bloque" ? cible.raison! : null,
+        bloqueLe: surLeFeu && cible.statut === "bloque" ? sql`coalesce(${tache.bloqueLe}, now())` : null,
         ...(surLeFeu ? { assigneId: cible.assigneId, engagement: cible.engagement } : {}),
         ...(cible.bucket === "a_venir" && cible.engagement !== undefined
           ? { engagement: cible.engagement }
@@ -172,12 +173,23 @@ export async function deplacer(ctx: Ctx, id: string, cible: z.infer<typeof C.Dep
   });
 }
 
-/** Changer de Statut. Vers Bloqué, la raison vient avec ; en sortant, elle s'efface. */
+/**
+ * Changer de Statut. Vers Bloqué, la raison vient avec ; en sortant, elle s'efface.
+ *
+ * `coalesce` sur la date de blocage : repasser « bloqué » sur une Tâche déjà bloquée ne remet pas
+ * le compteur à zéro. Ce qu'on veut lire, c'est depuis quand elle attend, pas depuis quand on l'a
+ * redit.
+ */
 export async function changerStatut(ctx: Ctx, id: string, entree: z.infer<typeof C.ChangerStatut>) {
   await lire(ctx, id);
   return traduire(async () => {
     await db.update(tache)
-      .set({ statut: entree.statut, raisonBlocage: entree.statut === "bloque" ? entree.raison : null, updatedAt: new Date() })
+      .set({
+        statut: entree.statut,
+        raisonBlocage: entree.statut === "bloque" ? entree.raison : null,
+        bloqueLe: entree.statut === "bloque" ? sql`coalesce(${tache.bloqueLe}, now())` : null,
+        updatedAt: new Date(),
+      })
       .where(eq(tache.id, id));
     return obtenir(ctx, id);
   });
@@ -249,19 +261,36 @@ export async function reporter(ctx: Ctx, id: string, entree: z.infer<typeof C.Re
   }
   return traduire(async () => {
     await db.transaction(async (tx) => {
+      /*
+       * Le glissement du matin a peut-être déjà posé un Report sur cette Tâche, ce matin même.
+       * Le geste d'un humain le **remplace** : c'est le même glissement, dit une fois par le
+       * temps et une fois par quelqu'un — deux Reports pour un seul report vécu, c'était faux.
+       * On reprend sa date de départ, pour que l'historique lise « 15 → 21 · Stan », pas
+       * « 15 → 16 · Bruno » suivi de « 16 → 21 · Stan ».
+       */
+      const [automatique] = await tx.select().from(report)
+        .where(and(
+          eq(report.tacheId, id),
+          isNull(report.auteurId),
+          eq(report.nouvelEngagement, courante.engagement!),
+        ))
+        .orderBy(desc(report.createdAt)).limit(1);
+      if (automatique) await tx.delete(report).where(eq(report.id, automatique.id));
+
       await tx.insert(report).values({
         spaceId: ctx.spaceId,
         tacheId: id,
         auteurId: ctx.membreId,
         raison: entree.raison,
-        ancienEngagement: courante.engagement!,
+        ancienEngagement: automatique?.ancienEngagement ?? courante.engagement!,
         nouvelEngagement: entree.nouvelEngagement,
       });
       await tx
         .update(tache)
         .set({
           engagement: entree.nouvelEngagement,
-          reportsCount: sql`${tache.reportsCount} + 1`,
+          // Le compteur ne remonte pas quand on remplace : le glissement l'avait déjà fait.
+          ...(automatique ? {} : { reportsCount: sql`${tache.reportsCount} + 1` }),
           updatedAt: new Date(),
         })
         .where(eq(tache.id, id));
@@ -280,10 +309,12 @@ export async function reporter(ctx: Ctx, id: string, entree: z.infer<typeof C.Re
  * ce qui fait qu'une Tâche qui glisse trois fois finit par se dire au Point du matin, au lieu de
  * vieillir en silence.
  *
- * Deux garde-fous. **Jamais le week-end** : personne ne travaille, donc rien ne glisse — un
- * Engagement du vendredi arrive au lundi avec un seul Report, pas trois. Et c'est **idempotent
- * par construction** : une fois posé à aujourd'hui, l'Engagement n'est plus antérieur au jour,
- * le cron peut repasser tous les quarts d'heure.
+ * Trois garde-fous. **Jamais une Tâche bloquée** : elle n'a pas glissé, elle attend quelqu'un —
+ * lui compter un Report reviendrait à reprocher à son assigné une réponse qui ne vient pas. Elle
+ * dit « bloqué depuis 3 j », ce qui est la vraie information. **Jamais le week-end** : personne
+ * ne travaille, donc un Engagement du vendredi arrive au lundi avec un seul Report, pas trois.
+ * Et c'est **idempotent par construction** : une fois posé à aujourd'hui, l'Engagement n'est plus
+ * antérieur au jour, le cron peut repasser tous les quarts d'heure.
  */
 export const RAISON_GLISSEMENT = "pas fait le jour dit";
 
@@ -293,6 +324,7 @@ export async function glisser(jour: string, spaceId?: string): Promise<{ glissee
     .where(and(
       eq(tache.bucket, "sur_le_feu"),
       isNull(tache.etatTerminal),
+      ne(tache.statut, "bloque"),
       lt(tache.engagement, jour),
       spaceId ? eq(tache.spaceId, spaceId) : undefined,
     ));
