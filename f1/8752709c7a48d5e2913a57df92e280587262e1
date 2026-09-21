@@ -1,0 +1,23 @@
+web/src/board/Kanban.tsx
+  s_09427aeab13931::t_496e66c941eccc 51-53,94-95,214-217,220-232,234-241,268
+  s_09427aeab13931::t_309eddf4d3b50f 56-64
+web/src/board/Colonne.tsx
+  s_09427aeab13931::t_e7671b72868433 7
+  s_09427aeab13931::t_496e66c941eccc 12,14-15,30,36-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f18752709c7a48d5e2913a57df92e280587262e1",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
