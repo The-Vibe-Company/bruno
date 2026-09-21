@@ -2,6 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Present } from "@/api/presence";
+import { derniereEcriture, surveillerEcritures } from "@/lib/ecritures";
 
 /** À quelle fréquence on annonce sa présence. La fenêtre du serveur est de vingt secondes. */
 const ANNONCE = 8000;
@@ -24,13 +25,22 @@ export function Pouls() {
   const router = useRouter();
   const [presents, setPresents] = useState<Present[]>([]);
   const derniere = useRef<string | null>(null);
+  /** Le numéro de la dernière écriture de cet onglet dont on a déjà vu passer le changement. */
+  const absorbee = useRef(0);
+
+  useEffect(() => { surveillerEcritures(); }, []);
 
   /** Ce qu'on fait d'un état reçu, d'où qu'il vienne : le flux, ou l'annonce de repli. */
   const appliquer = useCallback((pouls: { version: string; presents: Present[] }) => {
     setPresents(pouls.presents);
-    // Le premier état sert de référence : on ne recharge pas la page qu'on vient d'ouvrir.
-    if (derniere.current !== null && derniere.current !== pouls.version) router.refresh();
+    const avant = derniere.current;
     derniere.current = pouls.version;
+    // Le premier état sert de référence : on ne recharge pas la page qu'on vient d'ouvrir.
+    if (avant === null || avant === pouls.version) return;
+    // Le premier changement qui suit un geste d'ici, c'est ce geste : l'écran l'a déjà confirmé.
+    const { numero, recente } = derniereEcriture();
+    if (recente && numero > absorbee.current) { absorbee.current = numero; return; }
+    router.refresh();
   }, [router]);
 
   // J'annonce que je suis là, et sur quelle page.

@@ -11,11 +11,15 @@ import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import { Hier, type TacheFinie } from "@/daily/Hier";
 import { SurLeFeu, type TacheDuJour } from "@/daily/SurLeFeu";
 import { db } from "@/db/client";
+import { allegerAvatars } from "@/lib/avatar-url";
 import { membre } from "@/db/schema";
 import { jourOuvrePrecedent, libelleLong, veille } from "@/lib/dates";
 import { instant } from "@/relances/temps";
 
 export const dynamic = "force-dynamic";
+
+/** Le bandeau reçoit l'adresse des photos, pas les photos — voir `lib/avatar-url.ts`. */
+const parMembre = <T extends { membreId: string; avatar: string | null }>(l: T[]) => allegerAvatars(l, (m) => m.membreId);
 
 /**
  * Le Daily : l'interface de la réunion du matin, projetable, une seule page. Il n'invente aucune
@@ -30,14 +34,14 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   const hier = jourOuvrePrecedent(jour);
 
   const [dujour, projetsDuJour, delaVeille, projetsDeLaVeille, finies, feu, membres] = await Promise.all([
-    enCours(session),
-    projetsEnCours(session),
-    auJour(session, hier),
-    projetsAuJour(session, hier),
+    enCours(session).then(parMembre),
+    projetsEnCours(session).then(parMembre),
+    auJour(session, hier).then(parMembre),
+    projetsAuJour(session, hier).then(parMembre),
     // Depuis la dernière fois qu'on s'est vus, aujourd'hui compris : on le dit au point du matin.
     terminees(session, hier, jour),
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
-    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)).then((l) => allegerAvatars(l, (m) => m.id)),
   ]);
   const parId = new Map(membres.map((m) => [m.id, m]));
   const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };

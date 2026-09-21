@@ -8,6 +8,7 @@ import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import { db } from "@/db/client";
+import { allegerAvatars } from "@/lib/avatar-url";
 import { membre } from "@/db/schema";
 import type { TacheFiche } from "@/board/Detail";
 import { Historique } from "@/fait/Historique";
@@ -16,6 +17,9 @@ import { dimancheDe, lundiDe } from "@/lib/dates";
 import { instant } from "@/relances/temps";
 
 export const dynamic = "force-dynamic";
+
+/** Le bandeau reçoit l'adresse des photos, pas les photos — voir `lib/avatar-url.ts`. */
+const parMembre = <T extends { membreId: string; avatar: string | null }>(l: T[]) => allegerAvatars(l, (m) => m.membreId);
 
 /**
  * Fait : l'historique — Terminées *et* Abandonnées, groupées par semaine, filtrables par Membre.
@@ -33,7 +37,7 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
 
   const [finies, membres] = await Promise.all([
     terminees(session, "2000-01-01", jour),
-    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)).then((l) => allegerAvatars(l, (m) => m.id)),
   ]);
   const actifs = membresActifs(await filtreMembres(filtre), membres);
   const visibles = membres.filter((m) => actifs.has(m.id));
@@ -43,8 +47,9 @@ export default async function Fait({ searchParams }: { searchParams: Promise<{ m
   const semaines: SemaineFaite[] = await Promise.all(lundis.map(async (lundi) => ({
     lundi, enCours: lundi === cetteSemaine,
     taches: taches.filter((t) => lundiDe(t.jourFin) === lundi).map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigneId: t.assigneId })),
-    affectations: await surLaPeriode(session, lundi, dimancheDe(lundi)),
-    projets: await projetsSurLaPeriode(session, lundi, dimancheDe(lundi)),
+    // Les deux axes de la semaine en même temps, et l'adresse des photos plutôt que les photos.
+    ...await Promise.all([surLaPeriode(session, lundi, dimancheDe(lundi)), projetsSurLaPeriode(session, lundi, dimancheDe(lundi))])
+      .then(([affectations, projets]) => ({ affectations: parMembre(affectations), projets: parMembre(projets) })),
   })));
 
   const personne = (id: string) => { const m = membres.find((x) => x.id === id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
