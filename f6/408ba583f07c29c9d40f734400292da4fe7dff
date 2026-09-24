@@ -6,6 +6,7 @@ web/src/board/EnAttente.tsx
   s_09427aeab13931::t_37d4c199b9cb38 46-57,64-65,69-74,156-158
 web/src/board/Kanban.tsx
   s_09427aeab13931::t_46bf438f0b9301 93-94,97,202-207,211-220,314
+  s_09427aeab13931::t_5648687abe6da7 96,98-102
 ---
 {
   "schema_version": "authorship/3.0.0",
