@@ -12,7 +12,7 @@ async function poster(chemin: string, corps?: unknown) {
 
 export const appliquer = (m: Mutation) =>
   m.type === "statut"
-    ? poster(`/api/taches/${m.id}/statut`, m.statut === "bloque" ? { statut: m.statut, raison: m.raison } : { statut: m.statut })
+    ? poster(`/api/taches/${m.id}/statut`, m.statut === "bloque" ? { statut: m.statut, raison: m.raison, dependDeId: m.dependDeId ?? null } : { statut: m.statut })
     : poster(`/api/taches/${m.id}/rang`, { avantId: m.avantId, apresId: m.apresId });
 
 export const terminer = (id: string) => poster(`/api/taches/${id}/terminer`);
@@ -33,7 +33,7 @@ export async function creerTache(titre: string, bucket: "a_trier" | "a_venir" | 
   return r.json();
 }
 
-export type Patch = { titre?: string; notes?: string | null; assigneId?: string; aidantIds?: string[]; raisonBlocage?: string; engagement?: string | null };
+export type Patch = { titre?: string; notes?: string | null; assigneId?: string; aidantIds?: string[]; raisonBlocage?: string; engagement?: string | null; dependDeId?: string | null };
 /** Modifier ce qui se modifie librement : titre, Notes, Assigné, Aidants, raison du blocage — et l'Engagement, hors Sur le feu. */
 export async function modifierTache(id: string, patch: Patch) {
   const r = await fetch(`/api/taches/${id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(patch) });

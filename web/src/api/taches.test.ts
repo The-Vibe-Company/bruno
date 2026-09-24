@@ -301,6 +301,39 @@ describe("Bloqué, avec une raison", () => {
   });
 });
 
+describe("dépendre d'une autre Tâche", () => {
+  it("nomme ce qu'on attend, et l'oublie en débloquant", async () => {
+    const attendue = await surLeFeu("Livrer les accès");
+    const bloquee = await surLeFeu("Brancher l'intégration");
+
+    await T.changerStatut(ctx, bloquee.id, { statut: "bloque", raison: "Dépend d'une autre Tâche", dependDeId: attendue.id });
+    const [vue] = (await T.lister(ctx, { bucket: "sur_le_feu" } as never)).filter((t) => t.id === bloquee.id);
+    expect(vue.dependDeId).toBe(attendue.id);
+    // Le titre vient avec : la carte le dit sans aller le chercher.
+    expect(vue.dependDe).toMatchObject({ id: attendue.id, titre: "Livrer les accès", etatTerminal: null });
+
+    // Débloquer, c'est ne plus rien attendre.
+    const libre = await T.changerStatut(ctx, bloquee.id, { statut: "a_faire" });
+    expect(libre.dependDeId).toBeNull();
+  });
+
+  it("refuse de s'attendre soi-même, et d'attendre quand on n'est pas bloqué", async () => {
+    const t = await surLeFeu("Seule au monde");
+    await expect(T.modifier(ctx, t.id, { dependDeId: t.id })).rejects.toMatchObject({ statut: 422 });
+    const autre = await surLeFeu("Une autre");
+    await expect(T.modifier(ctx, t.id, { dependDeId: autre.id })).rejects.toMatchObject({ statut: 422 });
+  });
+
+  it("dit que ce qu'on attendait est terminé", async () => {
+    const attendue = await surLeFeu("Valider le devis");
+    const bloquee = await surLeFeu("Lancer la production");
+    await T.changerStatut(ctx, bloquee.id, { statut: "bloque", raison: "Dépend d'une autre Tâche", dependDeId: attendue.id });
+    await T.terminer(ctx, attendue.id);
+    const [vue] = (await T.lister(ctx, { bucket: "sur_le_feu" } as never)).filter((t) => t.id === bloquee.id);
+    expect(vue.dependDe?.etatTerminal).toBe("termine");
+  });
+});
+
 describe("les Tâches finies, par jour de Bruno", () => {
   it("range chaque fin dans son jour, en heure de Paris — pas en UTC", async () => {
     const [a, b, c] = await db.insert(tache).values([

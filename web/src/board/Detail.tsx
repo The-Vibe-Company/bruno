@@ -34,6 +34,8 @@ type Props = {
   onRouvrir?: (id: string) => Promise<void>;
   /** Changer de pile depuis la fiche — c'est par là qu'une Tâche Sur le feu redescend en Idée. */
   onDeplacer?: (t: TacheFiche, bucket: "sur_le_feu" | "a_venir" | "idees" | "a_trier") => void;
+  /** Aller voir la Tâche qu'on attend, quand on la connaît. */
+  onOuvrirTache?: (id: string) => void;
 };
 
 /**
@@ -56,7 +58,7 @@ export function Detail(props: Props) {
   );
 }
 
-function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut, onRouvrir, onDeplacer }: Props & { tache: TacheFiche }) {
+function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut, onRouvrir, onDeplacer, onOuvrirTache }: Props & { tache: TacheFiche }) {
   // Hors Sur le feu, il n'y a ni Statut ni Report : l'Engagement se pose et se retire librement.
   // Finie, il ne reste qu'à lire — et à rouvrir si c'était une erreur.
   const finie = !!tache.fin;
@@ -206,7 +208,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           {(surLeFeu || finie) && (<>
           {surLeFeu && tache.statut && <div className={ligne}>
             <dt className={libelle}>Statut</dt>
-            <dd className="flex flex-1 items-center gap-2">
+            <dd className="flex min-w-0 flex-1 items-center gap-2">
               <Choix valeur={tache.statut} onChoisir={(v) => onStatut?.(tache, v as Statut)} titre="Statut"
                 options={(["a_faire", "en_cours", "bloque"] as Statut[]).map((s) => ({ valeur: s, libelle: s === "bloque" ? "Bloqué…" : STATUT[s], pastille: <span className={`h-[7px] w-[7px] rounded-full ${POINT[s]}`} /> }))}>
                 <button aria-label="Statut" className={`flex h-7 items-center gap-1.5 rounded-full border pl-2.5 pr-2 text-[13px] font-medium ${PASTILLE[tache.statut]}`}>
@@ -214,10 +216,26 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
                 </button>
               </Choix>
               {tache.statut === "bloque" && (<>
-                <button onClick={() => onRaison?.(tache)} className={`truncate text-[13.5px] ${tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}`} title="Changer la raison">{tache.raisonBlocage ?? "raison à préciser"}</button>
+                {/* La raison ne se répète pas : quand la Tâche attendue est nommée en dessous, elle suffit. */}
+                {!tache.dependDe && (
+                  <button onClick={() => onRaison?.(tache)} className={`min-w-0 truncate text-[13.5px] ${tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}`} title="Changer la raison">{tache.raisonBlocage ?? "raison à préciser"}</button>
+                )}
                 {/* Depuis quand elle attend : c'est ce qui compte, plus que le jour où on l'a bloquée. */}
                 {tache.bloqueLe && <span className="flex-none text-[12.5px] text-texte-sourd">{libelleBlocage(tache.bloqueLe)}</span>}
               </>)}
+            </dd>
+          </div>}
+          {/* Ce qu'elle attend, nommé : « Dépend d'une autre Tâche » ne disait pas laquelle (BRU-90). */}
+          {surLeFeu && tache.dependDe && <div className={ligne}>
+            <dt className={libelle}>Dépend de</dt>
+            <dd className="flex flex-1 items-center gap-2">
+              <button onClick={() => onRaison?.(tache)} aria-label="Changer ce qu'on attend" className="min-w-0 flex-1 truncate text-left hover:text-accent" title="Changer ce qu’on attend">{tache.dependDe.titre}</button>
+              <button onClick={() => onOuvrirTache?.(tache.dependDe!.id)} className="flex-none text-[12.5px] text-texte-sourd hover:text-texte">Ouvrir</button>
+              {tache.dependDe.etatTerminal === "termine" && (
+                <button onClick={() => onStatut?.(tache, "a_faire")} className="flex-none rounded-md border border-bord-fort px-2 py-0.5 text-[12.5px] hover:border-accent">
+                  terminée · débloquer
+                </button>
+              )}
             </dd>
           </div>}
           <div className={ligne}>

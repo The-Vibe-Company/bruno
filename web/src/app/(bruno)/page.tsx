@@ -51,7 +51,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement,
     reportsCount: t.reportsCount, assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
     aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null, dependDeId: t.dependDeId, dependDe: t.dependDe,
   }));
   // En attente est une pile commune — on y trie ce que n'importe qui a capturé, assigné ou non.
   // Elle ne suit donc pas le filtre… sauf quand plus personne n'est retenu : là on ne veut rien voir.
@@ -60,7 +60,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     engagement: t.engagement, reportsCount: t.reportsCount,
     assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
     aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
+    notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null, dependDeId: t.dependDeId, dependDe: t.dependDe,
     auteur: t.creeParId ? personne(t.creeParId) : null,
   }));
 
@@ -73,9 +73,15 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
       engagement: t.engagement, reportsCount: t.reportsCount,
       assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
       aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
-      notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null,
+      notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage, bloqueLe: t.bloqueLe?.toISOString() ?? null, dependDeId: t.dependDeId, dependDe: null,
       fin: { etat: t.etatTerminal!, jour: t.jourFin },
     }));
+
+  /**
+   * De quoi choisir ce qu'on attend : **toutes** les Tâches vivantes de l'Espace, filtre compris.
+   * Une Tâche peut très bien attendre celle de quelqu'un d'autre — c'est même le cas courant.
+   */
+  const candidates = [...taches, ...aTrier, ...aVenir, ...idees].map((t) => ({ id: t.id, titre: t.titre }));
 
   return (
     <>
@@ -92,7 +98,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
           choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
       )}
       <main className="flex min-h-0 flex-1 flex-col">
-        <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} />
+        <Kanban taches={cartes} enAttente={enAttente} finies={finies} membres={membres} moiId={session.membreId} candidates={candidates} />
       </main>
     </>
   );

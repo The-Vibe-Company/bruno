@@ -7,7 +7,7 @@
  */
 import { sql } from "drizzle-orm";
 import {
-  boolean, check, date, index, integer, pgEnum, pgTable, primaryKey,
+  boolean, check, date, foreignKey, index, integer, pgEnum, pgTable, primaryKey,
   numeric, smallint, text, time, timestamp, unique, uuid,
 } from "drizzle-orm/pg-core";
 
@@ -124,6 +124,12 @@ export const tache = pgTable("tache", {
   reportsCount: integer("reports_count").notNull().default(0),
   /** Pourquoi c'est Bloqué — « en attente de réponse »… Obligatoire pour bloquer, effacée en sortant. */
   raisonBlocage: text("raison_blocage"),
+  /**
+   * Ce qu'elle attend, quand ce qu'elle attend est une autre Tâche (BRU-90). La raison du
+   * blocage dit « Dépend d'une autre Tâche » ; celle-ci dit laquelle, et permet d'y aller.
+   * Si l'autre est supprimée, le lien tombe — la raison écrite, elle, reste.
+   */
+  dependDeId: uuid("depend_de_id"),
   /** Depuis quand elle est bloquée. C'est ce qu'on affiche à la place du compte des Reports :
    *  une Tâche bloquée n'a pas glissé, elle attend quelqu'un. */
   bloqueLe: timestamp("bloque_le", { withTimezone: true }),
@@ -154,6 +160,8 @@ export const tache = pgTable("tache", {
   check("tache_fin_datee",
     sql`(${t.etatTerminal} IS NULL) = (${t.termineLe} IS NULL)`),
 
+  foreignKey({ columns: [t.dependDeId], foreignColumns: [t.id], name: "tache_depend_de" }).onDelete("set null"),
+  check("tache_depend_pas_de_soi", sql`${t.dependDeId} IS NULL OR ${t.dependDeId} <> ${t.id}`),
   check("tache_titre_non_vide", sql`length(btrim(${t.titre})) > 0`),
   check("tache_reports_positifs", sql`${t.reportsCount} >= 0`),
 
