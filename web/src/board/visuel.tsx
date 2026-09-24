@@ -58,11 +58,16 @@ export function Coche({ etat, taille = 15 }: { etat: "termine" | "abandonne"; ta
  * glissé, elle attend quelqu'un, et c'est l'attente qui se mesure. Ailleurs, l'Engagement et les
  * Reports, comme avant.
  */
-export function Meta({ tache }: { tache: { statut: Statut; engagement: string | null; reportsCount: number; raisonBlocage: string | null; bloqueLe?: string | null } }) {
+export function Meta({ tache }: { tache: { statut: Statut; engagement: string | null; reportsCount: number; raisonBlocage: string | null; bloqueLe?: string | null; dependDe?: { titre: string; etatTerminal: "termine" | "abandonne" | null } | null } }) {
   const bloquee = tache.statut === "bloque";
+  // Quand ce qu'elle attend est une autre Tâche, autant la nommer : « dépend d'une autre Tâche »
+  // ne disait pas laquelle. Et si cette autre est finie, c'est qu'il n'y a plus rien à attendre.
+  const attend = bloquee && tache.dependDe
+    ? `${tache.dependDe.etatTerminal === "termine" ? "attendait" : "attend"} « ${tache.dependDe.titre} »`
+    : null;
   return (
     <span className="flex-1 truncate text-[12px] text-texte-sourd">
-      {bloquee && <span className={tache.raisonBlocage ? "text-bloque" : "italic text-texte-faible"}>{tache.raisonBlocage ?? "raison à préciser"} · </span>}
+      {bloquee && <span className={tache.raisonBlocage || attend ? "text-bloque" : "italic text-texte-faible"}>{attend ?? tache.raisonBlocage ?? "raison à préciser"} · </span>}
       {bloquee && tache.bloqueLe ? libelleBlocage(tache.bloqueLe) : tache.engagement ? libelleJour(tache.engagement) : "—"}
       {/* Bloquée, on s'arrête là : la raison et l'attente tiennent déjà toute la largeur, et ses
           Reports ne bougent plus — ils sont dans la fiche, avec qui et pourquoi. */}

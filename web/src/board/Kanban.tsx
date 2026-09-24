@@ -38,7 +38,11 @@ function retoucheVisible(patch: Patch, membres: Membre[]): Partial<TacheCarte> {
   };
 }
 
-export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: TacheCarte[]; enAttente: TacheAttente[]; finies: TacheFinie[]; membres: Membre[]; moiId: string }) {
+export function Kanban({ taches, enAttente, finies, membres, moiId, candidates }: {
+  taches: TacheCarte[]; enAttente: TacheAttente[]; finies: TacheFinie[]; membres: Membre[]; moiId: string;
+  /** Toutes les Tâches vivantes de l'Espace : ce qu'on peut attendre ne dépend pas du filtre. */
+  candidates: { id: string; titre: string }[];
+}) {
   const router = useRouter();
   const [, demarrer] = useTransition();
   /**
@@ -147,13 +151,13 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
     }
     rafraichir();
   }
-  async function bloquer(id: string, raison: string) {
+  async function bloquer(id: string, raison: string, dependDeId: string | null) {
     if (demandeBlocage?.mode === "modifier") {
       setErreur(null);
-      try { await modifierTache(id, { raisonBlocage: raison }); } catch (e) { setErreur((e as Error).message); }
+      try { await modifierTache(id, { raisonBlocage: raison, dependDeId }); } catch (e) { setErreur((e as Error).message); }
       setDemandeBlocage(null); rafraichir(); return;
     }
-    const mutations = mutationsEnAttente.map((m) => (m.type === "statut" ? { ...m, raison } : m));
+    const mutations = mutationsEnAttente.map((m) => (m.type === "statut" ? { ...m, raison, dependDeId } : m));
     setDemandeBlocage(null); setMutationsEnAttente([]);
     await envoyer(mutations);
   }
@@ -314,15 +318,17 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
         onDeplacer={(t, bucket) => destination({ id: t.id, titre: t.titre }, bucket)}
         // Le Statut et la raison du blocage n'existent que Sur le feu : ailleurs, la fiche ne les montre pas.
         onRouvrir={action(rouvrir)}
-        onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}
+        onOuvrirTache={(id) => { if (parId.has(id) || attenteParId.has(id) || finiesParId.has(id)) setOuverteId(id); }}
+        onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, dependDeId: t.dependDeId, mode: "modifier" })}
         onStatut={(t, statut) => {
           if (statut === t.statut) return;
           // Vers Bloqué, la raison d'abord ; sinon, tout de suite.
-          if (statut === "bloque") { setMutationsEnAttente([{ type: "statut", id: t.id, statut: "bloque" }]); setDemandeBlocage({ id: t.id, titre: t.titre, raison: null, mode: "bloquer" }); }
+          if (statut === "bloque") { setMutationsEnAttente([{ type: "statut", id: t.id, statut: "bloque" }]); setDemandeBlocage({ id: t.id, titre: t.titre, raison: null, dependDeId: null, mode: "bloquer" }); }
           else action((id) => appliquer({ type: "statut", id, statut }))(t.id);
         }}
       />
-      <Blocage demande={demandeBlocage} onConfirmer={bloquer} onAnnuler={annulerBlocage} />
+      {/* De quoi choisir ce qu'on attend : tout ce qui vit, sauf elle-même. */}
+      <Blocage demande={demandeBlocage} candidates={candidates} onConfirmer={bloquer} onAnnuler={annulerBlocage} />
       {derniereFin && (
         <div role="status" className="anime-toast fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-bord-fort bg-surface px-4 py-2.5 text-sm shadow-2xl">
           <span>« {derniereFin.titre} » {derniereFin.libelle}</span>

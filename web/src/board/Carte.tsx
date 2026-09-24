@@ -12,6 +12,8 @@ export type TacheCarte = {
   reportsCount: number; assigneId: string | null; assigne: Personne | null;
   aidantIds: string[]; aidants: Personne[]; notes: string | null; transcriptionBrute: string | null;
   raisonBlocage: string | null; bloqueLe?: string | null;
+  /** Ce qu'elle attend, quand c'est une autre Tâche. */
+  dependDeId?: string | null; dependDe?: { id: string; titre: string; etatTerminal: "termine" | "abandonne" | null } | null;
 };
 
 /** L'Assigné, en grand : un clic, et on le change — sans ouvrir la carte, sans la glisser. */

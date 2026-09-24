@@ -25,10 +25,17 @@ async function avecAidants(lignes: (typeof tache.$inferSelect)[]) {
     arr.push(l.membreId);
     parTache.set(l.tacheId, arr);
   }
+  // Ce dont elles dépendent, en une requête : son titre et si elle est finie suffisent à l'afficher.
+  const attendues = [...new Set(lignes.map((l) => l.dependDeId).filter((id): id is string => !!id))];
+  const dependances = attendues.length
+    ? await db.select({ id: tache.id, titre: tache.titre, etatTerminal: tache.etatTerminal }).from(tache).where(inArray(tache.id, attendues))
+    : [];
+  const parDependance = new Map(dependances.map((d) => [d.id, d]));
   return lignes.map((l) => ({
     ...l,
     aidantIds: parTache.get(l.id) ?? [],
     createdAt: l.createdAt.toISOString(),
+    dependDe: l.dependDeId ? parDependance.get(l.dependDeId) ?? null : null,
   }));
 }
 
@@ -123,6 +130,13 @@ export async function modifier(ctx: Ctx, id: string, patch: z.infer<typeof C.Mod
   if (patch.raisonBlocage !== undefined && courante.statut !== "bloque") {
     throw new ErreurApi("requete_invalide", 422, "Une raison de blocage n'a de sens que sur une Tâche Bloquée.");
   }
+  // Attendre une autre Tâche, c'est être bloqué par elle : ailleurs, la question ne se pose pas.
+  if (patch.dependDeId && courante.statut !== "bloque") {
+    throw new ErreurApi("requete_invalide", 422, "Dépendre d'une autre Tâche n'a de sens que sur une Tâche Bloquée.");
+  }
+  if (patch.dependDeId === id) {
+    throw new ErreurApi("requete_invalide", 422, "Une Tâche ne peut pas s'attendre elle-même.");
+  }
   return traduire(async () => {
     const { aidantIds, ...champs } = patch;
     if (Object.keys(champs).length > 0) {
@@ -188,6 +202,8 @@ export async function changerStatut(ctx: Ctx, id: string, entree: z.infer<typeof
         statut: entree.statut,
         raisonBlocage: entree.statut === "bloque" ? entree.raison : null,
         bloqueLe: entree.statut === "bloque" ? sql`coalesce(${tache.bloqueLe}, now())` : null,
+        // La dépendance n'existe que tant qu'on est bloqué : débloquer, c'est ne plus rien attendre.
+        dependDeId: entree.statut === "bloque" ? entree.dependDeId ?? null : null,
         updatedAt: new Date(),
       })
       .where(eq(tache.id, id));

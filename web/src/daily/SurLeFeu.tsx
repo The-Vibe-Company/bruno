@@ -70,11 +70,11 @@ export function SurLeFeu({ taches, membres, assigneParDefaut }: {
     toucher(t.id, { statut });
     agir(() => appliquer({ type: "statut", id: t.id, statut }));
   };
-  const bloquer = async (id: string, raison: string) => {
+  const bloquer = async (id: string, raison: string, dependDeId: string | null) => {
     const modifie = demandeBlocage?.mode === "modifier";
     toucher(id, { statut: "bloque", raisonBlocage: raison });
     setDemandeBlocage(null);
-    await agir(() => (modifie ? modifierTache(id, { raisonBlocage: raison }) : appliquer({ type: "statut", id, statut: "bloque", raison })));
+    await agir(() => (modifie ? modifierTache(id, { raisonBlocage: raison, dependDeId }) : appliquer({ type: "statut", id, statut: "bloque", raison, dependDeId })));
   };
 
   /**
@@ -144,7 +144,7 @@ export function SurLeFeu({ taches, membres, assigneParDefaut }: {
         onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}
         onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })} />
 
-      <Blocage demande={demandeBlocage} onConfirmer={bloquer} onAnnuler={() => setDemandeBlocage(null)} />
+      <Blocage demande={demandeBlocage} candidates={toutes.map((t) => ({ id: t.id, titre: t.titre }))} onConfirmer={bloquer} onAnnuler={() => setDemandeBlocage(null)} />
       <Report demande={demandeReport}
         onReporter={async (id, corps) => {
           // Reporté, c'est demain ou plus tard : la Tâche quitte le jour même.

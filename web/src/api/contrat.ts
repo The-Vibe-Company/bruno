@@ -30,6 +30,9 @@ export const Tache = z.object({
   engagement: jour.nullable(),
   reportsCount: z.number().int(),
   raisonBlocage: z.string().nullable(),
+  /** La Tâche qu'elle attend, et de quoi la nommer sans aller la chercher. */
+  dependDeId: uuid.nullable(),
+  dependDe: z.object({ id: uuid, titre: z.string(), etatTerminal: EtatTerminal.nullable() }).nullable(),
   /** Depuis quand elle est bloquée — c'est ce que la carte dit, à la place de la date du jour. */
   bloqueLe: z.string().nullable(),
   etatTerminal: EtatTerminal.nullable(),
@@ -56,6 +59,8 @@ export const ModifierTache = z.object({
   aidantIds: z.array(uuid).optional(),
   /** Changer la raison d'une Tâche déjà Bloquée. Ailleurs, refusé. */
   raisonBlocage: z.string().trim().min(1).optional(),
+  /** Et la Tâche attendue, s'il y en a une. `null` l'enlève. */
+  dependDeId: uuid.nullish(),
 });
 
 /**
@@ -78,7 +83,12 @@ export const DeplacerTache = z.discriminatedUnion("bucket", [
 
 /** Bloquer exige une raison — c'est elle qui rend le blocage lisible sur la carte. */
 export const ChangerStatut = z.discriminatedUnion("statut", [
-  z.object({ statut: z.literal("bloque"), raison: z.string().trim().min(1, "Bloqué, oui — mais pourquoi ? La raison est obligatoire.") }),
+  z.object({
+    statut: z.literal("bloque"),
+    raison: z.string().trim().min(1, "Bloqué, oui — mais pourquoi ? La raison est obligatoire."),
+    /** Quand ce qu'on attend est une autre Tâche, on dit laquelle (BRU-90). */
+    dependDeId: uuid.nullish(),
+  }),
   z.object({ statut: z.enum(["a_faire", "en_cours"]) }),
 ]);
 
