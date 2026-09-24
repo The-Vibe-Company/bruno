@@ -81,6 +81,16 @@ describe("le droit d'entrée Sur le feu", () => {
     expect(sur.engagement).toBe(DEMAIN);
   });
 
+  it("laisse une Idée monter À venir puis redescendre, sans rien perdre", async () => {
+    const t = await capture("Une newsletter");
+    await T.deplacer(ctx, t.id, { bucket: "idees" });
+    const aVenir = await T.deplacer(ctx, t.id, { bucket: "a_venir", engagement: DEMAIN });
+    expect([aVenir.bucket, aVenir.engagement]).toEqual(["a_venir", DEMAIN]);
+    const retour = await T.deplacer(ctx, t.id, { bucket: "idees" });
+    // La date reste : une Idée qui en avait une la retrouvera si elle remonte.
+    expect([retour.bucket, retour.engagement, retour.statut]).toEqual(["idees", DEMAIN, null]);
+  });
+
   it("conserve Assigné et Engagement en sortant de Sur le feu (règle 7)", async () => {
     const t = await capture();
     await T.deplacer(ctx, t.id, {
