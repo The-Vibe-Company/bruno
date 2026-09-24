@@ -1,0 +1,25 @@
+web/src/api/taches.test.ts
+  s_09427aeab13931::t_3fc6c7ea51f180 84-93
+web/src/board/Detail.tsx
+  s_09427aeab13931::t_46bf438f0b9301 35-36,59,134-145
+web/src/board/EnAttente.tsx
+  s_09427aeab13931::t_37d4c199b9cb38 46-57,64-65,69-74,156-158
+web/src/board/Kanban.tsx
+  s_09427aeab13931::t_46bf438f0b9301 82-83,88-91,191-196,200-209,284
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7dc9e44a8f0f1c6432e363636a3635d553d0dc80",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
