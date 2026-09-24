@@ -2,6 +2,7 @@ web/src/board/Detail.tsx
   s_09427aeab13931::t_e2b0089e7d3886 37-38,228-231,234-238
   s_09427aeab13931::t_25460f20c6c5ce 211,219-222,232-233
   s_09427aeab13931::t_fe174a041aa691 239-240
+  s_09427aeab13931::t_e3187eeedb8ec8 61
 web/src/api/contrat.ts
   s_09427aeab13931::t_25b804e9936bac 33-35,62-63,86-91
 web/src/board/api.ts
