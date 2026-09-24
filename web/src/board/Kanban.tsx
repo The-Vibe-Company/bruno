@@ -90,9 +90,16 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
   // Les Tâches tapées à l'instant, posées à l'écran avant la réponse du serveur. Le prochain
   // rendu venu du serveur les remplace par les vraies — même motif que les colonnes.
   const [provisoires, setProvisoires] = useState<TacheAttente[]>([]);
+  /** Une Tâche qu'on vient de faire changer de pile : elle y est déjà à l'écran, le serveur suit. */
+  const [deplacees, setDeplacees] = useState<Map<string, "a_trier" | "a_venir" | "idees">>(new Map());
   const [baseAttente, setBaseAttente] = useState(enAttente);
-  if (baseAttente !== enAttente) { setBaseAttente(enAttente); if (enVol.current === 0) { setProvisoires([]); setSorties(new Set()); } }
-  const attendues = useMemo(() => [...enAttente.filter((t) => !sorties.has(t.id)), ...provisoires], [enAttente, provisoires, sorties]);
+  if (baseAttente !== enAttente) { setBaseAttente(enAttente); setDeplacees(new Map()); if (enVol.current === 0) { setProvisoires([]); setSorties(new Set()); } }
+  const attendues = useMemo(
+    () => [
+      ...enAttente.filter((t) => !sorties.has(t.id)).map((t) => { const b = deplacees.get(t.id); return b ? { ...t, bucket: b } : t; }),
+      ...provisoires,
+    ],
+    [enAttente, provisoires, sorties, deplacees]);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const finiesParId = useMemo(() => new Map(finies.map((t) => [t.id, t])), [finies]);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -192,11 +199,25 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
     return attenteParId.get(id) ?? finiesParId.get(id) ?? null;
   }
 
-  async function destination(t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") {
+  /**
+   * Changer de pile, d'où qu'on le demande : le panneau, ou la fiche d'une Tâche Sur le feu.
+   * Vers Sur le feu et vers À venir, une fenêtre s'ouvre — il y faut un Assigné et une date.
+   * Vers les Idées ou le tri, rien à demander : la carte bouge tout de suite.
+   */
+  async function destination(t: { id: string; titre: string }, b: "sur_le_feu" | "a_venir" | "idees" | "a_trier") {
     if (b === "sur_le_feu") { setDemande({ id: t.id, titre: t.titre, statut: "a_faire" }); return; }
     if (b === "a_venir") { setDemandeAVenir({ id: t.id, titre: t.titre }); return; }
     setErreur(null);
-    try { await deplacerBucket(t.id, { bucket: "idees" }); } catch (e) { setErreur((e as Error).message); }
+    setDeplacees((m) => new Map(m).set(t.id, b));
+    // Si elle était Sur le feu, elle quitte le tableau sans attendre le serveur.
+    setParties((p) => new Set(p).add(t.id));
+    setOuverteId((id) => (id === t.id ? null : id));
+    try { await deplacerBucket(t.id, { bucket: b }); }
+    catch (e) {
+      setErreur((e as Error).message);
+      setDeplacees((m) => { const n = new Map(m); n.delete(t.id); return n; });
+      setParties((p) => { const n = new Set(p); n.delete(t.id); return n; });
+    }
     rafraichir();
   }
   async function reporterTache(id: string, corps: { raison: string; nouvelEngagement: string }) {
@@ -290,6 +311,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
         onAbandonner={onAbandonner}
         onSupprimer={action(supprimer)}
         onReporter={(t) => setDemandeReport({ id: t.id, titre: t.titre, reportsCount: t.reportsCount })}
+        onDeplacer={(t, bucket) => destination({ id: t.id, titre: t.titre }, bucket)}
         // Le Statut et la raison du blocage n'existent que Sur le feu : ailleurs, la fiche ne les montre pas.
         onRouvrir={action(rouvrir)}
         onRaison={(t) => setDemandeBlocage({ id: t.id, titre: t.titre, raison: t.raisonBlocage, mode: "modifier" })}

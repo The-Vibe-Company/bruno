@@ -32,6 +32,8 @@ type Props = {
   onReporter?: (t: TacheFiche) => void; onRaison?: (t: TacheFiche) => void; onStatut?: (t: TacheFiche, statut: Statut) => void;
   /** Une Tâche finie : la seule action qui lui reste. */
   onRouvrir?: (id: string) => Promise<void>;
+  /** Changer de pile depuis la fiche — c'est par là qu'une Tâche Sur le feu redescend en Idée. */
+  onDeplacer?: (t: TacheFiche, bucket: "sur_le_feu" | "a_venir" | "idees" | "a_trier") => void;
 };
 
 /**
@@ -54,7 +56,7 @@ export function Detail(props: Props) {
   );
 }
 
-function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut, onRouvrir }: Props & { tache: TacheFiche }) {
+function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer, onReporter, onRaison, onModifier, onStatut, onRouvrir, onDeplacer }: Props & { tache: TacheFiche }) {
   // Hors Sur le feu, il n'y a ni Statut ni Report : l'Engagement se pose et se retire librement.
   // Finie, il ne reste qu'à lire — et à rouvrir si c'était une erreur.
   const finie = !!tache.fin;
@@ -129,8 +131,18 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <Dialog.Title className="sr-only">{tache.titre}</Dialog.Title>
           <input value={titre} onChange={(e) => setTitre(e.target.value)} onBlur={poserTitre} onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { setTitre(tache.titre); e.currentTarget.blur(); } }}
             aria-label="Titre" className="-mx-1 w-[calc(100%+0.5rem)] rounded-md border border-transparent bg-transparent px-1 text-2xl font-semibold leading-tight tracking-tight outline-none hover:border-bord-faible focus:border-accent" />
-          <p className="mt-1.5 text-sm text-texte-sourd">
-            {tache.fin ? (tache.fin.etat === "termine" ? "Terminé" : "Abandonné") : BUCKET[tache.bucket]}
+          <p className="mt-1.5 flex items-center gap-1.5 text-sm text-texte-sourd">
+            {tache.fin || !onDeplacer ? (
+              <span>{tache.fin ? (tache.fin.etat === "termine" ? "Terminé" : "Abandonné") : BUCKET[tache.bucket]}</span>
+            ) : (
+              // La pile se change ici : une Idée qui devient urgente, une Tâche Sur le feu qui redescend.
+              <Choix valeur={tache.bucket} titre="Déplacer vers" onChoisir={(b) => onDeplacer(tache, b as "sur_le_feu" | "a_venir" | "idees" | "a_trier")}
+                options={(Object.keys(BUCKET) as TacheFiche["bucket"][]).map((b) => ({ valeur: b, libelle: BUCKET[b] }))}>
+                <button className="flex h-6 items-center gap-1 rounded-md px-1 text-sm text-texte-sourd hover:bg-surface-2 hover:text-texte" aria-label="Pile">
+                  {BUCKET[tache.bucket]}<Chevron />
+                </button>
+              </Choix>
+            )}
             {tache.reportsCount > 0 && <> · <Reporte n={tache.reportsCount} /></>}
           </p>
         </div>

@@ -43,19 +43,35 @@ function Chevron({ ouvert }: { ouvert: boolean }) {
 }
 
 /** Une carte à trier : le titre nettoyé, l'auteur, la transcription brute, et trois destinations. Glissable vers le kanban. */
+/** Où une Tâche en attente peut aller, depuis la pile où elle est. On ne propose pas celle où elle est déjà. */
+const AILLEURS: Record<Bucket, { bucket: "sur_le_feu" | "a_venir" | "idees"; libelle: string }[]> = {
+  a_trier: [{ bucket: "sur_le_feu", libelle: "Sur le feu" }, { bucket: "a_venir", libelle: "À venir" }, { bucket: "idees", libelle: "Idées" }],
+  a_venir: [{ bucket: "sur_le_feu", libelle: "Sur le feu" }, { bucket: "idees", libelle: "Idées" }],
+  idees: [{ bucket: "sur_le_feu", libelle: "Sur le feu" }, { bucket: "a_venir", libelle: "À venir" }],
+};
+
+/**
+ * Une Tâche en attente, dans n'importe laquelle des trois piles. Les mêmes gestes partout : la
+ * déplacer, l'ouvrir, la supprimer — une Idée qui devient urgente ne devait pas obliger à passer
+ * par le tri, et une Tâche À venir qui retombe en Idée non plus.
+ */
 function CarteATrier({ t, onDestination, onSupprimer, onOuvrir }: { t: TacheAttente; onDestination: (t: TacheAttente, b: "sur_le_feu" | "a_venir" | "idees") => void; onSupprimer: (id: string) => void; onOuvrir: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: t.id, data: { depuisPanneau: true } });
   return (
     <div ref={setNodeRef} {...attributes} {...listeners} className={`mt-1.5 cursor-grab rounded-lg border border-bord-fort bg-surface px-3 py-2.5 shadow-md select-none ${isDragging ? "opacity-40" : ""}`}>
       <div className="flex items-center gap-2">
         <button onClick={() => onOuvrir(t.id)} className="flex-1 text-left text-[13.5px]">{t.titre}</button>
-        {t.auteur && <Initiale nom={t.auteur.nom} avatar={t.auteur.avatar} />}
+        {t.engagement && <span className="text-[12px] text-texte-sourd">{libelleJour(t.engagement)}</span>}
+        {t.assigne ? <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} /> : t.auteur && <Initiale nom={t.auteur.nom} avatar={t.auteur.avatar} />}
       </div>
       {t.transcriptionBrute && <p className="mt-0.5 text-[12px] italic text-texte-sourd">« {t.transcriptionBrute} »</p>}
       <div className="mt-2 flex gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
-        <button onClick={() => onDestination(t, "sur_le_feu")} className="h-[26px] rounded-[5px] bg-accent px-2.5 text-[12px] font-medium text-sur-accent">Sur le feu</button>
-        <button onClick={() => onDestination(t, "a_venir")} className="h-[26px] rounded-[5px] border border-bord-fort px-2.5 text-[12px]">À venir</button>
-        <button onClick={() => onDestination(t, "idees")} className="h-[26px] rounded-[5px] border border-bord-fort px-2.5 text-[12px]">Idées</button>
+        {AILLEURS[t.bucket].map((d, i) => (
+          <button key={d.bucket} onClick={() => onDestination(t, d.bucket)}
+            className={i === 0 ? "h-[26px] rounded-[5px] bg-accent px-2.5 text-[12px] font-medium text-sur-accent" : "h-[26px] rounded-[5px] border border-bord-fort px-2.5 text-[12px]"}>
+            {d.libelle}
+          </button>
+        ))}
         <AlertDialog.Root>
           <AlertDialog.Trigger asChild>
             <button aria-label="Supprimer" className="ml-auto flex h-[26px] w-[26px] items-center justify-center rounded-[5px] border border-bord-fort text-texte-sourd hover:text-bloque">
@@ -137,16 +153,9 @@ export function EnAttente({ taches, onDestination, onSupprimer, onOuvrir, onCree
               <BoutonPlus onClick={() => saisir(b)} libelle={`Nouvelle tâche · ${LIBELLE[b]}`} />
               <span className={`text-xs ${b === "a_trier" && par(b).length ? "text-accent" : "text-texte-sourd"}`}>{par(b).length}</span>
             </div>
-            {ouverts[b] && (b === "a_trier"
-              ? par(b).filter((t) => !t.provisoire).map((t) => <CarteATrier key={t.id} t={t} onDestination={onDestination} onSupprimer={onSupprimer} onOuvrir={onOuvrir} />)
-              : par(b).filter((t) => !t.provisoire).map((t) => (
-                <button key={t.id} onClick={() => onOuvrir(t.id)} className="mt-1.5 flex w-full items-center gap-2 rounded-lg border border-bord-2 bg-surface px-3 py-2 text-left">
-                  <span className="flex-1 text-[13.5px]">{t.titre}</span>
-                  {t.notes && <span title="Des notes" className="text-texte-faible"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><path d="M2.5 3h7M2.5 6h7M2.5 9h4" /></svg></span>}
-                  {t.engagement && <span className="text-[12px] text-texte-sourd">{libelleJour(t.engagement)}</span>}
-                  {t.assigne && <Initiale nom={t.assigne.nom} avatar={t.assigne.avatar} />}
-                </button>
-              )))}
+            {ouverts[b] && par(b).filter((t) => !t.provisoire).map((t) => (
+              <CarteATrier key={t.id} t={t} onDestination={onDestination} onSupprimer={onSupprimer} onOuvrir={onOuvrir} />
+            ))}
             {ouverts[b] && par(b).filter((t) => t.provisoire).map((t) => (
               <div key={t.id} className="mt-1.5 rounded-lg border border-bord-2 bg-surface px-3 py-2 text-[13.5px] text-texte-sourd opacity-60">{t.titre}</div>
             ))}
