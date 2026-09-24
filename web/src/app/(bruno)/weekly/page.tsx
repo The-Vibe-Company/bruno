@@ -7,12 +7,16 @@ import { lister, parSemaine } from "@/api/sujets";
 import { sessionCourante } from "@/auth/serveur";
 import { Affectations } from "@/board/Affectations";
 import { db } from "@/db/client";
+import { allegerAvatars } from "@/lib/avatar-url";
 import { membre } from "@/db/schema";
 import { dimancheDe, libelleSemaine, lundiDe } from "@/lib/dates";
 import { instant } from "@/relances/temps";
 import { Sujets } from "@/weekly/Sujets";
 
 export const dynamic = "force-dynamic";
+
+/** Le bandeau reçoit l'adresse des photos, pas les photos — voir `lib/avatar-url.ts`. */
+const parMembre = <T extends { membreId: string; avatar: string | null }>(l: T[]) => allegerAvatars(l, (m) => m.membreId);
 
 /** La semaine en cours, toujours. Les autres n'apparaissent que si elles portent des Sujets. */
 const SEMAINES_PROCHES = 1;
@@ -38,10 +42,10 @@ export default async function Weekly({ searchParams }: { searchParams: Promise<{
   const lundi = semaine && lundis.includes(semaine) ? semaine : courante;
 
   const [affectations, projets, sujets, membres, choix, choixProjets] = await Promise.all([
-    surLaPeriode(session, lundi, dimancheDe(lundi)),
-    projetsSurLaPeriode(session, lundi, dimancheDe(lundi)),
+    surLaPeriode(session, lundi, dimancheDe(lundi)).then(parMembre),
+    projetsSurLaPeriode(session, lundi, dimancheDe(lundi)).then(parMembre),
     lister(session, lundi),
-    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)).then((l) => allegerAvatars(l, (m) => m.id)),
     listerAffectations(session),
     listerProjets(session),
   ]);

@@ -9,6 +9,7 @@ import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import type { TacheAttente, TacheFinie } from "@/board/EnAttente";
 import { sessionCourante } from "@/auth/serveur";
 import { db } from "@/db/client";
+import { allegerAvatars } from "@/lib/avatar-url";
 import { membre } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { jourOuvrePrecedent, libelleLong } from "@/lib/dates";
@@ -17,6 +18,9 @@ import { Kanban } from "@/board/Kanban";
 import type { TacheCarte } from "@/board/Carte";
 
 export const dynamic = "force-dynamic";
+
+/** Le bandeau reçoit l'adresse des photos, pas les photos — voir `lib/avatar-url.ts`. */
+const parMembre = <T extends { membreId: string; avatar: string | null }>(l: T[]) => allegerAvatars(l, (m) => m.membreId);
 
 /** Le Board : Sur le feu en kanban. La colonne latérale (À trier, À venir, Idées) arrive avec BRU-14. */
 export default async function Board({ searchParams }: { searchParams: Promise<{ membres?: string }> }) {
@@ -33,10 +37,10 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
     // Les Tâches finies depuis le dernier jour ouvré : cochée par erreur ce matin, elle se
     // rattrape ce soir — bien après le « Annuler » de six secondes.
     terminees(session, jourOuvrePrecedent(jour), jour),
-    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
-    enCours(session),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)).then((l) => allegerAvatars(l, (m) => m.id)),
+    enCours(session).then(parMembre),
     listerAffectations(session),
-    projetsEnCours(session),
+    projetsEnCours(session).then(parMembre),
     listerProjets(session),
   ]);
   const parId = new Map(membres.map((m) => [m.id, m]));

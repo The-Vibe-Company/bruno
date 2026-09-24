@@ -157,6 +157,10 @@ export function documentOpenApi() {
       "/api/direct": {
         get: { summary: "Le direct", description: "Un flux qui reste ouvert (SSE). Le serveur envoie l'état — empreinte et présents — dès qu'il change, et se referme au bout de quatre minutes : le navigateur rouvre seul.", responses: { 200: { description: "text/event-stream" } } },
       },
+      "/api/membres/{id}/avatar": {
+        parameters: [idTache],
+        get: { summary: "La photo d'un Membre", description: "L'image elle-même, pour les pages web : elles donnent son adresse au lieu de recopier la photo dans chaque carte. L'adresse porte une empreinte (?v=), la réponse se garde indéfiniment.", responses: { 200: { description: "image/jpeg, image/png ou image/webp" }, 404: { description: "Pas de photo" } } },
+      },
       "/api/pouls": {
         post: { summary: "Je suis là", description: "Dit où l'on regarde, et rapporte qui d'autre est là plus une empreinte de ce qui est affiché : si elle change, la page se redemande.", requestBody: corps("Battre"), responses: { 200: { description: "Les présents et l'empreinte" } } },
       },

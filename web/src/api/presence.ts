@@ -8,6 +8,7 @@
 import { and, eq, gt, ne, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { affectationMembre, membre, presence, sujet, tache } from "@/db/schema";
+import { allegerAvatars } from "@/lib/avatar-url";
 
 /** Deux annonces manquées : on n'est plus là. Assez long pour survivre à un réseau qui hoquette. */
 const FENETRE = "20 seconds";
@@ -50,7 +51,8 @@ const lesAutres = (ctx: Ctx) =>
 /** L'état du moment : ce qui a changé, et qui est là. C'est ce que le flux envoie. */
 export async function etat(ctx: Ctx): Promise<Pouls> {
   const [version, presents] = await Promise.all([empreinte(ctx.spaceId), lesAutres(ctx)]);
-  return { version, presents };
+  // L'adresse de la photo, pas la photo : le flux renvoie cet état à chaque changement.
+  return { version, presents: allegerAvatars(presents, (p) => p.membreId) };
 }
 
 /** « Je suis là, sur cette page. » Une écriture, et l'état en retour. */

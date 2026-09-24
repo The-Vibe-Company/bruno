@@ -48,9 +48,20 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
    * Le prochain rendu venu du serveur les remplace, comme pour les colonnes.
    */
   const [retouches, setRetouches] = useState<Map<string, Partial<TacheCarte>>>(new Map());
+  // Tant qu'une création est en route, on garde ce qui est posé à l'écran : sinon la deuxième
+  // Tâche tapée disparaîtrait le temps que la première revienne du serveur.
+  const enVol = useRef(0);
   const [parties, setParties] = useState<Set<string>>(new Set());
   const [baseTaches, setBaseTaches] = useState(taches);
-  if (baseTaches !== taches) { setBaseTaches(taches); setRetouches(new Map()); setParties(new Set()); }
+  /**
+   * Les Tâches qui entrent Sur le feu par la fenêtre du droit d'entrée, posées dans leur colonne
+   * avant la réponse du serveur. La fenêtre attendait trois allers-retours vers Washington avant
+   * de se fermer — créer, placer, recharger : sept dixièmes de seconde, fenêtre ouverte.
+   */
+  const [arrivantes, setArrivantes] = useState<TacheCarte[]>([]);
+  /** Et celles qui ont quitté En attente pour y aller : elles disparaissent de la pile tout de suite. */
+  const [sorties, setSorties] = useState<Set<string>>(new Set());
+  if (baseTaches !== taches) { setBaseTaches(taches); setRetouches(new Map()); setParties(new Set()); if (enVol.current === 0) setArrivantes([]); }
   const parId = useMemo(() => {
     const m = new Map(taches.map((t) => [t.id, t]));
     for (const [id, patch] of retouches) { const t = m.get(id); if (t) m.set(id, { ...t, ...patch }); }
@@ -79,12 +90,9 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
   // Les Tâches tapées à l'instant, posées à l'écran avant la réponse du serveur. Le prochain
   // rendu venu du serveur les remplace par les vraies — même motif que les colonnes.
   const [provisoires, setProvisoires] = useState<TacheAttente[]>([]);
-  // Tant qu'une création est en route, on garde les provisoires : sinon la deuxième ligne tapée
-  // disparaîtrait le temps que la première revienne du serveur.
-  const enVol = useRef(0);
   const [baseAttente, setBaseAttente] = useState(enAttente);
-  if (baseAttente !== enAttente) { setBaseAttente(enAttente); if (enVol.current === 0) setProvisoires([]); }
-  const attendues = useMemo(() => [...enAttente, ...provisoires], [enAttente, provisoires]);
+  if (baseAttente !== enAttente) { setBaseAttente(enAttente); if (enVol.current === 0) { setProvisoires([]); setSorties(new Set()); } }
+  const attendues = useMemo(() => [...enAttente.filter((t) => !sorties.has(t.id)), ...provisoires], [enAttente, provisoires, sorties]);
   const attenteParId = useMemo(() => new Map(enAttente.map((t) => [t.id, t])), [enAttente]);
   const finiesParId = useMemo(() => new Map(finies.map((t) => [t.id, t])), [finies]);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -203,15 +211,34 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
     catch (e) { setErreur((e as Error).message); }
     rafraichir();
   }
+  /**
+   * La fenêtre se ferme tout de suite et la carte est déjà dans sa colonne ; le serveur suit
+   * derrière. S'il refuse, la carte repart et le message dit pourquoi.
+   */
   async function entrerSurLeFeu(d: { id: string; titre: string; assigneId: string; engagement: string; statut: Statut; raison?: string }) {
     setErreur(null);
-    try {
-      // Une Tâche tapée dans la fenêtre n'existe pas encore : on la crée, puis elle entre — par le même droit d'entrée que les autres.
+    const venue = d.id ? attenteParId.get(d.id) : undefined;
+    const provisoire: TacheCarte = {
+      id: `provisoire-${crypto.randomUUID()}`, titre: d.titre || venue?.titre || "", statut: d.statut, engagement: d.engagement,
+      reportsCount: venue?.reportsCount ?? 0, assigneId: d.assigneId, assigne: membres.find((m) => m.id === d.assigneId) ?? null,
+      aidantIds: venue?.aidantIds ?? [], aidants: venue?.aidants ?? [], notes: venue?.notes ?? null, transcriptionBrute: venue?.transcriptionBrute ?? null,
+      raisonBlocage: d.statut === "bloque" ? d.raison ?? null : null, bloqueLe: d.statut === "bloque" ? new Date().toISOString() : null,
+    };
+    setArrivantes((a) => [...a, provisoire]);
+    if (d.id) setSorties((s) => new Set(s).add(d.id));
+    setDemande(null);
+    enVol.current += 1;
+    // Une Tâche tapée dans la fenêtre n'existe pas encore : on la crée, puis elle entre — par le même droit d'entrée que les autres.
+    (async () => {
       const id = d.id || (await creerTache(d.titre)).id;
-      await deplacerBucket(id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut, raison: d.raison }); setDemande(null);
-    }
-    catch (e) { setErreur((e as Error).message); }
-    rafraichir();
+      await deplacerBucket(id, { bucket: "sur_le_feu", assigneId: d.assigneId, engagement: d.engagement, statut: d.statut, raison: d.raison });
+    })()
+      .catch((e) => {
+        setErreur((e as Error).message);
+        setArrivantes((a) => a.filter((t) => t.id !== provisoire.id));
+        if (d.id) setSorties((s) => { const n = new Set(s); n.delete(d.id); return n; });
+      })
+      .finally(() => { enVol.current -= 1; rafraichir(); });
   }
 
   return (
@@ -238,7 +265,7 @@ export function Kanban({ taches, enAttente, finies, membres, moiId }: { taches: 
       <div className="flex min-h-0 flex-1">
         <div className="grid min-h-0 flex-1 grid-cols-3 gap-4 px-5 pb-5 pt-4">
           {STATUTS.map((s) => (
-            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id) && !parties.has(id)).map((id) => carte(id, s))} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })}
+            <Colonne key={s} statut={s} taches={colonnes[s].filter((id) => parId.has(id) && !parties.has(id)).map((id) => carte(id, s))} arrivantes={arrivantes.filter((t) => t.statut === s)} membres={membres} onTerminer={onTerminer} onOuvrir={setOuverteId} onAssigner={(id, assigneId) => modifier(id, { assigneId })}
               onNouvelle={() => setDemande({ id: "", titre: "", statut: s })} />
           ))}
         </div>

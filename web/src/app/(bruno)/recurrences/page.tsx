@@ -5,6 +5,7 @@ import { lister } from "@/api/recurrences";
 import { sessionCourante } from "@/auth/serveur";
 import { Initiale } from "@/board/visuel";
 import { db } from "@/db/client";
+import { allegerAvatars } from "@/lib/avatar-url";
 import { membre } from "@/db/schema";
 import { Editeur, type Brouillon } from "@/recurrences/Editeur";
 import { libelleFrequence, libelleNombre } from "@/recurrences/regle";
@@ -19,7 +20,7 @@ export default async function Recurrences({ searchParams }: { searchParams: Prom
   const { regle: ouverteId, nouvelle } = await searchParams;
   const [regles, membres] = await Promise.all([
     lister(session),
-    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)),
+    db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)).then((l) => allegerAvatars(l, (m) => m.id)),
   ]);
   const nomDe = new Map(membres.map((m) => [m.id, m]));
   const ouverte = nouvelle ? null : (regles.find((r) => r.id === ouverteId) ?? regles[0] ?? null);
