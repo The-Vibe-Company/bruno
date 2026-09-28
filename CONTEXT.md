@@ -58,8 +58,9 @@ Une Tâche est dans un et un seul Bucket.
 _Avoid_: Colonne, catégorie, liste, statut
 
 **À trier**:
-Le Bucket où atterrit toute Capture, et le seul dans lequel une Tâche ne fait qu'attendre.
-Elle y reste jusqu'à ce qu'un humain lui donne une destination. Son compteur est l'un des
+Le Bucket de ce qu'on n'a pas encore placé, et le seul dans lequel une Tâche ne fait qu'attendre.
+Elle y reste jusqu'à ce qu'un humain lui donne une destination. Depuis le téléphone, on y envoie
+en choisissant « sans date » ; le défaut, lui, est d'entrer Sur le feu. Son compteur est l'un des
 deux signaux de santé de Bruno.
 _Avoid_: Inbox, boîte de réception, non trié, brouillon
 
@@ -232,8 +233,13 @@ _Avoid_: Point, item, ticket, ordre du jour, todo de réunion
 **Capture**:
 L'acte de créer une Tâche. Principalement vocale et depuis le mobile. Contrainte dure :
 une Capture ne peut jamais échouer — la Tâche est créée immédiatement à partir de la
-transcription brute, et l'enrichissement arrive après, éventuellement bien après. Elle
-atterrit toujours dans À trier, jamais ailleurs.
+transcription brute, et l'enrichissement arrive après, éventuellement bien après.
+
+Depuis le téléphone, elle propose une date et **entre Sur le feu** pour ce jour-là, à mon nom
+(28 septembre 2026, demandé par Antoine) : c'est ce qu'on veut neuf fois sur dix quand on capture
+en marchant, et ça évite de retrier le soir ce qu'on savait déjà en le disant. « Sans date » la
+laisse dans À trier, comme avant. L'API, elle, ne change pas : une Capture naît toujours À trier,
+et c'est le droit d'entrée — Assigné et Engagement — qui la fait passer Sur le feu juste après.
 _Avoid_: Ajout, création, quick add, saisie
 
 **Enrichissement**:

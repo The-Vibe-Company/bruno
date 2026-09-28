@@ -81,6 +81,13 @@ describe("le droit d'entrée Sur le feu", () => {
     expect(sur.engagement).toBe(DEMAIN);
   });
 
+  it("sans Assigné, la Tâche entre au nom de celui qui la pose — la Capture du téléphone", async () => {
+    const t = await capture("Rappeler le notaire");
+    const sur = await T.deplacer(ctx, t.id, { bucket: "sur_le_feu", engagement: DEMAIN, statut: "a_faire" } as never);
+    expect(sur.assigneId).toBe(ctx.membreId);
+    expect(sur.engagement).toBe(DEMAIN);
+  });
+
   it("laisse une Idée monter À venir puis redescendre, sans rien perdre", async () => {
     const t = await capture("Une newsletter");
     await T.deplacer(ctx, t.id, { bucket: "idees" });

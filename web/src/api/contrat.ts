@@ -71,7 +71,8 @@ export const ModifierTache = z.object({
 export const DeplacerTache = z.discriminatedUnion("bucket", [
   z.object({
     bucket: z.literal("sur_le_feu"),
-    assigneId: uuid,
+    /** Omis, c'est moi : depuis le téléphone, on entre sa propre Tâche sans se nommer. */
+    assigneId: uuid.optional(),
     engagement: jour,
     statut: Statut.default("a_faire"),
     raison: z.string().trim().min(1).optional(),

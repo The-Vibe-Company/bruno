@@ -3,7 +3,12 @@ import SwiftUI
 /**
  L'écran Capture — le pilier 1. Un gros micro au centre, la transcription en direct, un champ
  texte juste dessous qui n'est pas optionnel (réunions, transports, open space), et un bouton qui
- dit où ça va : « Envoyer dans À trier ». L'état du réseau se lit en haut ; il n'arrête rien.
+ dit où ça va. L'état du réseau se lit en haut ; il n'arrête rien.
+
+ **Une Capture part Sur le feu, pour aujourd'hui, à mon nom** : c'est ce qu'on veut neuf fois sur
+ dix quand on capture en marchant, et ça évite d'avoir à trier le soir ce qu'on savait déjà en le
+ disant. Trois raccourcis pour changer d'avis, et « sans date » remet la Capture dans À trier,
+ comme avant.
  */
 struct CaptureVue: View {
     /// Depuis le widget : on enregistre dès l'ouverture, sans un tap de plus.
@@ -12,6 +17,9 @@ struct CaptureVue: View {
     @State private var transcripteur = Transcripteur()
     @State private var texte = ""
     @State private var envoye = false
+    /// Le jour proposé. `nil` : pas de date, la Capture attend dans À trier.
+    @State private var quand: String? = Jours.aujourdhui()
+    @State private var autreDate: Date = Calendar.current.date(byAdding: .day, value: 3, to: .now) ?? .now
     private let file = FileAttente.partagee
 
     private var pret: Bool { !texte.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !transcripteur.texte.isEmpty }
@@ -98,8 +106,10 @@ struct CaptureVue: View {
             .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Teinte.bord))
 
+            dates
+
             Button(action: envoyer) {
-                Text(envoye ? "Envoyé" : "Envoyer dans À trier")
+                Text(envoye ? "Envoyé" : quand == nil ? "Envoyer dans À trier" : "Envoyer Sur le feu")
                     .font(.system(size: 16, weight: .medium)).foregroundStyle(Teinte.surAccent)
                     .frame(maxWidth: .infinity, minHeight: 52)
                     .background(Teinte.accent, in: RoundedRectangle(cornerRadius: 12))
@@ -110,6 +120,40 @@ struct CaptureVue: View {
         .padding(.horizontal, 20).padding(.bottom, 12)
     }
 
+    /// Pour quand ? Trois raccourcis et une date libre ; « sans date » renvoie la Capture au tri.
+    private var dates: some View {
+        HStack(spacing: 7) {
+            choixDate("aujourd'hui", valeur: Jours.aujourdhui())
+            choixDate("demain", valeur: Jours.demain())
+            ZStack {
+                pastille(titre: "autre", sous: estAutre ? Jours.libelle(quand!) : "date", actif: estAutre)
+                DatePicker("Autre date", selection: $autreDate, in: Date.now..., displayedComponents: .date).labelsHidden().blendMode(.destinationOver)
+                    .onChange(of: autreDate) { _, d in quand = Jours.jour(d) }
+            }
+            Button { quand = nil } label: { pastille(titre: "sans", sous: "à trier", actif: quand == nil) }.buttonStyle(.plain)
+        }
+    }
+
+    private var estAutre: Bool { quand != nil && quand != Jours.aujourdhui() && quand != Jours.demain() }
+
+    private func choixDate(_ titre: String, valeur: String) -> some View {
+        Button { quand = valeur } label: { pastille(titre: titre, sous: Jours.court(valeur), actif: quand == valeur) }
+            .buttonStyle(.plain)
+    }
+
+    private func pastille(titre: String, sous: String, actif: Bool) -> some View {
+        VStack(spacing: 2) {
+            // « aujourd'hui » ne tient pas sur une pastille au quart de l'écran : il rétrécit plutôt que de se couper en deux.
+            Text(titre).font(.system(size: 14.5, weight: .medium)).foregroundStyle(Teinte.texte)
+                .lineLimit(1).minimumScaleFactor(0.7)
+            Text(sous).font(.system(size: 12)).foregroundStyle(Teinte.texteSourd)
+                .lineLimit(1).minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity, minHeight: 50)
+        .background(actif ? Teinte.accent.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(actif ? Teinte.accent : Teinte.bordFort))
+    }
+
     /// Le titre, c'est ce qu'on a écrit — sinon ce qu'on a dit. La transcription brute part toujours telle quelle.
     private func envoyer() {
         if transcripteur.enCours { transcripteur.arreter() }
@@ -117,7 +161,7 @@ struct CaptureVue: View {
         let dit = transcripteur.texte
         let titre = ecrit.isEmpty ? dit : ecrit
         guard !titre.isEmpty else { return }
-        file.ajouter(titre: titre, transcription: dit.isEmpty ? nil : dit, audio: transcripteur.fichierAudio)
+        file.ajouter(titre: titre, transcription: dit.isEmpty ? nil : dit, audio: transcripteur.fichierAudio, engagement: quand)
         envoye = true
         Task {
             try? await Task.sleep(for: .milliseconds(500))

@@ -175,7 +175,8 @@ export async function deplacer(ctx: Ctx, id: string, cible: z.infer<typeof C.Dep
         statut: surLeFeu ? (cible.statut ?? "a_faire") : null,
         raisonBlocage: surLeFeu && cible.statut === "bloque" ? cible.raison! : null,
         bloqueLe: surLeFeu && cible.statut === "bloque" ? sql`coalesce(${tache.bloqueLe}, now())` : null,
-        ...(surLeFeu ? { assigneId: cible.assigneId, engagement: cible.engagement } : {}),
+        // Le droit d'entrée exige un Assigné ; ne pas le dire, c'est se désigner soi-même.
+        ...(surLeFeu ? { assigneId: cible.assigneId ?? ctx.membreId, engagement: cible.engagement } : {}),
         ...(cible.bucket === "a_venir" && cible.engagement !== undefined
           ? { engagement: cible.engagement }
           : {}),
