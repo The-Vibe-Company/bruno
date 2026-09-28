@@ -1,0 +1,49 @@
+web/src/app/(bruno)/Rail.tsx
+  s_09427aeab13931::t_34ea00a16f55cd 17-18
+web/src/app/(bruno)/clients/[id]/page.tsx
+  s_09427aeab13931::t_c47216d750e5b9 1-72
+web/src/app/(bruno)/clients/page.tsx
+  s_09427aeab13931::t_c47216d750e5b9 44
+  s_09427aeab13931::t_f865437ec0ab43 39
+  s_09427aeab13931::t_34ea00a16f55cd 1-38,40-43,45-61
+ios/Bruno/Aujourdhui/AujourdhuiVue.swift
+  s_09427aeab13931::t_19ed9512c52d60 83,99
+web/src/board/Affectations.tsx
+  s_09427aeab13931::t_34ea00a16f55cd 15,19
+web/src/api/journal.ts
+  s_09427aeab13931::t_c47216d750e5b9 28
+web/src/fait/Semaine.tsx
+  s_09427aeab13931::t_34ea00a16f55cd 50
+web/src/app/(bruno)/daily/page.tsx
+  s_09427aeab13931::t_893d77778564d5 3-4
+  s_09427aeab13931::t_5c848e33ba7fa8 36,45-47,74-75
+web/src/reglages/Affectations.tsx
+  s_09427aeab13931::t_34ea00a16f55cd 9-15,17
+web/src/api/rattachements.ts
+  s_09427aeab13931::t_c47216d750e5b9 16-20,147
+ios/Bruno/Aujourdhui/AffectationFeuille.swift
+  s_09427aeab13931::t_19ed9512c52d60 50
+CONTEXT.md
+  s_09427aeab13931::t_49abb81e814a5c 134-146
+  s_09427aeab13931::t_f8eb90a991a6e8 223,231,242
+  s_09427aeab13931::t_813dd72ad71f28 149,151-153,157,159,161,164-169
+  s_09427aeab13931::t_86a4521518d382 224-227
+tickets/E6-affectations.md
+  s_09427aeab13931::t_04e13217ee0787 3-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e645edabbac0a628adc74caa681b451410fc8785",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
