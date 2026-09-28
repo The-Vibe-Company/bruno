@@ -4,17 +4,17 @@ import { etat } from "@/api/journal";
 import { ErreurApi } from "@/api/erreurs";
 import { sessionCourante } from "@/auth/serveur";
 import { Initiale } from "@/board/visuel";
-import { Journal } from "@/affectations/Journal";
+import { Journal } from "@/clients/Journal";
 import { libelleDate, libelleDuree } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
 /**
- * L'état des lieux d'une Affectation : qui est dessus aujourd'hui, qui y est passé, et le journal
+ * L'état des lieux d'un Client : qui est dessus aujourd'hui, qui y est passé, et le journal
  * — ce qu'on s'est dit dessus, daté. Les Tâches n'y figurent pas : une Tâche ne porte jamais
  * d'Affectation, c'est un invariant du produit, et le journal existe justement pour ça.
  */
-export default async function FicheAffectation({ params }: { params: Promise<{ id: string }> }) {
+export default async function FicheClient({ params }: { params: Promise<{ id: string }> }) {
   const session = await sessionCourante();
   if (!session) redirect("/api/auth/google");
   const { id } = await params;
@@ -27,11 +27,11 @@ export default async function FicheAffectation({ params }: { params: Promise<{ i
   return (
     <>
       <header className="flex h-12 flex-none items-center gap-3 border-b border-bord-2 px-5">
-        <Link href="/affectations" className="text-[13px] text-texte-sourd hover:text-texte">Affectations</Link>
+        <Link href="/clients" className="text-[13px] text-texte-sourd hover:text-texte">Clients</Link>
         <span className="text-texte-faible">/</span>
         <span className="h-4 w-1 flex-none rounded-full" style={{ background: vue.couleur }} />
         <h1 className="text-[17px] font-medium tracking-tight">{vue.nom}</h1>
-        {!vue.actif && <span className="text-[12.5px] text-texte-faible">désactivée</span>}
+        {!vue.actif && <span className="text-[12.5px] text-texte-faible">désactivé</span>}
       </header>
 
       <main className="grid min-h-0 flex-1 grid-cols-1 gap-10 overflow-y-auto px-10 py-8 lg:grid-cols-[minmax(0,1fr)_320px]">

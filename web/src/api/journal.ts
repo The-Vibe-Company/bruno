@@ -25,7 +25,7 @@ export type Etat = {
 async function lire(ctx: Ctx, id: string) {
   const [a] = await db.select().from(affectation)
     .where(and(eq(affectation.id, id), eq(affectation.spaceId, ctx.spaceId), eq(affectation.genre, "affectation")));
-  if (!a) throw introuvable("Affectation");
+  if (!a) throw introuvable("Client");
   return a;
 }
 

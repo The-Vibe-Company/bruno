@@ -131,37 +131,42 @@ _Avoid_: statut, connecté, en ligne
 
 ### Les affectations
 
-**Affectation**:
-Ce à quoi un Membre travaille : un client comme MONKA ou Coup de Pâtes, ou un sujet interne.
-Le mot est volontairement plus large que « client » — `Interne` en est une. La liste se gère
-dans les Réglages. **Désactiver** est le geste normal : l'Affectation sort des choix, et
-l'historique continue de la nommer. **Supprimer** existe aussi, et efface les périodes avec :
-les Réglages disent combien avant de laisser cliquer. Une Affectation ne se pose jamais sur
-une Tâche.
-_Avoid_: Client, compte, dossier, mission, projet
+**Client**:
+Ce à quoi un Membre travaille : un client comme MONKA ou Coup de Pâtes, ou un sujet interne —
+`Interne` en est un, et c'est assumé. La liste se gère dans les Réglages. **Désactiver** est le
+geste normal : le Client sort des choix, et l'historique continue de le nommer. **Supprimer**
+existe aussi, et efface les périodes avec : les Réglages disent combien avant de laisser cliquer.
+Un Client ne se pose jamais sur une Tâche ; ce qui s'y passe se note dans son [[Journal]].
+
+Le mot était **Affectation** jusqu'au 28 septembre 2026 — délibérément plus large que « client »,
+justement pour couvrir l'interne. Antoine a tranché pour « Client », qui est le mot qu'on emploie
+en parlant. **Le code dit encore `affectation`** : table, routes d'API, types, et l'app iOS qui
+les appelle. La traduction se fait à la frontière (les mots à l'écran, les messages d'erreur).
+Renommer le reste demande une migration et une version iOS : à faire à part, pas en passant.
+_Avoid_: Affectation (à l'écran), compte, dossier, mission, projet
 
 **Projet**:
-Un second axe de rattachement, **exactement la même chose qu'une Affectation** et géré pareil :
+Un second axe de rattachement, **exactement la même chose qu'un Client** et géré pareil :
 liste ouverte dans les Réglages, désactiver plutôt que supprimer, on se pose dessus depuis le
-bandeau, plusieurs à la fois, et l'historique garde depuis quand. Un Membre peut être sur une
-Affectation *et* sur des Projets ; les deux listes sont indépendantes, et un Projet peut porter
-le nom d'une Affectation. Comme elle, un Projet ne se pose jamais sur une Tâche.
+bandeau, plusieurs à la fois, et l'historique garde depuis quand. Un Membre peut être sur un
+Client *et* sur des Projets ; les deux listes sont indépendantes, et un Projet peut porter le
+nom d'un Client. Comme lui, un Projet ne se pose jamais sur une Tâche.
 _Avoid_: Chantier, mission, epic, initiative
 
 **Journal**:
-Ce qu'on note sur une Affectation, daté et signé : « devis envoyé », « ils ne répondent plus »,
+Ce qu'on note sur un Client, daté et signé : « devis envoyé », « ils ne répondent plus »,
 « réunion de cadrage le 12 ». Il s'ajoute, il ne s'édite pas — un journal qu'on réécrit ne vaut
-plus rien — et chacun n'efface que ses propres lignes. C'est la mémoire d'un client : Bruno savait
+plus rien — et chacun n'efface que ses propres lignes. C'est la mémoire d'un Client : Bruno savait
 qui était dessus et depuis quand, il ne savait pas où on en était avec eux. Une Tâche n'y figure
-pas : elle ne porte jamais d'Affectation.
+pas : elle ne porte jamais de Client.
 _Avoid_: Commentaire, note (c'est le champ d'une Tâche), compte rendu, CRM
 
-**Être sur une Affectation**:
-Un Membre est sur une ou plusieurs Affectations, à partir d'une date, jusqu'à ce qu'il en
-sorte. Ce n'est pas une Tâche : une Tâche a une fin, être sur une Affectation a une durée.
-On ne la termine pas chaque soir pour la recréer le lendemain, et **on ne la coche jamais** :
-l'unique action est « je ne suis plus dessus ». L'interface n'a jamais besoin d'un second
-mot — elle dit simplement « Affectation : MONKA ».
+**Être sur un Client**:
+Un Membre est sur un ou plusieurs Clients, à partir d'une date, jusqu'à ce qu'il en sorte. Ce
+n'est pas une Tâche : une Tâche a une fin, être sur un Client a une durée. On ne le termine pas
+chaque soir pour le recréer le lendemain, et **on ne le coche jamais** : l'unique action est
+« je ne suis plus dessus ». L'interface n'a jamais besoin d'un second mot — elle dit simplement
+« MONKA ».
 _Avoid_: Focus, mission, allocation, timesheet, tâche récurrente
 
 ### Le temps et la relance
@@ -215,13 +220,15 @@ _Avoid_: Horaire, slot, plage, plage horaire
 
 **Daily**:
 La réunion d'équipe du matin, et l'écran partagé qui lui sert d'interface. Une colonne par
-Membre : son Affectation du jour, ce qu'il a Sur le feu aujourd'hui, ce qui est Bloqué, et
-**ce qu'il a fait hier** — Tâches terminées et Affectation de la veille. Il est en lecture
-seule et n'introduit aucune donnée qui n'existe déjà ailleurs.
+Membre : son Client du jour, ce qu'il a Sur le feu aujourd'hui, ce qui est Bloqué, et
+**ce qu'il a fait hier** — Tâches terminées et Client de la veille. Il n'introduit aucune donnée
+qui n'existe déjà ailleurs, mais il se travaille : on y coche, on y glisse une carte d'une
+colonne à l'autre, on y ajoute, et **on y change le Client de chacun** — c'est la réunion où on
+se le dit.
 _Avoid_: Standup, réunion, dashboard, tableau de bord
 
 **Weekly**:
-La réunion de la semaine, et son écran. Comme le Daily, il rappelle l'Affectation de chacun —
+La réunion de la semaine, et son écran. Comme le Daily, il rappelle le Client de chacun —
 mais il porte une chose à lui : trois encarts repliables, *Skills of the week*, *Projects of the
 week*, *Wins of the week*, remplis de **Sujets**. Une semaine, une page blanche : rien ne se
 traîne d'une semaine à l'autre.
@@ -232,7 +239,7 @@ Une ligne dans un encart du Weekly : un texte, la personne dont il relève, sa *
 parfois un lien. Chaque Rubrique dit une chose différente : *Leads* et *Wins* sont **une phrase
 courte** (« on a signé AFP ») ; *Skills* et *Posts* sont **un titre et un lien**. *Projects* ne se
 remplit pas : c'est le **récap** des Projets de la semaine et de qui a bossé dessus, lu des
-Affectations déjà posées. N'importe qui écrit sur la liste de n'importe qui — c'est une réunion,
+Clients déjà posés. N'importe qui écrit sur la liste de n'importe qui — c'est une réunion,
 pas un dossier personnel. Un Sujet n'est pas une Tâche : rien à terminer, rien à reporter.
 _Avoid_: Point, item, ticket, ordre du jour, todo de réunion
 

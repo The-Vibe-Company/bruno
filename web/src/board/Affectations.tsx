@@ -12,11 +12,11 @@ export type Genre = "affectation" | "projet";
 
 /** Les deux axes. Même mécanique, deux chemins — et deux poids à l'écran. */
 const CHEMIN: Record<Genre, string> = { affectation: "/api/affectations", projet: "/api/projets" };
-const AJOUTER: Record<Genre, string> = { affectation: "Nouvelle Affectation", projet: "Nouveau Projet" };
+const AJOUTER: Record<Genre, string> = { affectation: "Nouveau Client", projet: "Nouveau Projet" };
 
 /** Une ligne du bandeau : d'où elle vient, pour savoir quoi fermer et comment l'écrire. */
 type Ligne = Sur & { genre: Genre };
-const VIDE: Record<Genre, string> = { affectation: "Aucune Affectation", projet: "Aucun Projet" };
+const VIDE: Record<Genre, string> = { affectation: "Aucun Client", projet: "Aucun Projet" };
 /** Une coche : `genre:affectationId` — les deux axes ont leurs propres identifiants. */
 const cle = (genre: Genre, id: string) => `${genre}:${id}`;
 

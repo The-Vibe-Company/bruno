@@ -1,5 +1,10 @@
 # E6 — Affectations · **Invariant 6**
 
+> **28 septembre 2026 — le mot est « Client ».** Antoine a renommé l'Affectation en Client à
+> l'écran. Le code (table `affectation`, routes `/api/affectations`, types, app iOS) garde
+> l'ancien nom : la traduction se fait à la frontière. Renommer le reste demande une migration
+> et une version iOS — à faire à part.
+
 > Une Tâche a une fin, être sur une Affectation a une durée. On ne la coche jamais.
 >
 > **Vocabulaire tranché le 7 septembre** : le mot est `Affectation`, pas `Client` — `Interne`

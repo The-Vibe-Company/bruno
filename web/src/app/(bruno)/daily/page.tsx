@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { auJour, enCours } from "@/api/affectations";
-import { auJour as projetsAuJour, enCours as projetsEnCours } from "@/api/projets";
+import { auJour, enCours, lister as listerAffectations } from "@/api/affectations";
+import { auJour as projetsAuJour, enCours as projetsEnCours, lister as listerProjets } from "@/api/projets";
 import { lister, terminees } from "@/api/taches";
 import { sessionCourante } from "@/auth/serveur";
 import { Affectations } from "@/board/Affectations";
@@ -33,7 +33,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   const { jour } = instant();
   const hier = jourOuvrePrecedent(jour);
 
-  const [dujour, projetsDuJour, delaVeille, projetsDeLaVeille, finies, feu, membres] = await Promise.all([
+  const [dujour, projetsDuJour, delaVeille, projetsDeLaVeille, finies, feu, membres, choix, choixProjets] = await Promise.all([
     enCours(session).then(parMembre),
     projetsEnCours(session).then(parMembre),
     auJour(session, hier).then(parMembre),
@@ -42,6 +42,9 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
     terminees(session, hier, jour),
     lister(session, { bucket: "sur_le_feu", inclureTerminees: false }),
     db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre).where(eq(membre.spaceId, session.spaceId)).then((l) => allegerAvatars(l, (m) => m.id)),
+    // De quoi changer qui est sur quoi sans quitter la réunion : c'est là qu'on se le dit.
+    listerAffectations(session),
+    listerProjets(session),
   ]);
   const parId = new Map(membres.map((m) => [m.id, m]));
   const personne = (id: string) => { const m = parId.get(id); return { nom: m?.nom ?? "?", avatar: m?.avatar ?? null }; };
@@ -68,7 +71,8 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
         <div className="flex-1" />
         <FiltreMembres membres={membres} retenus={[...actifs]} />
       </header>
-      <Affectations membres={deLui(dujour)} projets={deLui(projetsDuJour)} moiId="" choix={[]} lectureSeule />
+      <Affectations membres={deLui(dujour)} projets={deLui(projetsDuJour)} moiId={session.membreId}
+        choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
       <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden">
         <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} />
         <SurLeFeu taches={tachesFeu} membres={membres} assigneParDefaut={assigneParDefaut} />

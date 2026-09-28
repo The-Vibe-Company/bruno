@@ -13,8 +13,11 @@ import { instant } from "@/relances/temps";
 import { ErreurApi, introuvable } from "./erreurs";
 
 export type Genre = "affectation" | "projet";
-/** Ce que le message d'erreur doit dire quand on ne trouve pas : « Affectation » ou « Projet ». */
-const NOM: Record<Genre, string> = { affectation: "Affectation", projet: "Projet" };
+/**
+ * Ce que le message d'erreur doit dire quand on ne trouve pas. Le code garde le mot
+ * `affectation` ; à l'écran, on dit « Client » depuis le 28 septembre 2026.
+ */
+const NOM: Record<Genre, string> = { affectation: "Client", projet: "Projet" };
 
 /** `periodes` : combien de fois quelqu'un s'est posé dessus. Zéro veut dire « ça n'a jamais servi ». */
 export type Affectation = { id: string; nom: string; couleur: string; actif: boolean; periodes: number };
@@ -141,7 +144,7 @@ export async function poser(ctx: Ctx, genre: Genre, membreId: string, affectatio
   const [a] = await db.select({ actif: affectation.actif }).from(affectation)
     .where(and(eq(affectation.id, affectationId), eq(affectation.spaceId, ctx.spaceId), eq(affectation.genre, genre)));
   if (!a) throw introuvable(NOM[genre]);
-  if (!a.actif) throw new ErreurApi("affectation_desactivee", 422, `${genre === "projet" ? "Ce Projet est désactivé" : "Cette Affectation est désactivée"} : réactivez-le d'abord dans les Réglages.`);
+  if (!a.actif) throw new ErreurApi("affectation_desactivee", 422, `${genre === "projet" ? "Ce Projet est désactivé" : "Ce Client est désactivé"} : réactivez-le d'abord dans les Réglages.`);
   const [m] = await db.select({ id: membre.id }).from(membre).where(and(eq(membre.id, membreId), eq(membre.spaceId, ctx.spaceId), eq(membre.actif, true)));
   if (!m) throw introuvable("Membre");
   const deja = await db.select({ id: affectationMembre.id }).from(affectationMembre)

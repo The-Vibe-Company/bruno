@@ -47,7 +47,7 @@ struct AffectationFeuille: View {
                     }
                     .buttonStyle(.plain)
                 }
-                if choix.isEmpty { Text("Aucune Affectation active — ajoutez-en une dans les Réglages du web.").font(.system(size: 14)).foregroundStyle(Teinte.texteSourd).padding(14) }
+                if choix.isEmpty { Text("Aucun Client actif — ajoutez-en un dans les Réglages du web.").font(.system(size: 14)).foregroundStyle(Teinte.texteSourd).padding(14) }
             }
             .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Teinte.bord))

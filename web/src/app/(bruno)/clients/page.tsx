@@ -10,10 +10,11 @@ import { libelleDate } from "@/lib/dates";
 export const dynamic = "force-dynamic";
 
 /**
- * Nos Affectations, une par carte : nos clients, et ce qui est interne. On sait depuis toujours
- * qui est sur quoi ; on ne savait pas où on en est avec eux. C'est ce que cet écran ouvre.
+ * Nos Clients, un par carte — et « Interne » en est un, puisque c'est la même liste : ce à quoi
+ * on peut travailler. On sait depuis toujours qui est sur quoi ; on ne savait pas où on en est
+ * avec eux. C'est ce que cet écran ouvre.
  */
-export default async function Affectations() {
+export default async function Clients() {
   const session = await sessionCourante();
   if (!session) redirect("/api/auth/google");
   const [lignes, sur] = await Promise.all([
@@ -29,18 +30,18 @@ export default async function Affectations() {
   return (
     <>
       <header className="flex h-12 flex-none items-center gap-5 border-b border-bord-2 px-5">
-        <h1 className="text-[17px] font-medium tracking-tight">Affectations</h1>
+        <h1 className="text-[17px] font-medium tracking-tight">Clients</h1>
         <span className="text-[13px] text-texte-sourd">{lignes.filter((a) => a.actif).length} en cours</span>
       </header>
       <main className="min-h-0 flex-1 overflow-y-auto px-10 py-8">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {lignes.map((a) => (
-            <Link key={a.id} href={`/affectations/${a.id}`}
+            <Link key={a.id} href={`/clients/${a.id}`}
               className="flex flex-col gap-3 rounded-xl border border-bord-2 bg-surface p-4 transition-colors hover:border-bord-fort">
               <div className="flex items-center gap-2.5">
                 <span className="h-5 w-1 flex-none rounded-full" style={{ background: a.couleur }} />
                 <span className={`flex-1 truncate text-[16px] font-medium tracking-tight ${a.actif ? "" : "text-texte-faible"}`}>{a.nom}</span>
-                {!a.actif && <span className="text-[12px] text-texte-faible">désactivée</span>}
+                {!a.actif && <span className="text-[12px] text-texte-faible">désactivé</span>}
               </div>
               <div className="flex min-h-6 items-center gap-2">
                 {(dessus.get(a.id) ?? []).map((m) => <Initiale key={m.nom} nom={m.nom} avatar={m.avatar} grande />)}

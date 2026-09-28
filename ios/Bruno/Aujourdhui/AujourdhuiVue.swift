@@ -80,7 +80,7 @@ struct AujourdhuiVue: View {
                 if modele.mesAffectations.isEmpty {
                     HStack(spacing: 10) {
                         RoundedRectangle(cornerRadius: 1).stroke(Color(hex: 0x4A4A4A), style: StrokeStyle(lineWidth: 1, dash: [3, 2])).frame(width: 4, height: 20)
-                        Text("Aucune Affectation").font(.system(size: 17, weight: .medium)).foregroundStyle(Teinte.texteSourd)
+                        Text("Aucun Client").font(.system(size: 17, weight: .medium)).foregroundStyle(Teinte.texteSourd)
                     }
                 }
                 ForEach(modele.mesAffectations) { sur in
@@ -96,7 +96,7 @@ struct AujourdhuiVue: View {
                 Image(systemName: "pencil").font(.system(size: 14, weight: .medium)).foregroundStyle(Teinte.texteSourd)
                     .frame(width: 32, height: 32).overlay(RoundedRectangle(cornerRadius: 8).stroke(Teinte.bordFort))
             }
-            .accessibilityLabel("Changer d’Affectation")
+            .accessibilityLabel("Changer de Client")
         }
         .padding(.horizontal, 14).padding(.vertical, 10).frame(minHeight: 52)
         .background(Teinte.surface, in: RoundedRectangle(cornerRadius: 14))
