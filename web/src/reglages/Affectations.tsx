@@ -6,9 +6,15 @@ import { PALETTE } from "./palette";
 
 export type Affectation = { id: string; nom: string; couleur: string; actif: boolean; periodes: number };
 
-/** Les mots changent, les gestes non : une Affectation et un Projet se gèrent pareil. */
+/**
+ * Les mots changent, les gestes non : un Client et un Projet se gèrent pareil.
+ *
+ * Le code dit encore `affectation` — table, routes, types. Antoine a renommé le mot à l'écran le
+ * 28 septembre 2026 ; renommer le reste demande une migration et une version iOS, c'est un
+ * chantier à part. Ici, on traduit à la frontière.
+ */
 export type Vocabulaire = { titre: string; chemin: string; un: string; le: string; ajouter: string; la: string; e: string };
-export const AFFECTATIONS: Vocabulaire = { titre: "Affectations", chemin: "/api/affectations", un: "une Affectation", le: "l’", ajouter: "+ Ajouter une Affectation", la: "la", e: "e" };
+export const AFFECTATIONS: Vocabulaire = { titre: "Clients", chemin: "/api/affectations", un: "un Client", le: "le ", ajouter: "+ Ajouter un Client", la: "le", e: "" };
 export const PROJETS: Vocabulaire = { titre: "Projets", chemin: "/api/projets", un: "un Projet", le: "le ", ajouter: "+ Ajouter un Projet", la: "le", e: "" };
 
 /**

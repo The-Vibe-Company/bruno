@@ -47,7 +47,7 @@ export function Semaine({ semaine, membres, onOuvrir }: { semaine: Semaine; memb
           <section key={p.id} className="row-span-3 grid grid-rows-subgrid">
             <h3 className="flex items-center gap-2 text-[13.5px] text-texte-sourd"><Initiale nom={p.nom} avatar={p.avatar} />{p.nom}</h3>
             <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 self-start">
-              {p.sur.length === 0 && p.projets.length === 0 && <span className="text-[15px] text-texte-faible">Aucune Affectation</span>}
+              {p.sur.length === 0 && p.projets.length === 0 && <span className="text-[15px] text-texte-faible">Aucun Client</span>}
               {p.sur.map((a) => (
                 <span key={a.id} className="flex items-center gap-2.5">
                   <span className="h-[18px] w-1 flex-none" style={{ background: a.couleur }} />
