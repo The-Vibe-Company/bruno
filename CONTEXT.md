@@ -148,6 +148,14 @@ Affectation *et* sur des Projets ; les deux listes sont indépendantes, et un Pr
 le nom d'une Affectation. Comme elle, un Projet ne se pose jamais sur une Tâche.
 _Avoid_: Chantier, mission, epic, initiative
 
+**Journal**:
+Ce qu'on note sur une Affectation, daté et signé : « devis envoyé », « ils ne répondent plus »,
+« réunion de cadrage le 12 ». Il s'ajoute, il ne s'édite pas — un journal qu'on réécrit ne vaut
+plus rien — et chacun n'efface que ses propres lignes. C'est la mémoire d'un client : Bruno savait
+qui était dessus et depuis quand, il ne savait pas où on en était avec eux. Une Tâche n'y figure
+pas : elle ne porte jamais d'Affectation.
+_Avoid_: Commentaire, note (c'est le champ d'une Tâche), compte rendu, CRM
+
 **Être sur une Affectation**:
 Un Membre est sur une ou plusieurs Affectations, à partir d'une date, jusqu'à ce qu'il en
 sorte. Ce n'est pas une Tâche : une Tâche a une fin, être sur une Affectation a une durée.

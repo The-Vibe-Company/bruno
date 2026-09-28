@@ -338,6 +338,27 @@ export const abonnementPush = pgTable("abonnement_push", {
   check("abonnement_push_cles_web", sql`${t.canal} <> 'web' OR (${t.p256dh} IS NOT NULL AND ${t.auth} IS NOT NULL)`),
 ]);
 
+/* ------------------------------------------------------------------ le journal */
+
+/**
+ * Ce qu'on note sur une Affectation : « devis signé », « réunion de cadrage le 12 », « ils ne
+ * répondent plus ». Daté, signé, et jamais écrasé — c'est un journal, pas une fiche.
+ *
+ * Il ne remplace ni les Tâches ni les Notes d'une Tâche : celles-là disent ce qu'on fait, le
+ * journal dit ce qui s'est passé. Un Membre parti laisse ses entrées ; c'est le passé commun.
+ */
+export const journal = pgTable("journal", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  affectationId: uuid("affectation_id").notNull().references(() => affectation.id, { onDelete: "cascade" }),
+  auteurId: uuid("auteur_id").references(() => membre.id, { onDelete: "set null" }),
+  texte: text("texte").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  check("journal_texte_non_vide", sql`length(btrim(${t.texte})) > 0`),
+  index("journal_par_affectation").on(t.affectationId, t.createdAt),
+]);
+
 /* ------------------------------------------------------------------ qui est là */
 
 /**
