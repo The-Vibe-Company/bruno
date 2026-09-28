@@ -11,7 +11,11 @@ Maquette : `Bruno iOS v2` → écran « Capture ».
 - [x] Champ texte juste en dessous — **pas optionnel** (réunions, transports, open space)
 - [x] Compteur de durée
 - [x] Bandeau d'état réseau : `hors ligne · N en attente d'envoi`
-- [x] Bouton d'action libellé **« Envoyer dans À trier »** — la destination est explicite
+- [x] Bouton d'action **explicite sur la destination** : « Envoyer Sur le feu » avec une date,
+      « Envoyer dans À trier » sans
+- [x] **Une date proposée** (28 septembre 2026) : aujourd'hui par défaut, demain, une date libre,
+      ou « sans ». Avec une date, la Capture entre Sur le feu à mon nom — l'API garde son
+      invariant, c'est le droit d'entrée qui l'y fait passer juste après
 - [x] Accessible depuis le bouton central de la barre d'onglets, sur tous les écrans
 
 ## BRU-7 — La Capture ne peut jamais échouer *(règle 1)* · **livré le 9 septembre**

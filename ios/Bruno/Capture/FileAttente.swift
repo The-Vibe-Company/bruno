@@ -10,12 +10,27 @@ struct Capture: Codable, Identifiable, Sendable {
     let audio: String?
     let creeLe: Date
     var essais: Int
+    /// Le jour pour lequel on s'engage. `nil` : la Capture reste À trier, comme avant.
+    var engagement: String?
+    /// L'identifiant rendu par le serveur, une fois la Tâche créée : le deuxième appel s'y accroche
+    /// si le réseau lâche entre les deux, et on ne recrée jamais la même Tâche.
+    var idServeur: String?
 }
 
 /// Ce que le serveur reçoit — le titre, et la transcription brute qui ne s'écrase jamais (règle 3).
 private struct CorpsCapture: Encodable, Sendable {
     let titre: String
     let transcriptionBrute: String?
+}
+
+/// Ce qu'il rend : de quoi enchaîner sur le droit d'entrée.
+private struct TacheCreee: Decodable, Sendable { let id: String }
+
+/// Le droit d'entrée, vu du téléphone : une date, et rien d'autre — l'Assigné, c'est moi.
+private struct CorpsEntree: Encodable, Sendable {
+    let bucket = "sur_le_feu"
+    let engagement: String
+    let statut = "a_faire"
 }
 
 /**
@@ -57,9 +72,14 @@ final class FileAttente {
 
     var enAttente: Int { captures.count }
 
-    /// Poser une Capture : sur le disque d'abord, puis on tente l'envoi. Elle apparaît dans À trier de toute façon.
-    func ajouter(titre: String, transcription: String?, audio: URL?) {
-        let capture = Capture(id: UUID(), titre: titre, transcriptionBrute: transcription, audio: audio?.lastPathComponent, creeLe: .now, essais: 0)
+    /**
+     Poser une Capture : sur le disque d'abord, puis on tente l'envoi.
+
+     Avec un `engagement`, elle entre **Sur le feu** pour ce jour-là, à mon nom — c'est ce qu'on
+     veut neuf fois sur dix quand on capture en marchant. Sans, elle attend dans À trier.
+     */
+    func ajouter(titre: String, transcription: String?, audio: URL?, engagement: String? = nil) {
+        let capture = Capture(id: UUID(), titre: titre, transcriptionBrute: transcription, audio: audio?.lastPathComponent, creeLe: .now, essais: 0, engagement: engagement)
         captures.append(capture)
         sauver()
         Task { await envoyer() }
@@ -72,7 +92,19 @@ final class FileAttente {
         defer { envoiEnCours = false }
         while let capture = captures.first {
             do {
-                try await Api.partagee.poster("api/taches", CorpsCapture(titre: capture.titre, transcriptionBrute: capture.transcriptionBrute))
+                // Deux temps, et un seul essai pour le premier : l'identifiant gardé empêche le doublon.
+                let id: String
+                if let dejaCreee = capture.idServeur {
+                    id = dejaCreee
+                } else {
+                    let creee: TacheCreee = try await Api.partagee.envoyer("api/taches", CorpsCapture(titre: capture.titre, transcriptionBrute: capture.transcriptionBrute))
+                    id = creee.id
+                    captures[0].idServeur = id
+                    sauver()
+                }
+                if let engagement = capture.engagement {
+                    try await Api.partagee.poster("api/taches/\(id)/bucket", CorpsEntree(engagement: engagement))
+                }
                 retirer(capture)
             } catch let erreur as Api.Erreur where erreur.statut == 401 {
                 // Garder la capture : la connexion relancera la file quand la session reviendra.
