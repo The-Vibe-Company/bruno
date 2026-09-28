@@ -14,7 +14,7 @@ const composants = {
   Reordonner: C.Reordonner, Reporter: C.Reporter,
   Creneau: C.Creneau, PoserCreneau: C.PoserCreneau,
   Affectation: C.Affectation, AjouterAffectation: C.AjouterAffectation, ActiverAffectation: C.ActiverAffectation,
-  AbonnerAppareil: C.AbonnerAppareil, AbonnerIphone: C.AbonnerIphone, Battre: C.Battre,
+  AbonnerAppareil: C.AbonnerAppareil, AbonnerIphone: C.AbonnerIphone, Battre: C.Battre, EcrireAuJournal: C.EcrireAuJournal,
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
   Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
@@ -160,6 +160,15 @@ export function documentOpenApi() {
       "/api/membres/{id}/avatar": {
         parameters: [idTache],
         get: { summary: "La photo d'un Membre", description: "L'image elle-même, pour les pages web : elles donnent son adresse au lieu de recopier la photo dans chaque carte. L'adresse porte une empreinte (?v=), la réponse se garde indéfiniment.", responses: { 200: { description: "image/jpeg, image/png ou image/webp" }, 404: { description: "Pas de photo" } } },
+      },
+      "/api/affectations/{id}/journal": {
+        parameters: [idTache],
+        get: { summary: "L'état des lieux d'une Affectation", description: "Qui est dessus, qui y est passé, et le journal du plus récent au plus ancien.", responses: { 200: { description: "L'état des lieux" } } },
+        post: { summary: "Écrire au journal", description: "Daté, signé, jamais écrasé : on ajoute, on n'édite pas.", requestBody: corps("EcrireAuJournal"), responses: { 200: { description: "L'état des lieux, à jour" } } },
+      },
+      "/api/journal/{id}": {
+        parameters: [idTache],
+        delete: { summary: "Effacer une entrée", description: "La sienne seulement : le journal est un passé commun.", responses: { 200: { description: "L'Affectation concernée" }, 422: { description: "Ce n'est pas la vôtre" } } },
       },
       "/api/pouls": {
         post: { summary: "Je suis là", description: "Dit où l'on regarde, et rapporte qui d'autre est là plus une empreinte de ce qui est affiché : si elle change, la page se redemande.", requestBody: corps("Battre"), responses: { 200: { description: "Les présents et l'empreinte" } } },

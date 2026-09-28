@@ -131,6 +131,11 @@ export const ModifierMoi = z.object({
   avatar: z.string().regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Une image, en data URL").max(200_000, "Trop lourde : 160 px suffisent").nullable(),
 });
 
+/* ------------------------------------------------------------------ le journal */
+
+/** Une ligne de journal : du texte, et c'est tout. La date et l'auteur, le serveur les connaît. */
+export const EcrireAuJournal = z.object({ texte: z.string().trim().min(1, "Il faut écrire quelque chose.").max(2000) });
+
 /* ------------------------------------------------------------------ qui est là */
 
 /** Le pouls dit d'où il bat : un chemin de l'application, rien d'autre. */
