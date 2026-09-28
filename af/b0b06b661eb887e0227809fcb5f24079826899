@@ -1,0 +1,32 @@
+ios/Bruno/Capture/CaptureVue.swift
+  s_09427aeab13931::t_425b6985b1790c 146,148,150
+  s_09427aeab13931::t_6b2c26d6c542cd 6-11,20-22,109-110,112,123-145,147,149,151-156,164
+web/src/api/contrat.ts
+  s_09427aeab13931::t_6e1db18e0bebf3 74-75
+web/src/api/taches.ts
+  s_09427aeab13931::t_6e1db18e0bebf3 178-179
+CONTEXT.md
+  s_09427aeab13931::t_ff3160100b4cfa 61-63,236-242
+web/src/api/taches.test.ts
+  s_09427aeab13931::t_d6c1aa64e9b871 84-90
+ios/Bruno/Capture/FileAttente.swift
+  s_09427aeab13931::t_0781343f7b16d9 13-17,26-35,75-82,95-107
+tickets/E1-capture.md
+  s_09427aeab13931::t_088b5cc10d4880 14-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "afb0b06b661eb887e0227809fcb5f24079826899",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
