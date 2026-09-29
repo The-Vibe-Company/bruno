@@ -1,0 +1,44 @@
+web/src/app/api/images/[id]/route.ts
+  s_09427aeab13931::t_2c5d953bce182f 1-19
+web/src/db/schema.ts
+  s_09427aeab13931::t_bc4fa8c6a235ba 10,341-368
+  s_09427aeab13931::t_ecefb91be4f63a 369-370
+web/src/board/Images.tsx
+  s_09427aeab13931::t_cfe3e72fa7da2b 1-107
+web/src/api/openapi.ts
+  s_09427aeab13931::t_ac4c5f0d3736ff 160-169
+web/drizzle/0016_image.sql
+  s_09427aeab13931::t_bc4fa8c6a235ba 1-18
+web/src/api/images.ts
+  s_09427aeab13931::t_2c5d953bce182f 1-67
+web/src/api/images.test.ts
+  s_09427aeab13931::t_2efbae818e9661 1-59
+web/src/app/api/taches/[id]/images/route.ts
+  s_09427aeab13931::t_2c5d953bce182f 1-23
+web/src/board/Detail.tsx
+  s_09427aeab13931::t_cfe3e72fa7da2b 7
+  s_09427aeab13931::t_2efbae818e9661 258-259
+  s_09427aeab13931::t_a20c4914ac368a 260
+CONTEXT.md
+  s_09427aeab13931::t_7cc9810e99f222 156-163
+web/drizzle/meta/0016_snapshot.json
+  s_09427aeab13931::t_427abe6faba388 1-1825
+web/drizzle/meta/_journal.json
+  s_09427aeab13931::t_6c09e93970b04e 116-122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2c12a3b997fc82e69b0c834c8c0d601e8cf76406",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
