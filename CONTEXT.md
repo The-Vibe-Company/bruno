@@ -153,6 +153,14 @@ Client *et* sur des Projets ; les deux listes sont indépendantes, et un Projet 
 nom d'un Client. Comme lui, un Projet ne se pose jamais sur une Tâche.
 _Avoid_: Chantier, mission, epic, initiative
 
+**Image**:
+Une capture d'écran, une photo d'un tableau blanc, une maquette — posée sur une Tâche, dans sa
+fiche. On la colle, on la dépose, ou on la choisit. PNG, JPEG, WebP ou GIF, cinq mégaoctets au
+plus. Elle vit dans la base de Bruno, faute de stockage de fichiers : le jour où il y en a un,
+c'est `api/images.ts` qui change, et lui seul. Une Tâche n'a pas de « pièces jointes » au sens
+large : des images, et c'est tout — un PDF est refusé, et le dira.
+_Avoid_: Pièce jointe, fichier, upload, média
+
 **Journal**:
 Ce qu'on note sur un Client, daté et signé : « devis envoyé », « ils ne répondent plus »,
 « réunion de cadrage le 12 ». Il s'ajoute, il ne s'édite pas — un journal qu'on réécrit ne vaut
