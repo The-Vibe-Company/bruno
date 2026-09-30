@@ -1,0 +1,26 @@
+web/src/board/Fichiers.tsx
+  s_09427aeab13931::t_b9d2a23baa903c 12-13,15-16,18,61-66,69,71-77,79-81,85,88-89,91,93-98,101,105,112,115,128,131,136-138,140-144,146-147,149-151,153,155
+  s_09427aeab13931::t_7146b361f5e046 90,145
+web/src/board/Detail.tsx
+  s_09427aeab13931::t_753a34b773b7df 70-71
+  s_09427aeab13931::t_cd182ffc5920c5 7,258,283-284
+  s_09427aeab13931::t_5eed4e62a4e88e 285
+web/src/app/globals.css
+  s_09427aeab13931::t_b3de2b28f361b3 256
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9813782aa939ee6806bd2392bf470c205fa144ad",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
