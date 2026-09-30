@@ -226,6 +226,16 @@ matin, la dernière porte le Bilan, celles du milieu portent les Rappels — au 
 autant qu'on veut. Il n'y a rien d'autre à configurer que des heures.
 _Avoid_: Horaire, slot, plage, plage horaire
 
+### Les règles du dépôt
+
+**Migrations et prévisualisations**:
+Une seule base Neon sert la production **et** les prévisualisations. Le build d'une PR ne migre
+donc plus rien (`web/scripts/migrer.mjs`) : le 30 septembre 2026, la prévisualisation d'une PR
+a supprimé une table que la production servait encore, et Bruno a cessé d'ouvrir les fiches
+avant même que la PR soit relue. Une prévisualisation se construit contre le schéma tel qu'il
+est ; si son code attend une table qui n'existe pas encore, elle seule s'en plaint. Le vrai
+remède est une base par environnement — Neon sait brancher.
+
 ### Le rituel
 
 **Daily**:
