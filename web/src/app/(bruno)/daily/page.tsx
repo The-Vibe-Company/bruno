@@ -53,7 +53,16 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
   // Abandonné n'est pas fait : le Daily dit ce qui a avancé, pas ce qu'on a enterré.
   const tachesHier: TacheFinie[] = finies
     .filter((t) => t.etatTerminal === "termine" && t.assigneId && actifs.has(t.assigneId))
-    .map((t) => ({ id: t.id, titre: t.titre, etat: t.etatTerminal!, jour: t.jourFin, assigne: t.assigneId ? personne(t.assigneId) : null }));
+    .map((t) => ({
+      // La fiche entière : pendant le Daily, on l'ouvre pour montrer le tableau ou la capture (THE-757).
+      id: t.id, titre: t.titre, bucket: t.bucket as TacheFinie["bucket"], statut: t.statut,
+      engagement: t.engagement, reportsCount: t.reportsCount,
+      assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
+      aidantIds: t.aidantIds, aidants: t.aidantIds.map(personne),
+      notes: t.notes, transcriptionBrute: t.transcriptionBrute, raisonBlocage: t.raisonBlocage,
+      bloqueLe: t.bloqueLe?.toISOString() ?? null, dependDeId: t.dependDeId, dependDe: null,
+      fin: { etat: t.etatTerminal!, jour: t.jourFin },
+    }));
   const tachesFeu: TacheDuJour[] = feu.filter((t) => t.assigneId && actifs.has(t.assigneId)).map((t) => ({
     id: t.id, titre: t.titre, statut: t.statut ?? "a_faire", engagement: t.engagement, reportsCount: t.reportsCount,
     assigneId: t.assigneId, assigne: t.assigneId ? personne(t.assigneId) : null,
@@ -74,7 +83,7 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
       <Affectations membres={deLui(dujour)} projets={deLui(projetsDuJour)} moiId={session.membreId}
         choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
       <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden">
-        <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} />
+        <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} membres={membres} />
         <SurLeFeu taches={tachesFeu} membres={membres} assigneParDefaut={assigneParDefaut} />
       </main>
     </>

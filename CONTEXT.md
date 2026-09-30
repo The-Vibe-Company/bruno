@@ -231,8 +231,8 @@ La réunion d'équipe du matin, et l'écran partagé qui lui sert d'interface. U
 Membre : son Client du jour, ce qu'il a Sur le feu aujourd'hui, ce qui est Bloqué, et
 **ce qu'il a fait hier** — Tâches terminées et Client de la veille. Il n'introduit aucune donnée
 qui n'existe déjà ailleurs, mais il se travaille : on y coche, on y glisse une carte d'une
-colonne à l'autre, on y ajoute, et **on y change le Client de chacun** — c'est la réunion où on
-se le dit.
+colonne à l'autre, on y ajoute, **on y change le Client de chacun**, et **on ouvre une Tâche
+finie** pour montrer ce qui va avec — le tableau, la capture d'écran, les Notes.
 _Avoid_: Standup, réunion, dashboard, tableau de bord
 
 **Weekly**:
