@@ -157,6 +157,16 @@ export function documentOpenApi() {
       "/api/direct": {
         get: { summary: "Le direct", description: "Un flux qui reste ouvert (SSE). Le serveur envoie l'état — empreinte et présents — dès qu'il change, et se referme au bout de quatre minutes : le navigateur rouvre seul.", responses: { 200: { description: "text/event-stream" } } },
       },
+      "/api/taches/{id}/images": {
+        parameters: [idTache],
+        get: { summary: "Les images d'une Tâche", description: "Noms et poids, jamais les octets.", responses: { 200: { description: "Les vignettes" } } },
+        post: { summary: "Poser une image", description: "Le corps est le fichier : `content-type` dit lequel, `x-nom` comment il s'appelle. PNG, JPEG, WebP ou GIF, 5 Mo au plus.", responses: { 200: { description: "Les vignettes, à jour" }, 422: { description: "Pas une image, ou trop lourde" } } },
+      },
+      "/api/images/{id}": {
+        parameters: [idTache],
+        get: { summary: "L'image elle-même", description: "Son identifiant ne change jamais : la réponse se garde indéfiniment.", responses: { 200: { description: "image/png, jpeg, webp ou gif" } } },
+        delete: { summary: "Retirer une image", description: "N'importe qui : elle est posée sur une Tâche, pas sur quelqu'un.", responses: { 200: { description: "La Tâche concernée" } } },
+      },
       "/api/membres/{id}/avatar": {
         parameters: [idTache],
         get: { summary: "La photo d'un Membre", description: "L'image elle-même, pour les pages web : elles donnent son adresse au lieu de recopier la photo dans chaque carte. L'adresse porte une empreinte (?v=), la réponse se garde indéfiniment.", responses: { 200: { description: "image/jpeg, image/png ou image/webp" }, 404: { description: "Pas de photo" } } },

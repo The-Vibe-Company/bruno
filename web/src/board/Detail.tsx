@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import { libelleBlocage, libelleJour } from "@/lib/dates";
 import { Calendrier, IconeCalendrier } from "./Calendrier";
+import { Images } from "./Images";
 import type { Patch } from "./api";
 import type { Membre, TacheCarte } from "./Carte";
 import { Chevron, Choix } from "./Choix";
@@ -253,6 +254,9 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
             className="w-full resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-texte-faible" />
           {tache.transcriptionBrute && <p className="mt-1 text-sm italic leading-relaxed text-texte-sourd">« {tache.transcriptionBrute} »</p>}
         </div>
+
+        {/* Les images juste après les Notes : c'est le même endroit dans la tête — le contexte de la Tâche. */}
+        <Images tacheId={tache.id} />
 
         {historique && historique.length > 0 && (
           <div>
