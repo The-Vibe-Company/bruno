@@ -245,3 +245,18 @@ body {
   .anime-toast                       { animation: toast-entre 200ms cubic-bezier(.16, 1, .3, 1) }
 }
 
+
+@layer components {
+  /*
+   * Glisser un fichier sur la fiche : elle s'éclaire et dit ce qu'elle attend. Le mot est porté
+   * par la fiche elle-même, pas par un carré à viser — on lâche où l'on veut.
+   */
+  [data-fiche][data-depot]::after {
+    content: "Déposez : la Tâche le garde";
+    position: absolute; left: 50%; bottom: 152px; translate: -50% 0;
+    padding: .45rem .9rem; border-radius: 9999px;
+    background: var(--accent); color: var(--sur-accent);
+    font-size: 13px; font-weight: 500; white-space: nowrap; pointer-events: none;
+    box-shadow: 0 8px 24px -8px rgb(0 0 0 / .45);
+  }
+}
