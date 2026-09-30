@@ -7,7 +7,7 @@
  */
 import { sql } from "drizzle-orm";
 import {
-  boolean, check, customType, date, foreignKey, index, integer, pgEnum, pgTable, primaryKey,
+  boolean, check, date, foreignKey, index, integer, pgEnum, pgTable, primaryKey,
   numeric, smallint, text, time, timestamp, unique, uuid,
 } from "drizzle-orm/pg-core";
 
@@ -338,21 +338,17 @@ export const abonnementPush = pgTable("abonnement_push", {
   check("abonnement_push_cles_web", sql`${t.canal} <> 'web' OR (${t.p256dh} IS NOT NULL AND ${t.auth} IS NOT NULL)`),
 ]);
 
-/* ------------------------------------------------------------------ les images */
-
-/** Les octets d'une image, dans la base. Drizzle ne connaît pas `bytea` d'origine. */
-const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
+/* ------------------------------------------------------------------ les fichiers */
 
 /**
- * Une image posée sur une Tâche : une capture d'écran, une photo d'un tableau blanc, une
- * maquette. Les octets vivent ici, pas chez un tiers — Bruno n'a pas de stockage de fichiers, et
- * en attendre un aurait voulu dire attendre. Une route les sert avec un cache éternel ; le
- * board, lui, ne les lit jamais : seules leurs fiches les demandent.
+ * Un fichier posé sur une Tâche : une capture d'écran, une photo d'un tableau blanc, un devis en
+ * PDF. Les octets vivent dans le stockage de Vercel (Blob, en privé) ; la base ne garde que de
+ * quoi les retrouver et les nommer. Le board ne les lit jamais : seules les fiches les demandent.
  *
- * Deux garde-fous simples : des images seulement, et pas plus de 5 Mo — ce qui suffit à une
- * capture d'écran et interdit d'y ranger une vidéo.
+ * Privé, pas public : un devis client n'a rien à faire derrière une adresse devinable. C'est
+ * Bruno qui les sert, après avoir vérifié qui demande.
  */
-export const image = pgTable("image", {
+export const fichier = pgTable("fichier", {
   id: uuid("id").primaryKey().defaultRandom(),
   spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
   tacheId: uuid("tache_id").notNull().references(() => tache.id, { onDelete: "cascade" }),
@@ -360,12 +356,13 @@ export const image = pgTable("image", {
   nom: text("nom").notNull(),
   type: text("type").notNull(),
   octets: integer("octets").notNull(),
-  contenu: bytea("contenu").notNull(),
+  /** Où il est rangé dans le stockage. Jamais montré : c'est notre route qui sert le fichier. */
+  chemin: text("chemin").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-  check("image_type", sql`${t.type} in ('image/png', 'image/jpeg', 'image/webp', 'image/gif')`),
-  check("image_taille", sql`${t.octets} > 0 and ${t.octets} <= 5242880`),
-  index("image_par_tache").on(t.tacheId, t.createdAt),
+  check("fichier_type", sql`${t.type} in ('image/png', 'image/jpeg', 'image/webp', 'image/gif', 'application/pdf')`),
+  check("fichier_taille", sql`${t.octets} > 0 and ${t.octets} <= 20971520`),
+  index("fichier_par_tache").on(t.tacheId, t.createdAt),
 ]);
 
 /* ------------------------------------------------------------------ le journal */

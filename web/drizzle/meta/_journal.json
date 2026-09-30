@@ -120,6 +120,20 @@
       "when": 1790693723081,
       "tag": "0016_image",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790770889428,
+      "tag": "0017_sans-image",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790770889878,
+      "tag": "0018_fichiers",
+      "breakpoints": true
     }
   ]
 }

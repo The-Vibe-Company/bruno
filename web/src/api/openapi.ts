@@ -157,15 +157,15 @@ export function documentOpenApi() {
       "/api/direct": {
         get: { summary: "Le direct", description: "Un flux qui reste ouvert (SSE). Le serveur envoie l'état — empreinte et présents — dès qu'il change, et se referme au bout de quatre minutes : le navigateur rouvre seul.", responses: { 200: { description: "text/event-stream" } } },
       },
-      "/api/taches/{id}/images": {
+      "/api/taches/{id}/fichiers": {
         parameters: [idTache],
-        get: { summary: "Les images d'une Tâche", description: "Noms et poids, jamais les octets.", responses: { 200: { description: "Les vignettes" } } },
-        post: { summary: "Poser une image", description: "Le corps est le fichier : `content-type` dit lequel, `x-nom` comment il s'appelle. PNG, JPEG, WebP ou GIF, 5 Mo au plus.", responses: { 200: { description: "Les vignettes, à jour" }, 422: { description: "Pas une image, ou trop lourde" } } },
+        get: { summary: "Les fichiers d'une Tâche", description: "Noms, types et poids ; jamais les octets.", responses: { 200: { description: "Les vignettes" } } },
+        post: { summary: "Poser un fichier", description: "Le corps est le fichier : `content-type` dit lequel, `x-nom` comment il s'appelle. Image (PNG, JPEG, WebP, GIF) ou PDF, 20 Mo au plus.", responses: { 200: { description: "Les vignettes, à jour" }, 422: { description: "Type refusé, ou trop lourd" } } },
       },
-      "/api/images/{id}": {
+      "/api/fichiers/{id}": {
         parameters: [idTache],
-        get: { summary: "L'image elle-même", description: "Son identifiant ne change jamais : la réponse se garde indéfiniment.", responses: { 200: { description: "image/png, jpeg, webp ou gif" } } },
-        delete: { summary: "Retirer une image", description: "N'importe qui : elle est posée sur une Tâche, pas sur quelqu'un.", responses: { 200: { description: "La Tâche concernée" } } },
+        get: { summary: "Le fichier lui-même", description: "Rangé en privé : c'est cette route qui vérifie qui demande. Son identifiant ne change jamais, la réponse se garde indéfiniment.", responses: { 200: { description: "L'image ou le PDF" } } },
+        delete: { summary: "Retirer un fichier", description: "N'importe qui : il est posé sur une Tâche, pas sur quelqu'un.", responses: { 200: { description: "La Tâche concernée" } } },
       },
       "/api/membres/{id}/avatar": {
         parameters: [idTache],
