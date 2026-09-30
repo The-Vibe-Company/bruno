@@ -9,18 +9,16 @@ const poids = (o: number) => (o > 1024 * 1024 ? `${(o / 1024 / 1024).toFixed(1)}
 
 type EnVol = { cle: string; apercu: string | null; nom: string };
 
+export type Depot = ReturnType<typeof useDepot>;
+
 /**
- * Les fichiers d'une Tâche : des objets, pas une rubrique.
- *
- * Pas de titre, pas de phrase d'explication : une vignette se reconnaît, un PDF se lit à son nom.
- * Vide, il ne reste qu'un trombone au ras du texte — l'endroit où l'on glisse est la fiche
- * entière, et elle ne le montre qu'au moment où l'on glisse.
+ * Ce qu'une Tâche garde avec elle. Un seul état, montré à deux endroits : la liste dans le corps
+ * de la fiche, le bouton au ras du bas, toujours sous la main même quand on a fait défiler.
  */
-export function Fichiers({ tacheId }: { tacheId: string }) {
+export function useDepot(tacheId: string) {
   const [liste, setListe] = useState<Vignette[] | null>(null);
   const [enVol, setEnVol] = useState<EnVol[]>([]);
   const [erreur, setErreur] = useState<string | null>(null);
-  const champ = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let vivant = true;
@@ -60,47 +58,61 @@ export function Fichiers({ tacheId }: { tacheId: string }) {
     return () => document.removeEventListener("paste", coller);
   }, [envoyer]);
 
-  // Déposer : sur la fiche entière, pas sur un carré à viser. Elle s'éclaire le temps du geste.
+  /*
+   * Déposer : la fenêtre entière, pas un carré à viser. Rater la fiche de trois pixels faisait
+   * ouvrir le fichier par le navigateur — la page partait, et le geste avait l'air cassé. Tant
+   * qu'une fiche est ouverte, un fichier lâché n'importe où lui revient, et rien d'autre ne
+   * l'attrape. Le panneau s'éclaire pour dire qui le reçoit.
+   */
   useEffect(() => {
     const panneau = document.querySelector<HTMLElement>("[data-fiche]");
-    if (!panneau) return;
+    const desFichiers = (e: DragEvent) => [...(e.dataTransfer?.types ?? [])].includes("Files");
     let compte = 0;
-    const entre = (e: DragEvent) => { e.preventDefault(); compte += 1; panneau.dataset.depot = "oui"; };
-    const sort = () => { compte = Math.max(0, compte - 1); if (compte === 0) delete panneau.dataset.depot; };
-    const dessus = (e: DragEvent) => e.preventDefault();
-    const lache = (e: DragEvent) => { e.preventDefault(); compte = 0; delete panneau.dataset.depot; void envoyer([...(e.dataTransfer?.files ?? [])]); };
-    panneau.addEventListener("dragenter", entre); panneau.addEventListener("dragleave", sort);
-    panneau.addEventListener("dragover", dessus); panneau.addEventListener("drop", lache);
+    const eteindre = () => { compte = 0; if (panneau) delete panneau.dataset.depot; };
+    const entre = (e: DragEvent) => { if (!desFichiers(e)) return; e.preventDefault(); compte += 1; if (panneau) panneau.dataset.depot = "oui"; };
+    const sort = (e: DragEvent) => { if (!desFichiers(e)) return; compte -= 1; if (compte <= 0) eteindre(); };
+    const dessus = (e: DragEvent) => { if (desFichiers(e)) e.preventDefault(); };
+    const lache = (e: DragEvent) => { if (!desFichiers(e)) return; e.preventDefault(); eteindre(); void envoyer([...(e.dataTransfer?.files ?? [])]); };
+    window.addEventListener("dragenter", entre); window.addEventListener("dragleave", sort);
+    window.addEventListener("dragover", dessus); window.addEventListener("drop", lache);
     return () => {
-      panneau.removeEventListener("dragenter", entre); panneau.removeEventListener("dragleave", sort);
-      panneau.removeEventListener("dragover", dessus); panneau.removeEventListener("drop", lache);
-      delete panneau.dataset.depot;
+      window.removeEventListener("dragenter", entre); window.removeEventListener("dragleave", sort);
+      window.removeEventListener("dragover", dessus); window.removeEventListener("drop", lache);
+      eteindre();
     };
   }, [envoyer]);
 
-  const retirer = async (id: string) => {
+  const retirer = useCallback(async (id: string) => {
     setListe((l) => (l ?? []).filter((i) => i.id !== id));
     try { await fetch(`/api/fichiers/${id}`, { method: "DELETE" }); } catch (e) { setErreur((e as Error).message); }
-  };
+  }, []);
 
-  const tous = liste ?? [];
+  return { liste, enVol, erreur, envoyer, retirer };
+}
+
+/**
+ * Les fichiers d'une Tâche : des objets, pas une rubrique. Pas de titre, pas de phrase
+ * d'explication — une vignette se reconnaît, un PDF se lit à son nom.
+ */
+export function Fichiers({ depot }: { depot: Depot }) {
+  const tous = depot.liste ?? [];
   const images = tous.filter((f) => f.estImage);
   const documents = tous.filter((f) => !f.estImage);
-  const rien = tous.length === 0 && enVol.length === 0;
+  if (tous.length === 0 && depot.enVol.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2">
-      {(images.length > 0 || enVol.some((v) => v.apercu)) && (
+      {(images.length > 0 || depot.enVol.some((v) => v.apercu)) && (
         <div className="flex flex-wrap gap-1.5">
           {images.map((f) => (
             <a key={f.id} href={`/api/fichiers/${f.id}`} target="_blank" rel="noreferrer" title={`${f.nom} · ${poids(f.octets)}`}
               className="group relative overflow-hidden rounded-lg">
               {/* eslint-disable-next-line @next/next/no-img-element -- servie par Bruno, taille libre */}
               <img src={`/api/fichiers/${f.id}`} alt={f.nom} className="h-[72px] w-[72px] object-cover transition-transform duration-200 group-hover:scale-[1.04]" />
-              <Croix onClick={(e) => { e.preventDefault(); retirer(f.id); }} nom={f.nom} />
+              <Croix onClick={(e) => { e.preventDefault(); depot.retirer(f.id); }} nom={f.nom} />
             </a>
           ))}
-          {enVol.filter((v) => v.apercu).map((v) => (
+          {depot.enVol.filter((v) => v.apercu).map((v) => (
             /* eslint-disable-next-line @next/next/no-img-element -- l'aperçu local, le temps de l'envoi */
             <img key={v.cle} src={v.apercu!} alt={v.nom} className="h-[72px] w-[72px] animate-pulse rounded-lg object-cover opacity-40" />
           ))}
@@ -113,24 +125,34 @@ export function Fichiers({ tacheId }: { tacheId: string }) {
           <IconePdf />
           <span className="min-w-0 flex-1 truncate text-[14px]">{f.nom}</span>
           <span className="flex-none text-[12px] text-texte-faible">{poids(f.octets)}</span>
-          <Croix onClick={(e) => { e.preventDefault(); retirer(f.id); }} nom={f.nom} place="top-1/2 right-1 -translate-y-1/2" />
+          <Croix onClick={(e) => { e.preventDefault(); depot.retirer(f.id); }} nom={f.nom} place="top-1/2 right-1 -translate-y-1/2" />
         </a>
       ))}
-      {enVol.filter((v) => !v.apercu).map((v) => (
+      {depot.enVol.filter((v) => !v.apercu).map((v) => (
         <div key={v.cle} className="flex max-w-full animate-pulse items-center gap-2.5 self-start rounded-lg bg-surface-2 py-2 pl-2.5 pr-8 opacity-50">
           <IconePdf /><span className="truncate text-[14px]">{v.nom}</span>
         </div>
       ))}
+    </div>
+  );
+}
 
-      {erreur && <p role="alert" className="text-[12.5px] text-bloque">{erreur}</p>}
-
+/**
+ * Le bouton reste en bas, au-dessus du trait : quelles que soient la longueur des Notes et la
+ * position du défilement, joindre un fichier est au même endroit.
+ */
+export function Joindre({ depot }: { depot: Depot }) {
+  const champ = useRef<HTMLInputElement>(null);
+  return (
+    <div className="flex items-center gap-3 px-6 pb-3">
       <button onClick={() => champ.current?.click()}
-        title="Une image ou un PDF — ou colle une capture, ou dépose-la ici"
-        className={`flex items-center gap-1.5 self-start rounded-md py-1 text-[13px] text-texte-faible hover:text-accent ${rien ? "" : "pt-0.5"}`}>
-        <Trombone />{rien ? "Joindre un fichier" : "Joindre"}
+        title="Une image ou un PDF — ou colle une capture, ou dépose-la n'importe où sur la fiche"
+        className="flex flex-none items-center gap-1.5 rounded-md py-1 text-[13px] text-texte-faible hover:text-accent">
+        <Trombone />Joindre un fichier
       </button>
+      {depot.erreur && <p role="alert" className="min-w-0 flex-1 truncate text-[12.5px] text-bloque">{depot.erreur}</p>}
       <input ref={champ} type="file" accept={TYPES.join(",")} multiple hidden
-        onChange={(e) => { void envoyer([...(e.target.files ?? [])]); e.target.value = ""; }} />
+        onChange={(e) => { void depot.envoyer([...(e.target.files ?? [])]); e.target.value = ""; }} />
     </div>
   );
 }

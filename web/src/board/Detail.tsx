@@ -4,7 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import { libelleBlocage, libelleJour } from "@/lib/dates";
 import { Calendrier, IconeCalendrier } from "./Calendrier";
-import { Fichiers } from "./Fichiers";
+import { Fichiers, Joindre, useDepot } from "./Fichiers";
 import type { Patch } from "./api";
 import type { Membre, TacheCarte } from "./Carte";
 import { Chevron, Choix } from "./Choix";
@@ -67,6 +67,8 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
   const [occupe, setOccupe] = useState(false);
   const [titre, setTitre] = useState(tache.titre);
   const [notes, setNotes] = useState(tache.notes ?? "");
+  // Ce que la Tâche garde avec elle : la liste est dans le corps, le bouton en bas. Un seul état.
+  const depot = useDepot(tache.id);
   type Report = { id: string; raison: string; ancienEngagement: string; nouvelEngagement: string; createdAt: string; auteur: string | null };
   // L'historique des Reports, chargé à l'ouverture : visible de tous, avec qui et pourquoi.
   const [historique, setHistorique] = useState<Report[] | null>(null);
@@ -253,7 +255,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={poserNotes} rows={Math.max(2, Math.min(14, notes.split("\n").length + 1))} placeholder="Une note, un contexte, un lien…" aria-label="Notes"
             className="w-full resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-texte-faible" />
           {tache.transcriptionBrute && <p className="text-sm italic leading-relaxed text-texte-sourd">« {tache.transcriptionBrute} »</p>}
-          <Fichiers tacheId={tache.id} />
+          <Fichiers depot={depot} />
         </div>
 
         {historique && historique.length > 0 && (
@@ -277,6 +279,9 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
           </details>
         )}
       </div>
+
+      {/* Joindre ne défile pas avec les Notes : le geste est au même endroit, juste au-dessus du trait. */}
+      <Joindre depot={depot} />
 
       <footer className="flex flex-col gap-2 border-t border-bord-faible px-6 pt-4 pb-6">
         {finie ? (

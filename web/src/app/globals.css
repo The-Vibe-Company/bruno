@@ -253,7 +253,7 @@ body {
    */
   [data-fiche][data-depot]::after {
     content: "Déposez : la Tâche le garde";
-    position: absolute; left: 50%; bottom: 152px; translate: -50% 0;
+    position: absolute; left: 50%; bottom: 190px; translate: -50% 0;
     padding: .45rem .9rem; border-radius: 9999px;
     background: var(--accent); color: var(--sur-accent);
     font-size: 13px; font-weight: 500; white-space: nowrap; pointer-events: none;
