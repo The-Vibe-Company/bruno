@@ -1,0 +1,49 @@
+web/src/db/schema.ts
+  s_09427aeab13931::t_045b05e0478bc6 10,341,344-346,348-349,351,359-360,363-365
+web/src/app/api/fichiers/[id]/route.ts
+  s_09427aeab13931::t_131e6ea2aec353 1-27
+web/src/api/fichiers.ts
+  s_09427aeab13931::t_131e6ea2aec353 1-82
+web/drizzle/0017_sans-image.sql
+  s_09427aeab13931::t_42bb7b7c2f01a9 1
+web/drizzle/0018_fichiers.sql
+  s_09427aeab13931::t_42bb7b7c2f01a9 1-18
+web/src/board/Fichiers.tsx
+  s_09427aeab13931::t_d7d1098dde82f0 1-136
+web/src/api/fichiers.test.ts
+  s_09427aeab13931::t_65be292320e16f 1-23
+web/src/board/Detail.tsx
+  s_09427aeab13931::t_d7d1098dde82f0 7,258-259
+web/src/api/openapi.ts
+  s_09427aeab13931::t_65be292320e16f 160,162-163,165,167-168
+web/package.json
+  s_09427aeab13931::t_bfeee225d6ab85 27
+web/src/app/api/taches/[id]/fichiers/route.ts
+  s_09427aeab13931::t_131e6ea2aec353 1-23
+CONTEXT.md
+  s_09427aeab13931::t_adf55891fbe870 156-164
+web/drizzle/meta/0017_snapshot.json
+  s_09427aeab13931::t_a684002ce0b356 1-1685
+web/drizzle/meta/0018_snapshot.json
+  s_09427aeab13931::t_3eb92a89a392d3 1-1825
+web/drizzle/meta/_journal.json
+  s_09427aeab13931::t_bb72c83e331aa0 123-136
+web/pnpm-lock.yaml
+  s_09427aeab13931::t_75a04955f428fa 32-34,1659-1673,1766-1768,2221-2224,2315-2318,2394-2397,2437-2440,2488-2490,2511-2514,2553-2555,2789-2791,2800-2803,2862-2865,2902-2905,2910-2913,3044-3047,3138-3140,3195-3198,3231-3234,3310-3313,3465-3472,3486-3488,4686-4709,4828-4831,5410-5421,5515-5516,5585-5586,5629-5630,5678-5679,5700-5701,5743-5744,5927-5928,5936-5937,5992-5995,6040-6043,6053-6054,6183-6184,6333-6334,6413-6414,6434-6435,6529-6530,6680-6688,6697-6698
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6a762d3c316c77abf6bd569b515b81a79717909f",
+  "prompts": {},
+  "sessions": {
+    "s_09427aeab13931": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "772c7deb-b502-4b8c-9815-3c08cac832ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
