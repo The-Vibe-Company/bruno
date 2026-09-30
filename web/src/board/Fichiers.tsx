@@ -10,17 +10,16 @@ const poids = (o: number) => (o > 1024 * 1024 ? `${(o / 1024 / 1024).toFixed(1)}
 type EnVol = { cle: string; apercu: string | null; nom: string };
 
 /**
- * Les fichiers d'une Tâche : une capture d'écran, une photo d'un tableau blanc, un devis en PDF.
+ * Les fichiers d'une Tâche : des objets, pas une rubrique.
  *
- * Trois façons de les poser, parce qu'on ne s'y prend jamais pareil : coller (c'est le geste
- * après une capture d'écran), déposer, ou choisir. La vignette apparaît avant que le serveur
- * réponde — on vient de la voir, elle ne doit pas disparaître le temps d'un envoi.
+ * Pas de titre, pas de phrase d'explication : une vignette se reconnaît, un PDF se lit à son nom.
+ * Vide, il ne reste qu'un trombone au ras du texte — l'endroit où l'on glisse est la fiche
+ * entière, et elle ne le montre qu'au moment où l'on glisse.
  */
 export function Fichiers({ tacheId }: { tacheId: string }) {
   const [liste, setListe] = useState<Vignette[] | null>(null);
   const [enVol, setEnVol] = useState<EnVol[]>([]);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [survol, setSurvol] = useState(false);
   const champ = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export function Fichiers({ tacheId }: { tacheId: string }) {
 
   const envoyer = useCallback(async (fichiers: File[]) => {
     const bons = fichiers.filter((f) => TYPES.includes(f.type));
-    if (bons.length < fichiers.length) setErreur("Une image (PNG, JPEG, WebP, GIF) ou un PDF.");
+    if (bons.length < fichiers.length) setErreur("Une image ou un PDF.");
     for (const f of bons) {
       if (f.size > POIDS_MAX) { setErreur(`« ${f.name} » pèse ${poids(f.size)} — vingt mégaoctets au plus.`); continue; }
       const attente: EnVol = { cle: crypto.randomUUID(), apercu: f.type.startsWith("image/") ? URL.createObjectURL(f) : null, nom: f.name };
@@ -61,6 +60,24 @@ export function Fichiers({ tacheId }: { tacheId: string }) {
     return () => document.removeEventListener("paste", coller);
   }, [envoyer]);
 
+  // Déposer : sur la fiche entière, pas sur un carré à viser. Elle s'éclaire le temps du geste.
+  useEffect(() => {
+    const panneau = document.querySelector<HTMLElement>("[data-fiche]");
+    if (!panneau) return;
+    let compte = 0;
+    const entre = (e: DragEvent) => { e.preventDefault(); compte += 1; panneau.dataset.depot = "oui"; };
+    const sort = () => { compte = Math.max(0, compte - 1); if (compte === 0) delete panneau.dataset.depot; };
+    const dessus = (e: DragEvent) => e.preventDefault();
+    const lache = (e: DragEvent) => { e.preventDefault(); compte = 0; delete panneau.dataset.depot; void envoyer([...(e.dataTransfer?.files ?? [])]); };
+    panneau.addEventListener("dragenter", entre); panneau.addEventListener("dragleave", sort);
+    panneau.addEventListener("dragover", dessus); panneau.addEventListener("drop", lache);
+    return () => {
+      panneau.removeEventListener("dragenter", entre); panneau.removeEventListener("dragleave", sort);
+      panneau.removeEventListener("dragover", dessus); panneau.removeEventListener("drop", lache);
+      delete panneau.dataset.depot;
+    };
+  }, [envoyer]);
+
   const retirer = async (id: string) => {
     setListe((l) => (l ?? []).filter((i) => i.id !== id));
     try { await fetch(`/api/fichiers/${id}`, { method: "DELETE" }); } catch (e) { setErreur((e as Error).message); }
@@ -69,56 +86,60 @@ export function Fichiers({ tacheId }: { tacheId: string }) {
   const tous = liste ?? [];
   const images = tous.filter((f) => f.estImage);
   const documents = tous.filter((f) => !f.estImage);
+  const rien = tous.length === 0 && enVol.length === 0;
+
   return (
-    <section
-      onDragOver={(e) => { e.preventDefault(); setSurvol(true); }}
-      onDragLeave={() => setSurvol(false)}
-      onDrop={(e) => { e.preventDefault(); setSurvol(false); void envoyer([...e.dataTransfer.files]); }}
-      className={`rounded-lg border border-dashed p-2 transition-colors ${survol ? "border-accent bg-accent-voile" : "border-transparent"}`}>
-      <div className="flex items-center gap-2 pb-1.5">
-        <span className="text-sm text-texte-sourd">Fichiers</span>
-        <button onClick={() => champ.current?.click()} className="text-[12.5px] text-accent hover:text-accent-survol">ajouter</button>
-        <span className="text-[12px] text-texte-faible">ou colle, ou dépose</span>
-        <input ref={champ} type="file" accept={TYPES.join(",")} multiple hidden
-          onChange={(e) => { void envoyer([...(e.target.files ?? [])]); e.target.value = ""; }} />
-      </div>
-      {erreur && <p role="alert" className="pb-2 text-[12.5px] text-bloque">{erreur}</p>}
-      {tous.length === 0 && enVol.length === 0 && (
-        <p className="text-[13px] text-texte-faible">Une capture d’écran vaut souvent trois phrases de Notes.</p>
+    <div className="flex flex-col gap-2">
+      {(images.length > 0 || enVol.some((v) => v.apercu)) && (
+        <div className="flex flex-wrap gap-1.5">
+          {images.map((f) => (
+            <a key={f.id} href={`/api/fichiers/${f.id}`} target="_blank" rel="noreferrer" title={`${f.nom} · ${poids(f.octets)}`}
+              className="group relative overflow-hidden rounded-lg">
+              {/* eslint-disable-next-line @next/next/no-img-element -- servie par Bruno, taille libre */}
+              <img src={`/api/fichiers/${f.id}`} alt={f.nom} className="h-[72px] w-[72px] object-cover transition-transform duration-200 group-hover:scale-[1.04]" />
+              <Croix onClick={(e) => { e.preventDefault(); retirer(f.id); }} nom={f.nom} />
+            </a>
+          ))}
+          {enVol.filter((v) => v.apercu).map((v) => (
+            /* eslint-disable-next-line @next/next/no-img-element -- l'aperçu local, le temps de l'envoi */
+            <img key={v.cle} src={v.apercu!} alt={v.nom} className="h-[72px] w-[72px] animate-pulse rounded-lg object-cover opacity-40" />
+          ))}
+        </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        {images.map((f) => (
-          <span key={f.id} className="group relative">
-            <a href={`/api/fichiers/${f.id}`} target="_blank" rel="noreferrer" title={`${f.nom} · ${poids(f.octets)}`}>
-              {/* eslint-disable-next-line @next/next/no-img-element -- servie par Bruno, taille libre */}
-              <img src={`/api/fichiers/${f.id}`} alt={f.nom} className="h-20 w-20 rounded-lg border border-bord-2 object-cover" />
-            </a>
-            <Croix onClick={() => retirer(f.id)} nom={f.nom} />
-          </span>
-        ))}
-        {enVol.filter((v) => v.apercu).map((v) => (
-          /* eslint-disable-next-line @next/next/no-img-element -- l'aperçu local, le temps de l'envoi */
-          <img key={v.cle} src={v.apercu!} alt={v.nom} className="h-20 w-20 animate-pulse rounded-lg border border-bord-2 object-cover opacity-50" />
-        ))}
-      </div>
-
       {documents.map((f) => (
-        <div key={f.id} className="group relative mt-1.5 flex items-center gap-2 rounded-lg border border-bord-2 px-2.5 py-2">
+        <a key={f.id} href={`/api/fichiers/${f.id}`} target="_blank" rel="noreferrer"
+          className="group relative flex max-w-full items-center gap-2.5 self-start rounded-lg bg-surface-2 py-2 pl-2.5 pr-8 hover:bg-surface-3">
           <IconePdf />
-          <a href={`/api/fichiers/${f.id}`} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate text-[13.5px] hover:text-accent">{f.nom}</a>
+          <span className="min-w-0 flex-1 truncate text-[14px]">{f.nom}</span>
           <span className="flex-none text-[12px] text-texte-faible">{poids(f.octets)}</span>
-          <Croix onClick={() => retirer(f.id)} nom={f.nom} />
-        </div>
+          <Croix onClick={(e) => { e.preventDefault(); retirer(f.id); }} nom={f.nom} place="top-1/2 right-1 -translate-y-1/2" />
+        </a>
       ))}
       {enVol.filter((v) => !v.apercu).map((v) => (
-        <div key={v.cle} className="mt-1.5 flex animate-pulse items-center gap-2 rounded-lg border border-bord-2 px-2.5 py-2 opacity-50">
-          <IconePdf /><span className="truncate text-[13.5px]">{v.nom}</span>
+        <div key={v.cle} className="flex max-w-full animate-pulse items-center gap-2.5 self-start rounded-lg bg-surface-2 py-2 pl-2.5 pr-8 opacity-50">
+          <IconePdf /><span className="truncate text-[14px]">{v.nom}</span>
         </div>
       ))}
-    </section>
+
+      {erreur && <p role="alert" className="text-[12.5px] text-bloque">{erreur}</p>}
+
+      <button onClick={() => champ.current?.click()}
+        title="Une image ou un PDF — ou colle une capture, ou dépose-la ici"
+        className={`flex items-center gap-1.5 self-start rounded-md py-1 text-[13px] text-texte-faible hover:text-accent ${rien ? "" : "pt-0.5"}`}>
+        <Trombone />{rien ? "Joindre un fichier" : "Joindre"}
+      </button>
+      <input ref={champ} type="file" accept={TYPES.join(",")} multiple hidden
+        onChange={(e) => { void envoyer([...(e.target.files ?? [])]); e.target.value = ""; }} />
+    </div>
   );
 }
+
+const Trombone = () => (
+  <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" className="flex-none" aria-hidden="true">
+    <path d="M9.5 4.5 5 9a1.8 1.8 0 1 0 2.5 2.5l4.2-4.2a3.2 3.2 0 1 0-4.5-4.5L2.8 7.2" />
+  </svg>
+);
 
 const IconePdf = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" className="flex-none text-texte-sourd" aria-hidden="true">
@@ -126,10 +147,10 @@ const IconePdf = () => (
   </svg>
 );
 
-function Croix({ onClick, nom }: { onClick: () => void; nom: string }) {
+function Croix({ onClick, nom, place = "right-1 top-1" }: { onClick: (e: React.MouseEvent) => void; nom: string; place?: string }) {
   return (
     <button onClick={onClick} aria-label={`Retirer ${nom}`}
-      className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-bord-fort bg-surface text-texte-sourd opacity-0 transition-opacity hover:text-bloque group-hover:opacity-100">
+      className={`absolute ${place} flex h-5 w-5 items-center justify-center rounded-full bg-fond-page/80 text-texte-sourd opacity-0 backdrop-blur transition-opacity hover:text-bloque group-hover:opacity-100`}>
       <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 2l8 8M10 2l-8 8" /></svg>
     </button>
   );

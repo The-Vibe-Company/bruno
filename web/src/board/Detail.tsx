@@ -51,7 +51,7 @@ export function Detail(props: Props) {
     <Dialog.Root open={tache !== null} onOpenChange={(o) => !o && onFermer()}>
       <Dialog.Portal>
         <Dialog.Overlay className="anime-voile fixed inset-0 bg-fond-page/60" />
-        <Dialog.Content aria-describedby={undefined} className="anime-panneau fixed inset-y-0 right-0 flex w-[440px] max-w-full flex-col border-l border-bord-2 bg-fond shadow-2xl outline-none">
+        <Dialog.Content data-fiche aria-describedby={undefined} className="anime-panneau fixed inset-y-0 right-0 flex w-[440px] max-w-full flex-col border-l border-bord-2 bg-fond shadow-2xl outline-none data-[depot]:ring-2 data-[depot]:ring-inset data-[depot]:ring-accent">
           {tache && <Fiche key={tache.id} {...props} tache={tache} />}
         </Dialog.Content>
       </Dialog.Portal>
@@ -239,29 +239,34 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
               )}
             </dd>
           </div>}
-          <div className={ligne}>
-            <dt className={libelle}>Reports</dt>
-            <dd className="flex-1">{tache.reportsCount}</dd>
-          </div>
           </>)}
         </dl>
 
         <hr className="border-bord-2" />
 
-        {/* Puis du texte, directement — comme une page. */}
-        <div>
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={poserNotes} rows={Math.max(4, Math.min(14, notes.split("\n").length + 1))} placeholder="Une note, un contexte, un lien…" aria-label="Notes"
+        {/*
+          * Le contenu : du texte, ce qu'on y a joint, et ce qui a été dicté. Un seul bloc, sans
+          * titres intermédiaires — une vignette se reconnaît, un PDF se lit à son nom. Le champ
+          * s'ouvre à la taille de ce qu'il contient : deux lignes vides, pas dix.
+          */}
+        <div className="flex flex-col gap-3">
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={poserNotes} rows={Math.max(2, Math.min(14, notes.split("\n").length + 1))} placeholder="Une note, un contexte, un lien…" aria-label="Notes"
             className="w-full resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-texte-faible" />
-          {tache.transcriptionBrute && <p className="mt-1 text-sm italic leading-relaxed text-texte-sourd">« {tache.transcriptionBrute} »</p>}
+          {tache.transcriptionBrute && <p className="text-sm italic leading-relaxed text-texte-sourd">« {tache.transcriptionBrute} »</p>}
+          <Fichiers tacheId={tache.id} />
         </div>
 
-        {/* Les fichiers juste après les Notes : c'est le même endroit dans la tête — le contexte de la Tâche. */}
-        <Fichiers tacheId={tache.id} />
-
         {historique && historique.length > 0 && (
-          <div>
-            <h3 className="mb-2 text-sm text-texte-sourd">Reports</h3>
-            <ol className="flex flex-col gap-1.5 text-[14px]">
+          <details className="group border-t border-bord-2 pt-3">
+            {/* Le compte est déjà dit en haut de la fiche ; ici on donne ce qu'il ne dit pas : pourquoi. */}
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 text-[13px] text-texte-sourd hover:text-texte">
+              <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"
+                className="flex-none transition-transform duration-150 group-open:rotate-90"><path d="M3.5 1.5 7 5l-3.5 3.5" /></svg>
+              <span className="flex-none group-open:hidden">Dernier report</span>
+              <span className="hidden flex-none group-open:inline">Tous les reports</span>
+              <span className="min-w-0 truncate text-texte-faible group-open:hidden">« {historique[0].raison} »</span>
+            </summary>
+            <ol className="flex flex-col gap-1.5 pt-2.5 text-[14px]">
               {historique.map((h) => (
                 <li key={h.id} className="flex items-baseline gap-2">
                   <span className="flex-1">« {h.raison} »</span>
@@ -269,7 +274,7 @@ function Fiche({ tache, membres, onFermer, onTerminer, onAbandonner, onSupprimer
                 </li>
               ))}
             </ol>
-          </div>
+          </details>
         )}
       </div>
 
