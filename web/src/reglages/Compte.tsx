@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Initiale } from "@/board/visuel";
+import { oublierMembre } from "@/lib/posthog";
 
 /** Réduire une image en un petit rond : 160 px, JPEG — assez pour une pastille, pas de quoi peser. */
 async function reduire(fichier: File): Promise<string> {
@@ -49,8 +50,9 @@ export function Compte({ nom, email, avatar }: { nom: string; email: string; ava
           </p>
           {erreur && <p role="alert" className="mt-1 text-[13px] text-bloque">{erreur}</p>}
         </div>
-        {/* Une vraie navigation : le serveur efface le cookie et envoie sur la page de connexion. */}
-        <form method="post" action="/api/auth/deconnexion"><button type="submit" className="h-10 rounded-lg border border-bord-fort px-4 text-[14.5px]">Se déconnecter</button></form>
+        {/* Une vraie navigation : le serveur efface le cookie et envoie sur la page de connexion.
+            Avant ça, on oublie le Membre dans PostHog — sinon le navigateur garderait son identité. */}
+        <form method="post" action="/api/auth/deconnexion" onSubmit={() => oublierMembre()}><button type="submit" className="h-10 rounded-lg border border-bord-fort px-4 text-[14.5px]">Se déconnecter</button></form>
       </div>
     </section>
   );

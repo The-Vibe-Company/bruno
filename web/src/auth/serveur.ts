@@ -11,12 +11,12 @@ import { COOKIE, lireSession } from "./session";
  * Mise en cache le temps d'un rendu : le layout la demande, la page aussi, et ça ne fait qu'une
  * requête. Sans ça, chaque page payait deux allers-retours de base au lieu d'un.
  */
-export const sessionCourante = cache(async (): Promise<(Ctx & { nom: string; avatar: string | null }) | null> => {
+export const sessionCourante = cache(async (): Promise<(Ctx & { nom: string; email: string; avatar: string | null }) | null> => {
   const jeton = (await cookies()).get(COOKIE)?.value;
   if (!jeton) return null;
   const s = await lireSession(jeton);
   if (!s) return null;
   const [m] = await db.select().from(membre).where(eq(membre.id, s.membreId));
   if (!m || !m.actif) return null;
-  return { spaceId: m.spaceId, membreId: m.id, nom: m.nom, avatar: m.avatar };
+  return { spaceId: m.spaceId, membreId: m.id, nom: m.nom, email: m.email, avatar: m.avatar };
 });

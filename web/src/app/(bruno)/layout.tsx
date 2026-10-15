@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { urlAvatar } from "@/lib/avatar-url";
 import type { ReactNode } from "react";
 import { sessionCourante } from "@/auth/serveur";
+import { IdentifierMembre } from "@/lib/posthog";
 import { Rail } from "./Rail";
 
 /**
@@ -14,6 +15,7 @@ export default async function CadreBruno({ children }: { children: ReactNode }) 
   if (!session) redirect("/api/auth/google");
   return (
     <div className="flex h-dvh overflow-hidden">
+      <IdentifierMembre id={session.membreId} email={session.email} nom={session.nom} />
       <Rail initiale={session.nom.charAt(0).toUpperCase()} avatar={urlAvatar(session.membreId, session.avatar)} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
     </div>
