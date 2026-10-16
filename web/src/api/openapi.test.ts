@@ -28,9 +28,10 @@ describe("le contrat OpenAPI", () => {
   });
 
   it("décrit toutes les routes métier servies", () => {
-    // Tout ce qui est sous /api, sauf la plomberie : l'auth, le cron, le contrat lui-même.
+    // Tout ce qui est sous /api, sauf la plomberie : l'auth, le cron, les stats
+    // (jeton STATS_TOKEN, pas la session), le contrat lui-même.
     const surDisque = routesSurDisque(path.resolve(__dirname, "../app/api"))
-      .filter((r) => !/^\/api\/(auth|cron|openapi\.json)/.test(r))
+      .filter((r) => !/^\/api\/(auth|cron|stats|openapi\.json)/.test(r))
       .sort();
     expect(Object.keys(doc.paths).sort()).toEqual(surDisque);
   });
