@@ -226,3 +226,27 @@ export const ModifierSujet = z.object({
   lien: z.string().trim().url().max(500).nullish(),
 });
 
+/* ------------------------------------------------------------------ les jetons d'agent */
+
+/** Nommer un jeton : « Grok de Stan ». C'est tout ce qu'on demande. */
+export const CreerJeton = z.object({
+  nom: z.string().trim().min(1, "Un nom, pour savoir à qui il sert.").max(80),
+});
+
+/** Un jeton personnel, sans le secret : on ne le montre qu'à la création. */
+export const JetonApi = z.object({
+  id: uuid,
+  nom: z.string(),
+  creeLe: z.string(),
+  revoqueLe: z.string().nullable(),
+  dernierUsage: z.string().nullable(),
+});
+
+/** La création : le secret voyage une fois, puis plus jamais. */
+export const JetonEmis = JetonApi.extend({
+  jeton: z.string().regex(/^bruno_pat_/, "Un jeton personnel commence par bruno_pat_"),
+});
+export type CreerJeton = z.infer<typeof CreerJeton>;
+export type JetonApi = z.infer<typeof JetonApi>;
+export type JetonEmis = z.infer<typeof JetonEmis>;
+

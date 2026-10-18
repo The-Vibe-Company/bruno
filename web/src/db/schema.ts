@@ -403,3 +403,30 @@ export const presence = pgTable("presence", {
   page: text("page").notNull(),
   vuLe: timestamp("vu_le", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("presence_par_space").on(t.spaceId, t.vuLe)]);
+
+/* ------------------------------------------------------------------ les jetons d'agent */
+
+/**
+ * Un jeton personnel d'API. Il permet à un agent d'agir **en tant que** ce Membre —
+ * `creeParId`, auteur des Reports, attribution restent vrais.
+ *
+ * On ne garde que l'empreinte SHA-256 : le jeton clair (`bruno_pat_…`) n'existe
+ * qu'au moment où on le montre, une seule fois. `revoque_le` coupe l'accès
+ * immédiatement, comme `membre.actif = false` le fait déjà pour les sessions.
+ */
+export const jetonApi = pgTable("jeton_api", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  nom: text("nom").notNull(),
+  /** Hexadécimal, 64 caractères. Jamais le jeton. */
+  empreinte: text("empreinte").notNull(),
+  creeLe: timestamp("cree_le", { withTimezone: true }).notNull().defaultNow(),
+  revoqueLe: timestamp("revoque_le", { withTimezone: true }),
+  dernierUsage: timestamp("dernier_usage", { withTimezone: true }),
+}, (t) => [
+  unique("jeton_api_empreinte").on(t.empreinte),
+  check("jeton_api_nom", sql`length(btrim(${t.nom})) > 0`),
+  check("jeton_api_empreinte_sha256", sql`${t.empreinte} ~ '^[0-9a-f]{64}$'`),
+  index("jeton_api_par_membre").on(t.spaceId, t.membreId),
+]);
