@@ -18,6 +18,7 @@ const composants = {
   Sur: C.Sur, AffectationsMembre: C.AffectationsMembre, PoserAffectation: C.PoserAffectation,
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
   Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
+  CreerJeton: C.CreerJeton, JetonApi: C.JetonApi, JetonEmis: C.JetonEmis,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -128,6 +129,42 @@ export function documentOpenApi() {
       },
       "/api/membres": {
         get: { summary: "Les Membres actifs", responses: { 200: { description: "id et nom", content: { "application/json": { schema: { type: "array", items: { type: "object", properties: { id: { type: "string", format: "uuid" }, nom: { type: "string" } } } } } } } } },
+      },
+      "/api/jetons": {
+        get: {
+          summary: "Mes jetons d'agent",
+          description: "Sans le secret : il n'est montré qu'à la création. Seulement les siens.",
+          responses: { 200: { description: "Les jetons", content: { "application/json": { schema: { type: "array", items: ref("JetonApi") } } } } },
+        },
+        post: {
+          summary: "Créer un jeton",
+          description: "Le secret est dans la réponse, une seule fois. Il commence par bruno_pat_. On ne garde que son empreinte SHA-256.",
+          requestBody: corps("CreerJeton"),
+          responses: { 200: { description: "Le jeton, secret compris", content: { "application/json": { schema: ref("JetonEmis") } } } },
+        },
+      },
+      "/api/jetons/{id}/revoquer": {
+        parameters: [idTache],
+        post: {
+          summary: "Révoquer un jeton",
+          description: "L'accès est coupé immédiatement. Le jeton reste dans la liste, marqué révoqué. Pas le sien : introuvable.",
+          responses: { 200: { description: "Les jetons, à jour" }, 404: { description: "Pas le vôtre" } },
+        },
+      },
+      "/api/mcp": {
+        post: {
+          summary: "MCP Streamable HTTP",
+          description:
+            "Outils d'agent, authentifiés par la session ou par un jeton personnel " +
+            "(Authorization: Bearer bruno_pat_…). Stateless, sans Redis. " +
+            "Pas d'outil pour supprimer une Tâche.",
+          responses: { 200: { description: "Réponse MCP" }, 401: { description: "Jeton absent, invalide, révoqué, ou Membre désactivé" } },
+        },
+        get: {
+          summary: "MCP Streamable HTTP",
+          description: "Le même point d'entrée, sans session de transport.",
+          responses: { 200: { description: "Réponse MCP" }, 401: { description: "Non authentifié" } },
+        },
       },
       "/api/affectations": {
         get: { summary: "Les Affectations", description: "Ce à quoi on peut travailler, désactivées comprises.",
