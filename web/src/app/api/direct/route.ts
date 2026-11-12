@@ -18,8 +18,13 @@ import { reponseErreur } from "@/api/route-outils";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-/** À quelle fréquence le serveur regarde. Deux requêtes minuscules, à côté de la base. */
-const REGARD = 500;
+/**
+ * À quelle fréquence le serveur regarde. Deux requêtes minuscules, à côté de la base — mais pour
+ * chaque onglet ouvert, tout le temps qu'il est visible. À une demi-seconde, trois onglets
+ * suffisaient à tenir la base éveillée et à la faire parler sans arrêt ; deux secondes restent
+ * en dessous de ce qu'on remarque quand une carte bouge chez un autre.
+ */
+const REGARD = 2000;
 /** Un silence trop long et les intermédiaires ferment : un commentaire suffit à tenir la ligne. */
 const SOUFFLE = 20_000;
 const DUREE = 4 * 60_000;

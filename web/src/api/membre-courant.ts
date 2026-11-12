@@ -26,7 +26,8 @@ export async function membreCourant(request: Request): Promise<Ctx> {
 
 /** La session dit qui, la base dit si c'est toujours vrai : un Membre désactivé perd l'accès tout de suite. */
 async function membreActif(membreId: string): Promise<Ctx> {
-  const [m] = await db.select().from(membre).where(eq(membre.id, membreId));
+  // Pas `select *` : la ligne porte la photo (10 à 15 Ko), et cette question se pose à chaque appel.
+  const [m] = await db.select({ id: membre.id, spaceId: membre.spaceId, actif: membre.actif }).from(membre).where(eq(membre.id, membreId));
   if (!m || !m.actif) throw new ErreurApi("non_authentifie", 401, "Membre inconnu ou désactivé.");
   return { spaceId: m.spaceId, membreId: m.id };
 }

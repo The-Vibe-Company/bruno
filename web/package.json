@@ -26,6 +26,7 @@
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-popover": "^1.1.23",
     "@vercel/blob": "^2.8.0",
+    "@vercel/functions": "^3.11.1",
     "drizzle-orm": "^0.45.2",
     "jose": "^6.2.12",
     "mcp-handler": "^2.3.0",

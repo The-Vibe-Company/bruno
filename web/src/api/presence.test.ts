@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
 import { membre, space, tache } from "@/db/schema";
+import { urlAvatar } from "@/lib/avatar-url";
 import { battre } from "./presence";
 
 /**
@@ -33,6 +34,23 @@ describe("qui est là", () => {
     const vu = await battre({ spaceId, membreId: antoine }, "/");
     expect(vu.presents).toHaveLength(1);
     expect(vu.presents[0].page).toBe("/fait");
+  });
+});
+
+describe("la photo", () => {
+  it("voyage en adresse, la même que partout ailleurs, sans que la photo quitte la base", async () => {
+    const photo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+    await db.update(membre).set({ avatar: photo }).where(eq(membre.id, stan));
+    await battre({ spaceId, membreId: stan }, "/");
+    const vu = await battre({ spaceId, membreId: antoine }, "/");
+    expect(vu.presents[0].avatar).toBe(urlAvatar(stan, photo));
+    expect(vu.presents[0].avatar).toMatch(/^\/api\/membres\/.+\/avatar\?v=[0-9a-f]{10}$/);
+  });
+
+  it("pas de photo, pas d'adresse", async () => {
+    await db.update(membre).set({ avatar: null }).where(eq(membre.id, stan));
+    await battre({ spaceId, membreId: stan }, "/");
+    expect((await battre({ spaceId, membreId: antoine }, "/")).presents[0].avatar).toBeNull();
   });
 });
 
