@@ -8,6 +8,7 @@ import { and, asc, eq } from "drizzle-orm";
 import type { z } from "zod";
 import { db } from "@/db/client";
 import { membre, recurrence } from "@/db/schema";
+import { oublierAgenda } from "@/relances/agenda";
 import type * as C from "./contrat";
 import { introuvable, traduire } from "./erreurs";
 
@@ -32,13 +33,18 @@ const valeurs = (e: z.infer<typeof C.PoserRecurrence>) => ({
 
 export async function creer(ctx: Ctx, e: z.infer<typeof C.PoserRecurrence>): Promise<Recurrence> {
   await verifierAssigne(ctx, e.assigneId);
-  return traduire(async () => (await db.insert(recurrence).values({ spaceId: ctx.spaceId, ...valeurs(e) }).returning())[0]);
+  const r = await traduire(async () => (await db.insert(recurrence).values({ spaceId: ctx.spaceId, ...valeurs(e) }).returning())[0]);
+  // Une règle qui tombe aujourd'hui doit naître au prochain passage du cron, pas demain.
+  await oublierAgenda();
+  return r;
 }
 
 export async function modifier(ctx: Ctx, id: string, e: z.infer<typeof C.PoserRecurrence>): Promise<Recurrence> {
   await obtenir(ctx, id);
   await verifierAssigne(ctx, e.assigneId);
-  return traduire(async () => (await db.update(recurrence).set(valeurs(e)).where(eq(recurrence.id, id)).returning())[0]);
+  const r = await traduire(async () => (await db.update(recurrence).set(valeurs(e)).where(eq(recurrence.id, id)).returning())[0]);
+  await oublierAgenda();
+  return r;
 }
 
 export async function obtenir(ctx: Ctx, id: string): Promise<Recurrence> {

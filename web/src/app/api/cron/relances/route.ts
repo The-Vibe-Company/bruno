@@ -4,9 +4,11 @@
  *
  * `?apercu=1` montre ce qui partirait sans rien envoyer ; `&quand=2026-09-08T09:15` rejoue un
  * instant (heure de Bruno). La livraison va aux appareils abonnés, et toujours au journal.
- * Le cron de Vercel envoie
+ * Entre deux Créneaux, le passage lit l'agenda du jour et s'en va sans réveiller la base (voir
+ * `relances/agenda.ts`). Le cron de Vercel envoie
  * `Authorization: Bearer $CRON_SECRET` ; sans secret configuré, la route reste ouverte en dev.
  */
+import { lireAgenda, noterAgenda, rienAFaire } from "@/relances/agenda";
 import { relancer, relancesDues } from "@/relances/moteur";
 import { livreurPush } from "@/relances/push";
 import { instant, instantDepuis } from "@/relances/temps";
@@ -25,6 +27,9 @@ export async function GET(request: Request) {
     const dues = await relancesDues(i);
     return Response.json({ instant: i, dues: dues.map((r) => ({ membre: r.nom, heure: r.heure, ...r.message })) });
   }
+  // Un instant rejoué refait toujours tout : c'est fait pour ça.
+  if (!rejoue && rienAFaire(await lireAgenda(), i)) return Response.json({ instant: i, repos: true });
   const bilan = await relancer(livreurPush, i);
+  if (!rejoue) await noterAgenda(i);
   return Response.json({ instant: i, ...bilan });
 }

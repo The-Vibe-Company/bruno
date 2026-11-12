@@ -79,7 +79,7 @@ export async function resoudreJetonPersonnel(jeton: string): Promise<Ctx> {
   if (!ligne) throw new ErreurApi("non_authentifie", 401, "Jeton invalide.");
   if (ligne.revoqueLe) throw new ErreurApi("non_authentifie", 401, "Jeton révoqué.");
 
-  const [m] = await db.select().from(membre).where(eq(membre.id, ligne.membreId));
+  const [m] = await db.select({ id: membre.id, spaceId: membre.spaceId, actif: membre.actif }).from(membre).where(eq(membre.id, ligne.membreId));
   if (!m || !m.actif || m.spaceId !== ligne.spaceId) {
     throw new ErreurApi("non_authentifie", 401, "Membre inconnu ou désactivé.");
   }

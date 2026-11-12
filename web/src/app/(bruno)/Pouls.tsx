@@ -14,8 +14,8 @@ const ou = (page: string) => PAGES[page] ?? page;
  *
  * Deux choses, deux sens. On **annonce** où l'on est toutes les huit secondes — une écriture, il
  * en faut bien une. Et l'on **écoute** un flux que le serveur garde ouvert : dès que ce qui est
- * affiché change, il le dit, et la page se redemande. La carte déplacée par Stan apparaît dans
- * la seconde, sans rien toucher.
+ * affiché change, il le dit, et la page se redemande. La carte déplacée par Stan apparaît en
+ * deux secondes, sans rien toucher.
  *
  * Le composant vit dans le rail, donc dans le layout : monté une fois, il suit d'une page à
  * l'autre. Onglet en arrière-plan, tout s'arrête — personne ne regarde.

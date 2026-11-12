@@ -12,6 +12,7 @@
 import { and, asc, eq, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { creneau } from "@/db/schema";
+import { oublierAgenda } from "@/relances/agenda";
 import { ErreurApi, depuisPostgres, introuvable } from "./erreurs";
 
 export type Nature = "point_du_matin" | "rappel" | "bilan";
@@ -55,6 +56,7 @@ async function traduire<T>(fn: () => Promise<T>): Promise<T> {
 
 export async function ajouter(ctx: Ctx, heure: string): Promise<Creneau[]> {
   await traduire(() => db.insert(creneau).values({ spaceId: ctx.spaceId, membreId: ctx.membreId, heure }));
+  await oublierAgenda();
   return lister(ctx);
 }
 
@@ -62,6 +64,7 @@ export async function deplacer(ctx: Ctx, id: string, heure: string): Promise<Cre
   const [c] = await db.select().from(creneau).where(and(eq(creneau.id, id), eq(creneau.membreId, ctx.membreId)));
   if (!c) throw introuvable("Créneau");
   await traduire(() => db.update(creneau).set({ heure }).where(eq(creneau.id, id)));
+  await oublierAgenda();
   return lister(ctx);
 }
 
@@ -74,5 +77,6 @@ export async function retirer(ctx: Ctx, id: string): Promise<Creneau[]> {
     throw new ErreurApi("minimum_creneaux", 422, `Trois Créneaux au minimum : le Point du matin, au moins un Rappel, le Bilan.`);
   }
   await db.delete(creneau).where(eq(creneau.id, id));
+  await oublierAgenda();
   return lister(ctx);
 }
