@@ -8,6 +8,7 @@ import { ajouterJours, heureDe, minutesDansLeJour } from "@/agenda/periode";
 import { sessionCourante } from "@/auth/serveur";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { Agendas } from "@/calendrier/Agendas";
+import { Avis } from "@/calendrier/Avis";
 import { Fiche, type Source } from "@/calendrier/Fiche";
 import { couvre, disposer, type Place } from "@/calendrier/disposition";
 import { db } from "@/db/client";
@@ -95,11 +96,7 @@ export default async function Calendrier({ searchParams }: {
         <Agendas personnes={personnes} agendas={agendas} moiId={session.membreId} couleurs={couleurs} couleursPersonnes={couleurPersonne} erreurs={erreurs} outlookPret={microsoftConfigure()} />
       </header>
 
-      {(p.branche || p.erreur) && (
-        <p role={p.erreur ? "alert" : "status"} className={`mx-5 mt-3 rounded-lg border px-3 py-2 text-[13.5px] ${p.erreur ? "border-bloque/40 bg-bloque-voile" : "border-en-cours/40 bg-en-cours-voile"}`}>
-          {p.erreur ?? `Agenda branché : ${p.branche}.`}
-        </p>
-      )}
+      {(p.branche || p.erreur) && <Avis message={p.erreur ?? `Agenda branché : ${p.branche}.`} erreur={Boolean(p.erreur)} />}
       {muets.length > 0 && (
         <p className="mx-5 mt-3 text-[13px] text-texte-sourd">
           <span className="text-bloque">Muet</span> : {muets.map((a) => `${a.nom} (${noms[a.membreId] ?? "?"})`).join(", ")} — voir « Agendas ».
