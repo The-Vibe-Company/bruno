@@ -1,0 +1,22 @@
+web/src/calendrier/Avis.tsx
+  s_d307dd89b18083::t_9dd72f246a30af 1-35
+web/src/app/(bruno)/calendrier/page.tsx
+  s_d307dd89b18083::t_ac20a7bcd2a5c0 11
+  s_d307dd89b18083::t_e74b94bca449e4 98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5a28a002b390560501756447a5d83bb4c9339f1f",
+  "prompts": {},
+  "sessions": {
+    "s_d307dd89b18083": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "084f215b-7054-4798-a4d2-281cf849b1fd",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
