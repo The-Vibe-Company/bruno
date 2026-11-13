@@ -20,7 +20,34 @@ export type EvenementLu = {
   journee: boolean;
   lieu: string | null;
   lien: string | null;
+  /** En texte brut, coupée : c'est pour lire la réunion en grand, pas pour la recopier. */
+  description: string | null;
+  /** Les noms, à défaut les adresses, de ceux qui sont invités. */
+  participants: string[];
+  /** Le lien pour rejoindre en visio, quand il y en a un. */
+  visio: string | null;
 };
+
+const DESCRIPTION_MAX = 4000;
+
+/** Une description en texte : Google et Outlook la donnent parfois en HTML. */
+export function enTexte(v: string | null | undefined): string | null {
+  if (!v) return null;
+  const t = v
+    .replace(/<br\s*\/?>/gi, "\n").replace(/<\/(p|div|li|tr|h\d)>/gi, "\n").replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  if (!t) return null;
+  return t.length > DESCRIPTION_MAX ? `${t.slice(0, DESCRIPTION_MAX)}…` : t;
+}
+
+const VISIO = /https:\/\/(?:meet\.google\.com|teams\.microsoft\.com|teams\.live\.com|[\w-]+\.zoom\.us|zoom\.us|whereby\.com|meet\.jit\.si)\/[^\s<>"')\]]+/i;
+
+/** Le lien de visio : celui que le fournisseur donne, sinon le premier trouvé dans le lieu ou la description. */
+export function trouverVisio(...sources: (string | null | undefined)[]): string | null {
+  for (const s of sources) { const m = s?.match(VISIO); if (m) return m[0]; }
+  return null;
+}
 
 /** Une série sans fin ne se déplie pas à l'infini : au-delà, c'est un fichier qui ment. */
 const MAX_OCCURRENCES = 2000;
@@ -67,6 +94,16 @@ export function lireIcs(contenu: string, du: Date, au: Date): EvenementLu[] {
   }
 
   const sortie: EvenementLu[] = [];
+  const details = (e: ICAL.Event) => {
+    const description = enTexte(e.description);
+    const lieu = texte(e.location);
+    const participants = e.attendees.map((a) => {
+      const nom = a.getParameter("cn");
+      return typeof nom === "string" && nom.trim() ? nom.trim() : String(a.getFirstValue() ?? "").replace(/^mailto:/i, "");
+    }).filter(Boolean);
+    const conference = texte(e.component.getFirstPropertyValue("x-google-conference"));
+    return { lieu, lien: texte(e.component.getFirstPropertyValue("url")), description, participants, visio: conference ?? trouverVisio(lieu, description) };
+  };
   const garder = (e: ICAL.Event, debut: ICAL.Time, fin: ICAL.Time, cle: string) => {
     if (String(e.component.getFirstPropertyValue("status") ?? "").toUpperCase() === "CANCELLED") return;
     const journee = debut.isDate;
@@ -78,7 +115,7 @@ export function lireIcs(contenu: string, du: Date, au: Date): EvenementLu[] {
       const j1 = fin.compare(debut) > 0 ? jourIso(fin) : j0;
       const finJour = j1 > j0 ? j1 : ajouterUnJour(j0);
       if (minuit(finJour).getTime() <= du.getTime() || minuit(j0).getTime() >= au.getTime()) return;
-      sortie.push({ id: cle, titre: e.summary || "(sans titre)", debut: j0, fin: finJour, journee: true, lieu: texte(e.location), lien: texte(e.component.getFirstPropertyValue("url")) });
+      sortie.push({ id: cle, titre: e.summary || "(sans titre)", debut: j0, fin: finJour, journee: true, ...details(e) });
       return;
     }
     const a = instant(debut, tzDebut);
@@ -86,7 +123,7 @@ export function lireIcs(contenu: string, du: Date, au: Date): EvenementLu[] {
     // Dans la période : commence avant sa fin, et finit après son début (un instant ponctuel compte s'il y tombe).
     const dedans = a < au && (b > du || (b.getTime() === a.getTime() && a >= du));
     if (!dedans) return;
-    sortie.push({ id: cle, titre: e.summary || "(sans titre)", debut: a.toISOString(), fin: b.toISOString(), journee: false, lieu: texte(e.location), lien: texte(e.component.getFirstPropertyValue("url")) });
+    sortie.push({ id: cle, titre: e.summary || "(sans titre)", debut: a.toISOString(), fin: b.toISOString(), journee: false, ...details(e) });
   };
 
   for (const [uid, e] of series) {

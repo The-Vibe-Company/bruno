@@ -8,7 +8,7 @@
 import { decodeJwt } from "jose";
 import { GOOGLE, reglage } from "@/auth/config";
 import { urlRetour } from "@/auth/oauth";
-import type { EvenementLu } from "./ical";
+import { enTexte, trouverVisio, type EvenementLu } from "./ical";
 
 export type FournisseurOAuth = "google" | "microsoft";
 
@@ -96,8 +96,9 @@ export const oublierAcces = (agendaId: string) => acces.delete(agendaId);
 type EvenementGoogle = {
   id: string; status?: string; summary?: string; location?: string; htmlLink?: string; eventType?: string;
   start?: { date?: string; dateTime?: string }; end?: { date?: string; dateTime?: string };
-  attendees?: { self?: boolean; responseStatus?: string }[];
-  hangoutLink?: string;
+  attendees?: { self?: boolean; responseStatus?: string; email?: string; displayName?: string; resource?: boolean }[];
+  hangoutLink?: string; description?: string;
+  conferenceData?: { entryPoints?: { entryPointType?: string; uri?: string }[] };
 };
 
 /** L'agenda principal du compte. Les agendas partagés des collègues y seraient en double. */
@@ -121,7 +122,10 @@ export async function evenementsGoogle(jeton: string, du: Date, au: Date): Promi
       const journee = Boolean(e.start?.date);
       const debut = journee ? e.start!.date! : new Date(e.start?.dateTime ?? "").toISOString();
       const fin = journee ? (e.end?.date ?? e.start!.date!) : new Date(e.end?.dateTime ?? e.start?.dateTime ?? "").toISOString();
-      sortie.push({ id: e.id, titre: e.summary || "(sans titre)", debut, fin, journee, lieu: e.location ?? null, lien: e.htmlLink ?? e.hangoutLink ?? null });
+      const description = enTexte(e.description);
+      const visio = e.hangoutLink ?? e.conferenceData?.entryPoints?.find((p) => p.entryPointType === "video")?.uri ?? trouverVisio(e.location, description);
+      const participants = (e.attendees ?? []).filter((a) => !a.resource).map((a) => a.displayName || a.email || "").filter(Boolean);
+      sortie.push({ id: e.id, titre: e.summary || "(sans titre)", debut, fin, journee, lieu: e.location ?? null, lien: e.htmlLink ?? null, description, participants, visio });
     }
     page = json.nextPageToken;
   } while (page);
@@ -132,6 +136,8 @@ type EvenementGraph = {
   id: string; subject?: string; isAllDay?: boolean; isCancelled?: boolean; webLink?: string;
   start: { dateTime: string }; end: { dateTime: string };
   location?: { displayName?: string }; responseStatus?: { response?: string };
+  bodyPreview?: string; onlineMeeting?: { joinUrl?: string } | null;
+  attendees?: { type?: string; emailAddress?: { name?: string; address?: string } }[];
 };
 
 /** Le calendrier par défaut, déplié par Graph (`calendarView` rend chaque occurrence). Heures en UTC. */
@@ -142,7 +148,7 @@ export async function evenementsMicrosoft(jeton: string, du: Date, au: Date): Pr
     u.searchParams.set("startDateTime", du.toISOString());
     u.searchParams.set("endDateTime", au.toISOString());
     u.searchParams.set("$top", "200");
-    u.searchParams.set("$select", "id,subject,isAllDay,isCancelled,webLink,start,end,location,responseStatus");
+    u.searchParams.set("$select", "id,subject,isAllDay,isCancelled,webLink,start,end,location,responseStatus,bodyPreview,onlineMeeting,attendees");
     return u.toString();
   })();
   while (url) {
@@ -155,7 +161,13 @@ export async function evenementsMicrosoft(jeton: string, du: Date, au: Date): Pr
       // Une journée entière Outlook va de minuit à minuit, en UTC une fois demandé ainsi : la date suffit.
       const debut = e.isAllDay ? e.start.dateTime.slice(0, 10) : utc(e.start.dateTime).toISOString();
       const fin = e.isAllDay ? e.end.dateTime.slice(0, 10) : utc(e.end.dateTime).toISOString();
-      sortie.push({ id: e.id, titre: e.subject || "(sans titre)", debut, fin, journee: Boolean(e.isAllDay), lieu: e.location?.displayName || null, lien: e.webLink ?? null });
+      const description = enTexte(e.bodyPreview);
+      const lieu = e.location?.displayName || null;
+      const participants = (e.attendees ?? []).filter((a) => a.type !== "resource").map((a) => a.emailAddress?.name || a.emailAddress?.address || "").filter(Boolean);
+      sortie.push({
+        id: e.id, titre: e.subject || "(sans titre)", debut, fin, journee: Boolean(e.isAllDay), lieu, lien: e.webLink ?? null,
+        description, participants, visio: e.onlineMeeting?.joinUrl ?? trouverVisio(lieu, description),
+      });
     }
     url = json["@odata.nextLink"];
   }

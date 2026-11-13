@@ -293,6 +293,11 @@ export const Evenement = z.object({
   journee: z.boolean(),
   lieu: z.string().nullable(),
   lien: z.string().nullable(),
+  /** En texte brut, coupée à 4000 caractères. */
+  description: z.string().nullable(),
+  participants: z.array(z.string()),
+  /** Le lien pour rejoindre en visio. */
+  visio: z.string().nullable(),
 });
 export type Evenement = z.infer<typeof Evenement>;
 

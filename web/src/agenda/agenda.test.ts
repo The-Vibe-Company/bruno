@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { ouvrir, sceller } from "./coffre";
-import { lireIcs, normaliserLien, origineDuLien } from "./ical";
+import { enTexte, lireIcs, normaliserLien, origineDuLien } from "./ical";
 import { jourDe, minuit } from "./periode";
 import { disposer } from "@/calendrier/disposition";
 import type { Evenement } from "@/api/contrat";
@@ -75,6 +75,9 @@ END:VEVENT
 BEGIN:VEVENT
 UID:sans-vtimezone
 SUMMARY:Déjeuner
+DESCRIPTION:Chez Paul.\\nLien : https://teams.microsoft.com/l/meetup-join/abc
+ATTENDEE;CN=Stan Girard:mailto:stan@exemple.fr
+ATTENDEE:mailto:victor@exemple.fr
 DTSTART;TZID=Europe/Paris:20261117T123000
 DTEND;TZID=Europe/Paris:20261117T140000
 END:VEVENT
@@ -94,6 +97,15 @@ describe("un lien iCal", () => {
     expect(titres.filter((t) => t.startsWith("Point MONKA"))).toEqual(["Point MONKA (décalé)"]);
     const decale = evs.find((e) => e.titre === "Point MONKA (décalé)")!;
     expect(decale.debut).toBe("2026-11-16T13:00:00.000Z");
+  });
+
+  it("garde la description, les invités et la visio", () => {
+    expect(evs.find((e) => e.titre === "Déjeuner")).toMatchObject({
+      description: "Chez Paul.\nLien : https://teams.microsoft.com/l/meetup-join/abc",
+      participants: ["Stan Girard", "victor@exemple.fr"],
+      visio: "https://teams.microsoft.com/l/meetup-join/abc",
+    });
+    expect(enTexte("<p>Ordre du jour&nbsp;:</p><ul><li>budget</li></ul>")).toBe("Ordre du jour :\nbudget");
   });
 
   it("garde les journées entières en jours, fin exclusive", () => {
@@ -124,7 +136,7 @@ describe("les liens", () => {
 });
 
 describe("la grille d'une journée", () => {
-  const ev = (id: string, debut: string, fin: string): Evenement => ({ id, agendaId: id, membreId: "m", titre: id, debut, fin, journee: false, lieu: null, lien: null });
+  const ev = (id: string, debut: string, fin: string): Evenement => ({ id, agendaId: id, membreId: "m", titre: id, debut, fin, journee: false, lieu: null, lien: null, description: null, participants: [], visio: null });
   it("met côte à côte ce qui se chevauche, et en pleine largeur le reste", () => {
     const places = disposer([
       ev("a", "2026-11-16T08:00:00Z", "2026-11-16T09:00:00Z"), // 9 h–10 h à Paris
