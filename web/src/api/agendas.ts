@@ -124,12 +124,14 @@ async function lireUn(l: Ligne, du: Date, au: Date): Promise<EvenementLu[]> {
  * Tous les Agendas de l'Espace, en parallèle, du premier jour au dernier inclus. Un Agenda qui ne
  * répond pas ne prive pas les autres : il est listé dans `erreurs` et l'écran le dit.
  */
-export async function lire(ctx: Ctx, duJour: string, auJour: string): Promise<LectureAgendas> {
+export async function lire(ctx: Ctx, duJour: string, auJour: string, membres?: Set<string>): Promise<LectureAgendas> {
   if (auJour < duJour) throw new ErreurApi("requete_invalide", 422, "La période finit avant de commencer.");
   if (ajouterJours(duJour, JOURS_MAX) < auJour) throw new ErreurApi("requete_invalide", 422, `${JOURS_MAX} jours au plus.`);
   const du = minuit(duJour);
   const au = minuit(ajouterJours(auJour, 1));
-  const lignes = await db.select().from(agenda).where(eq(agenda.spaceId, ctx.spaceId));
+  // Les visages éteints sur le Calendrier : leurs agendas ne sont même pas lus.
+  const lignes = (await db.select().from(agenda).where(eq(agenda.spaceId, ctx.spaceId)))
+    .filter((l) => !membres || membres.has(l.membreId));
 
   const lus = await Promise.all(lignes.map(async (l) => {
     try {
