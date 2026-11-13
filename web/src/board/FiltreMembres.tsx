@@ -15,11 +15,9 @@ import { retenirMembres } from "@/lib/filtre-membres-client";
  * Qui est retenu porte un **anneau d'accent** ; les autres passent en gris et rapetissent d'un
  * cheveu. Une simple différence d'opacité ne se voyait pas : on ne savait pas qui était filtré.
  */
-export function FiltreMembres({ membres, retenus, couleurs }: {
+export function FiltreMembres({ membres, retenus }: {
   membres: { id: string; nom: string; avatar?: string | null }[];
   retenus: string[];
-  /** Sur le Calendrier, l'anneau prend la couleur de la personne : le visage sert de légende. */
-  couleurs?: Record<string, string>;
 }) {
   const router = useRouter(); const chemin = usePathname(); const params = useSearchParams();
   const [, demarrer] = useTransition();
@@ -54,10 +52,9 @@ export function FiltreMembres({ membres, retenus, couleurs }: {
         const actif = actifs.has(m.id);
         return (
           <button key={m.id} aria-pressed={actif} title={`${m.nom} — ⌘-clic : seulement ${m.nom}`} onClick={(e) => (e.metaKey || e.ctrlKey ? seul(m.id) : basculer(m.id))}
-            style={couleurs?.[m.id] ? ({ "--tw-ring-color": couleurs[m.id] } as React.CSSProperties) : undefined}
             className={`flex h-7 w-7 items-center justify-center overflow-hidden rounded-full text-xs font-medium ring-offset-2 ring-offset-fond transition-all ${
               actif
-                ? `bg-bord-faible text-texte ring-2 ${couleurs?.[m.id] ? "" : "ring-accent"}`
+                ? "bg-bord-faible text-texte ring-2 ring-accent"
                 : "scale-90 bg-bord-faible text-texte-tres-faible opacity-40 grayscale hover:opacity-70"
             }`}>
             {/* eslint-disable-next-line @next/next/no-img-element -- une data URL */}

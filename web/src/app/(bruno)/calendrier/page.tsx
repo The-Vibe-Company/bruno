@@ -79,7 +79,7 @@ export default async function Calendrier({ searchParams }: {
           <Link href={lien(aujourdhui)} className="flex h-8 items-center rounded-lg border border-bord-2 px-2.5 text-[13px] text-texte-sourd hover:text-texte">Aujourd’hui</Link>
         )}
         <div className="flex-1" />
-        <FiltreMembres membres={personnes} retenus={[...actifs]} couleurs={couleurPersonne} />
+        <FiltreMembres membres={personnes} retenus={[...actifs]} />
         <span className="flex h-8 items-center rounded-lg border border-bord-2 bg-surface p-0.5 text-[13px]">
           {(["semaine", "jour"] as const).map((v) => (
             <Link key={v} href={lien(v === "jour" && vue === "semaine" && du <= aujourdhui && aujourdhui <= au ? aujourdhui : jour, v)} aria-current={v === vue ? "page" : undefined}
@@ -187,11 +187,11 @@ function Bloc({ p, premiere, couleur = "var(--accent)", qui }: { p: Place; premi
   return (
     <Balise {...(e.lien ? { href: e.lien, target: "_blank", rel: "noreferrer" } : {})}
       title={`${qui ? `${qui} · ` : ""}${horaire} · ${e.titre}${e.lieu ? ` · ${e.lieu}` : ""}`}
-      className="absolute overflow-hidden rounded-md border-l-[3px] px-1.5 py-0.5 text-[12px] leading-tight text-texte hover:brightness-110"
+      className="absolute overflow-hidden rounded-md px-1.5 py-0.5 text-[12px] leading-tight text-texte hover:brightness-110"
       style={{
         top, height: hauteur - 2,
         left: `calc(${(p.colonne / p.colonnes) * 100}% + 2px)`, width: `calc(${100 / p.colonnes}% - 4px)`,
-        borderLeftColor: couleur, background: `color-mix(in srgb, ${couleur} 20%, var(--surface))`,
+        background: `color-mix(in srgb, ${couleur} 30%, var(--surface))`,
       }}>
       <span className="block truncate font-medium">{e.titre}</span>
       {hauteur > 32 && <span className="block truncate tabular-nums text-texte-sourd">{horaire}{qui ? ` · ${qui}` : ""}</span>}
