@@ -456,6 +456,8 @@ export const agenda = pgTable("agenda", {
   /** L'adresse du compte (« stan@monka.fr »), ou le nom qu'on a donné au lien. */
   nom: text("nom").notNull(),
   secret: text("secret").notNull(),
+  /** Choisie à la main ; sinon l'Agenda prend la couleur de son Membre. */
+  couleur: text("couleur"),
   ajouteParId: uuid("ajoute_par_id").references(() => membre.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [

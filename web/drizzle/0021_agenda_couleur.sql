@@ -1,0 +1,1 @@
+ALTER TABLE "agenda" ADD COLUMN "couleur" text;

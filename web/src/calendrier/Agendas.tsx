@@ -1,9 +1,11 @@
 "use client";
 import * as Dialog from "@radix-ui/react-dialog";
+import * as Popover from "@radix-ui/react-popover";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Agenda } from "@/api/contrat";
 import { Initiale } from "@/board/visuel";
+import { PALETTE } from "@/reglages/palette";
 
 type Personne = { id: string; nom: string; avatar: string | null };
 
@@ -22,9 +24,10 @@ const ORIGINE: Record<Agenda["origine"], string> = { google: "Google", outlook: 
  * Brancher et débrancher les agendas de chacun. Google et Outlook se branchent par leur
  * propriétaire — c'est lui qui dit oui chez le fournisseur ; un lien iCal se colle pour n'importe qui.
  */
-export function Agendas({ personnes, agendas, moiId, couleurs, erreurs, outlookPret }: {
+export function Agendas({ personnes, agendas, moiId, couleurs, couleursPersonnes, erreurs, outlookPret }: {
   personnes: Personne[]; agendas: Agenda[]; moiId: string;
-  couleurs: Record<string, string>; erreurs: Record<string, string>; outlookPret: boolean;
+  /** Celle que chaque Agenda porte sur le Calendrier ; et celle de chaque Membre, qu'un Agenda sans couleur à lui reprend. */
+  couleurs: Record<string, string>; couleursPersonnes: Record<string, string>; erreurs: Record<string, string>; outlookPret: boolean;
 }) {
   const router = useRouter();
   const [ouvert, setOuvert] = useState(false);
@@ -45,6 +48,17 @@ export function Agendas({ personnes, agendas, moiId, couleurs, erreurs, outlookP
       router.refresh();
     } catch (e) { setErreur((e as Error).message); }
     finally { setOccupe(false); }
+  };
+
+  // La pastille change au clic ; le Calendrier suit au retour du serveur.
+  const [choisies, setChoisies] = useState<Record<string, string | null>>({});
+  const colorer = async (a: Agenda, couleur: string | null) => {
+    setChoisies((c) => ({ ...c, [a.id]: couleur }));
+    try { await appel(`/api/agendas/${a.id}`, "PATCH", { couleur }); router.refresh(); }
+    catch (e) {
+      setChoisies((c) => { const reste = { ...c }; delete reste[a.id]; return reste; });
+      setErreur((e as Error).message);
+    }
   };
 
   const retirer = async (a: Agenda) => {
@@ -83,7 +97,10 @@ export function Agendas({ personnes, agendas, moiId, couleurs, erreurs, outlookP
                 <ul className="flex flex-col">
                   {siens.map((a) => (
                     <li key={a.id} className="flex items-center gap-2.5 py-1.5">
-                      <span className="h-2.5 w-2.5 flex-none rounded-full" style={{ background: couleurs[a.id] }} />
+                      <ChoixCouleur agenda={a}
+                        propre={a.id in choisies ? choisies[a.id] : a.couleur}
+                        sienne={couleursPersonnes[a.membreId] ?? couleurs[a.id]}
+                        onChoisir={(c) => colorer(a, c)} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[14px]">{a.nom}</span>
                         <span className={`block truncate text-[12px] ${erreurs[a.id] ? "text-bloque" : "text-texte-faible"}`}>
@@ -142,3 +159,47 @@ export function Agendas({ personnes, agendas, moiId, couleurs, erreurs, outlookP
 }
 
 const bouton = "inline-flex h-8 items-center rounded-lg border border-bord-fort px-3 text-[13px] text-texte-2 hover:border-accent hover:text-texte";
+
+/**
+ * La pastille d'un Agenda, qui s'ouvre sur la palette. La première case est la couleur de son
+ * Membre : la reprendre efface le choix, et l'Agenda suivra si celle du Membre change.
+ */
+function ChoixCouleur({ agenda, propre, sienne, onChoisir }: {
+  agenda: Agenda; propre: string | null; sienne: string; onChoisir: (c: string | null) => void;
+}) {
+  const [ouvert, setOuvert] = useState(false);
+  const affichee = propre ?? sienne;
+  const choisir = (c: string | null) => { setOuvert(false); if (c !== propre) onChoisir(c); };
+  const cases: { couleur: string; valeur: string | null; libelle: string }[] = [
+    { couleur: sienne, valeur: null, libelle: "Celle de la personne" },
+    ...PALETTE.filter((c) => c.toUpperCase() !== sienne.toUpperCase()).map((c) => ({ couleur: c, valeur: c, libelle: c })),
+  ];
+  return (
+    <Popover.Root open={ouvert} onOpenChange={setOuvert}>
+      <Popover.Trigger asChild>
+        <button type="button" aria-label={`Couleur de « ${agenda.nom} »`} title="Changer de couleur"
+          className="flex h-6 w-6 flex-none items-center justify-center rounded-full outline-none hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-accent">
+          <span className="h-2.5 w-2.5 rounded-full" style={{ background: affichee }} />
+        </button>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content align="start" sideOffset={6} className="anime-bulle z-[60] flex flex-col gap-2 rounded-xl border border-bord-fort bg-surface p-3 shadow-[0_20px_60px_rgb(0_0_0/0.35)] outline-none">
+          <p className="text-[12.5px] text-texte-sourd">Sa couleur sur le Calendrier</p>
+          <span className="flex gap-1.5" role="radiogroup" aria-label="Couleur">
+            {cases.map((c) => {
+              const prise = c.valeur === null ? propre === null : propre?.toUpperCase() === c.valeur.toUpperCase();
+              return (
+                <button key={c.libelle} type="button" role="radio" aria-checked={prise} aria-label={c.libelle} title={c.libelle} onClick={() => choisir(c.valeur)}
+                  className={`relative h-5 w-5 rounded-full ring-offset-2 ring-offset-surface ${prise ? "ring-2 ring-texte" : "hover:ring-2 hover:ring-bord-fort"}`}
+                  style={{ background: c.couleur }}>
+                  {c.valeur === null && <span aria-hidden className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-surface bg-texte-sourd" />}
+                </button>
+              );
+            })}
+          </span>
+          <p className="text-[12px] text-texte-faible">La première est celle de la personne.</p>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}

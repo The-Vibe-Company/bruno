@@ -25,7 +25,7 @@ function origine(l: Ligne): Agenda["origine"] {
 }
 
 const resume = (l: Ligne): Agenda => ({
-  id: l.id, membreId: l.membreId, fournisseur: l.fournisseur, nom: l.nom, origine: origine(l), createdAt: l.createdAt.toISOString(),
+  id: l.id, membreId: l.membreId, fournisseur: l.fournisseur, nom: l.nom, origine: origine(l), couleur: l.couleur, createdAt: l.createdAt.toISOString(),
 });
 
 export async function lister(ctx: Ctx): Promise<Agenda[]> {
@@ -100,6 +100,15 @@ export async function retirer(ctx: Ctx, id: string): Promise<Agenda[]> {
   if (sortis.length === 0) throw introuvable("Agenda");
   oublierAcces(id);
   fichiers.delete(id);
+  return lister(ctx);
+}
+
+/** La couleur d'un Agenda sur le Calendrier ; null lui rend celle de son Membre. */
+export async function colorer(ctx: Ctx, id: string, couleur: string | null): Promise<Agenda[]> {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) throw introuvable("Agenda");
+  const touches = await db.update(agenda).set({ couleur: couleur?.toUpperCase() ?? null })
+    .where(and(eq(agenda.id, id), eq(agenda.spaceId, ctx.spaceId))).returning({ id: agenda.id });
+  if (touches.length === 0) throw introuvable("Agenda");
   return lister(ctx);
 }
 
