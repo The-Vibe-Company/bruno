@@ -1,0 +1,32 @@
+CONTEXT.md
+  s_a572b40f415343::t_f841a2524c723b 247-249
+web/src/calendrier/couleurs.ts
+  s_a572b40f415343::t_f4aa98cd58c5ff 1-45
+web/src/app/(bruno)/calendrier/page.tsx
+  s_a572b40f415343::t_bcf4d93f135f14 95
+  s_a572b40f415343::t_4a58c586dbb4ad 57-59
+  s_a572b40f415343::t_646c2fa5bfb1aa 12
+web/src/calendrier/Agendas.tsx
+  s_a572b40f415343::t_910accba2bca62 100,102
+  s_a572b40f415343::t_ebdd42b9f9e7bf 27,29-30
+  s_a572b40f415343::t_4651b7eafef618 201
+  s_a572b40f415343::t_9d5029f8fccd70 164-165,167-168,171,173,175-176
+web/src/calendrier/couleurs.test.ts
+  s_a572b40f415343::t_6ff701c90603b9 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7084d7b762bb646794f293ecab5ce9ec6b2cc899",
+  "prompts": {},
+  "sessions": {
+    "s_a572b40f415343": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c18cfacc-40e6-4fce-b952-2b3cb688a292",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
