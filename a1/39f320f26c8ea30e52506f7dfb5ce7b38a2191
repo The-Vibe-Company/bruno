@@ -1,0 +1,19 @@
+web/src/api/agendas.test.ts
+  s_fa10390adc8674::t_d0e174a38e2ab8 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a139f320f26c8ea30e52506f7dfb5ce7b38a2191",
+  "prompts": {},
+  "sessions": {
+    "s_fa10390adc8674": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6b52f86d-e303-42ae-b18b-ccb0b6169d95",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
