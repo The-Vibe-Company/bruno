@@ -17,6 +17,7 @@ const perso = randomUUID(); const sienDAilleurs = randomUUID();
 const ctx = { spaceId, membreId: antoine };
 
 beforeAll(async () => {
+  process.env.SESSION_SECRET ??= "secret-de-test-assez-long-pour-hkdf";
   await db.insert(space).values([{ id: spaceId, nom: "t" }, { id: ailleurs, nom: "u" }]);
   await db.insert(membre).values([
     { id: antoine, spaceId, nom: "Antoine", email: `a-${spaceId}@t.co` },
