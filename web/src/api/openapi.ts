@@ -19,6 +19,8 @@ const composants = {
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
   Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
   CreerJeton: C.CreerJeton, JetonApi: C.JetonApi, JetonEmis: C.JetonEmis,
+  Agenda: C.Agenda, AjouterLienAgenda: C.AjouterLienAgenda, PeriodeAgendas: C.PeriodeAgendas,
+  Evenement: C.Evenement, LectureAgendas: C.LectureAgendas,
 } as const;
 
 const ref = (nom: keyof typeof composants) => ({ $ref: `#/components/schemas/${nom}` });
@@ -149,6 +151,34 @@ export function documentOpenApi() {
           summary: "Révoquer un jeton",
           description: "L'accès est coupé immédiatement. Le jeton reste dans la liste, marqué révoqué. Pas le sien : introuvable.",
           responses: { 200: { description: "Les jetons, à jour" }, 404: { description: "Pas le vôtre" } },
+        },
+      },
+      "/api/agendas": {
+        get: {
+          summary: "Les Agendas de l'Espace",
+          description: "Ceux de tout le monde : le Calendrier les montre tous. Jamais leur secret.",
+          responses: { 200: { description: "Les Agendas", content: { "application/json": { schema: { type: "array", items: ref("Agenda") } } } } },
+        },
+        post: {
+          summary: "Brancher un lien iCal",
+          description: "L'adresse secrète d'un agenda Outlook ou Google, pour n'importe quel Membre. Lue tout de suite : un lien qui ne répond pas est refusé. Google et Microsoft se branchent par OAuth (/api/auth/agenda/{fournisseur}), pour soi seulement.",
+          requestBody: corps("AjouterLienAgenda"),
+          responses: { 200: { description: "Les Agendas, à jour" }, 422: { description: "Lien illisible, ou déjà branché sous ce nom" } },
+        },
+      },
+      "/api/agendas/{id}": {
+        parameters: [idTache],
+        delete: { summary: "Débrancher un Agenda", description: "Le secret est effacé. Les événements n'étaient pas gardés.", responses: { 200: { description: "Les Agendas, à jour" }, 404: { description: "Inconnu" } } },
+      },
+      "/api/agendas/evenements": {
+        get: {
+          summary: "Les événements de la période",
+          description: "Lus à la demande chez Google, Microsoft ou au lien iCal. Un Agenda qui ne répond pas est listé dans `erreurs`, les autres répondent quand même.",
+          parameters: [
+            { name: "du", in: "query", required: true, schema: { type: "string", format: "date" } },
+            { name: "au", in: "query", required: true, schema: { type: "string", format: "date" } },
+          ],
+          responses: { 200: { description: "Les événements", content: { "application/json": { schema: ref("LectureAgendas") } } } },
         },
       },
       "/api/mcp": {

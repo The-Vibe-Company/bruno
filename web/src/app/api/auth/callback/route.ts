@@ -2,10 +2,13 @@ import { DomaineRefuse, verifierIdToken } from "@/auth/google";
 import { MembreDesactive, membrePourIdentite } from "@/auth/membre";
 import { diagnostiquerEtat, echangerCode, etatEfface, retourIOS } from "@/auth/oauth";
 import { creerSession, enteteCookie } from "@/auth/session";
+import { estEtatAgenda, retour as retourAgenda } from "@/agenda/oauth";
 
 /** Le retour de Google. Un refus doit être lisible, pas une page blanche. */
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
+  // Un Agenda qu'on branche revient par ici aussi : c'est la seule adresse déclarée chez Google.
+  if (estEtatAgenda(params.get("state"))) return retourAgenda(request);
   const racine = new URL("/", request.url);
 
   /** Un échec se lit sur la page de connexion — jamais sur `/`, qui renverrait chez Google en boucle. */

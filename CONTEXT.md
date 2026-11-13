@@ -236,6 +236,23 @@ avant même que la PR soit relue. Une prévisualisation se construit contre le s
 est ; si son code attend une table qui n'existe pas encore, elle seule s'en plaint. Le vrai
 remède est une base par environnement — Neon sait brancher.
 
+### Le Calendrier
+
+**Agenda**:
+Un calendrier branché sur un Membre : un compte Google, un compte Outlook, ou un **lien iCal** —
+l'adresse secrète qu'Outlook et Google savent publier. Autant qu'on veut par personne : le Google
+de la boîte, l'Outlook de chez un Client, le Gmail perso. Bruno **lit** et ne garde rien : les
+événements se relisent chez leur propriétaire à chaque fois. Un compte Google ou Outlook se branche
+par son propriétaire, qui dit oui chez le fournisseur ; un lien iCal se colle pour n'importe qui.
+Ce qui ouvre un Agenda — jeton ou lien — est chiffré en base.
+_Avoid_: Calendrier (c'est la page), compte, intégration, synchro
+
+**Calendrier**:
+La page qui montre les Agendas de tout le monde, côte à côte : la semaine avec une ligne par
+Membre, le jour avec une colonne par Membre, heure par heure. Comme le reste de Bruno, tout le
+monde voit tout. Aucun événement ne devient une Tâche, et aucune Tâche n'y apparaît.
+_Avoid_: Planning, agenda partagé, disponibilités
+
 ### Le rituel
 
 **Daily**:

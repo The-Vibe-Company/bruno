@@ -430,3 +430,36 @@ export const jetonApi = pgTable("jeton_api", {
   check("jeton_api_empreinte_sha256", sql`${t.empreinte} ~ '^[0-9a-f]{64}$'`),
   index("jeton_api_par_membre").on(t.spaceId, t.membreId),
 ]);
+
+/* ------------------------------------------------------------------ les agendas */
+
+/**
+ * D'où vient un Agenda : un compte Google, un compte Microsoft (Outlook), ou un lien iCal — l'adresse
+ * secrète qu'Outlook et Google savent donner, et qui marche même quand l'OAuth est fermé (un Gmail
+ * perso devant un écran de consentement « Interne », l'Outlook d'un client qui bloque les applis).
+ */
+export const fournisseurAgendaEnum = pgEnum("fournisseur_agenda", ["google", "microsoft", "ical"]);
+
+/**
+ * Un Agenda branché sur un Membre. Autant qu'on veut par personne : le Google de la boîte,
+ * l'Outlook de chez MONKA, le Gmail perso. Bruno n'écrit jamais dedans ; il lit, et il montre.
+ *
+ * `secret` est chiffré (voir `agenda/coffre.ts`) : un jeton de rafraîchissement pour Google et
+ * Microsoft, l'adresse elle-même pour un lien iCal — elle vaut un mot de passe. Les événements ne
+ * sont pas gardés : ils se lisent à la demande, chez celui qui les possède.
+ */
+export const agenda = pgTable("agenda", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
+  fournisseur: fournisseurAgendaEnum("fournisseur").notNull(),
+  /** L'adresse du compte (« stan@monka.fr »), ou le nom qu'on a donné au lien. */
+  nom: text("nom").notNull(),
+  secret: text("secret").notNull(),
+  ajouteParId: uuid("ajoute_par_id").references(() => membre.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  unique("agenda_unique").on(t.membreId, t.fournisseur, t.nom),
+  check("agenda_nom", sql`length(btrim(${t.nom})) > 0`),
+  index("agenda_par_space").on(t.spaceId, t.membreId),
+]);
