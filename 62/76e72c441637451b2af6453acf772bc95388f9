@@ -1,0 +1,25 @@
+web/src/board/FiltreMembres.tsx
+  s_a7c8caa659ebbe::t_9f2570703c9d57 18,21-22
+  s_a7c8caa659ebbe::t_a83da6e3dbec69 57,60
+web/src/app/(bruno)/calendrier/page.tsx
+  s_a7c8caa659ebbe::t_fd189a2d26bec6 5,9,11,16-17,27-29,31-33,43,51-65,67,82,91,99-103,109-110,117,119,121-124,126,132-137,140,143-150,152-153,155,165-166,168-173,181-200,202,204-207,211
+  s_a7c8caa659ebbe::t_e4f95605b79891 212
+web/src/api/agendas.ts
+  s_a7c8caa659ebbe::t_9acdd57703d6c3 127,132-134
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6276e72c441637451b2af6453acf772bc95388f9",
+  "prompts": {},
+  "sessions": {
+    "s_a7c8caa659ebbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a896a4f-ec45-4a19-9f57-66e5984d32ff",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
