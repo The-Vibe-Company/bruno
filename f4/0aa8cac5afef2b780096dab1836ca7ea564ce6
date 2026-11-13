@@ -1,0 +1,31 @@
+web/src/agenda/fournisseurs.ts
+  s_a7c8caa659ebbe::t_d845bf4e23f89f 11,99-101,125-128,139-140,151,164-170
+web/src/agenda/ical.ts
+  s_a7c8caa659ebbe::t_d845bf4e23f89f 23-28,31-51,97-106,118,126
+web/src/api/contrat.ts
+  s_a7c8caa659ebbe::t_d845bf4e23f89f 296-300
+web/src/agenda/agenda.test.ts
+  s_a7c8caa659ebbe::t_29bb93a15c866d 3,79-80,102-110,139
+  s_a7c8caa659ebbe::t_5f8a38a6ae7393 78
+web/src/calendrier/Fiche.tsx
+  s_a7c8caa659ebbe::t_8f1b2b7892043a 1-106
+web/src/app/(bruno)/calendrier/page.tsx
+  s_a7c8caa659ebbe::t_8e508e6d8dcdec 136
+  s_a7c8caa659ebbe::t_61d90f808b2bb1 11,61-62,112,125,127,150,168,181,183,188-199,203,205-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f40aa8cac5afef2b780096dab1836ca7ea564ce6",
+  "prompts": {},
+  "sessions": {
+    "s_a7c8caa659ebbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a896a4f-ec45-4a19-9f57-66e5984d32ff",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
