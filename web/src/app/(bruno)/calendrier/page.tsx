@@ -9,6 +9,7 @@ import { sessionCourante } from "@/auth/serveur";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { Agendas } from "@/calendrier/Agendas";
 import { Avis } from "@/calendrier/Avis";
+import { couleursDuCalendrier } from "@/calendrier/couleurs";
 import { Fiche, type Source } from "@/calendrier/Fiche";
 import { couvre, disposer, type Place } from "@/calendrier/disposition";
 import { db } from "@/db/client";
@@ -17,7 +18,6 @@ import { allegerAvatars } from "@/lib/avatar-url";
 import { lundiDe } from "@/lib/dates";
 import { membresActifs } from "@/lib/filtre-membres";
 import { filtreMembres } from "@/lib/filtre-membres-serveur";
-import { PALETTE } from "@/reglages/palette";
 import { instant } from "@/relances/temps";
 
 export const dynamic = "force-dynamic";
@@ -54,10 +54,9 @@ export default async function Calendrier({ searchParams }: {
   const actifs = membresActifs(await filtreMembres(p.membres), personnes);
   const lecture = await lire(session, du, au, actifs);
 
-  // Une couleur par personne d'ordinaire : sur une grille commune, c'est qui qu'on cherche. Un
-  // Agenda peut en recevoir une à lui — le perso d'un côté, le client de l'autre.
-  const couleurPersonne = Object.fromEntries(personnes.map((m, i) => [m.id, PALETTE[i % PALETTE.length]]));
-  const couleurs = Object.fromEntries(agendas.map((a) => [a.id, a.couleur ?? couleurPersonne[a.membreId] ?? PALETTE[7]]));
+  // Mes Agendas, une couleur chacun ; ceux des autres, une par personne. Dans l'ordre d'arrivée
+  // de chacun, pas celui de l'écran : sinon la couleur d'un collègue changerait selon qui regarde.
+  const { agendas: couleurs, defauts } = couleursDuCalendrier(membres, agendas, session.membreId);
   const erreurs = Object.fromEntries(lecture.erreurs.map((e) => [e.agendaId, e.message]));
   const noms = Object.fromEntries(personnes.map((m) => [m.id, m.nom]));
   const avatars = Object.fromEntries(personnes.map((m) => [m.id, m.avatar]));
@@ -93,7 +92,7 @@ export default async function Calendrier({ searchParams }: {
             </Link>
           ))}
         </span>
-        <Agendas personnes={personnes} agendas={agendas} moiId={session.membreId} couleurs={couleurs} couleursPersonnes={couleurPersonne} erreurs={erreurs} outlookPret={microsoftConfigure()} />
+        <Agendas personnes={personnes} agendas={agendas} moiId={session.membreId} couleurs={couleurs} defauts={defauts} erreurs={erreurs} outlookPret={microsoftConfigure()} />
       </header>
 
       {(p.branche || p.erreur) && <Avis message={p.erreur ?? `Agenda branché : ${p.branche}.`} erreur={Boolean(p.erreur)} />}
