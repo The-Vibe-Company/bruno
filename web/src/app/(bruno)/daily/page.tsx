@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { eq } from "drizzle-orm";
 import { auJour, enCours, lister as listerAffectations } from "@/api/affectations";
 import { auJour as projetsAuJour, enCours as projetsEnCours, lister as listerProjets } from "@/api/projets";
@@ -8,6 +9,7 @@ import { Affectations } from "@/board/Affectations";
 import { FiltreMembres } from "@/board/FiltreMembres";
 import { membresActifs } from "@/lib/filtre-membres";
 import { filtreMembres } from "@/lib/filtre-membres-serveur";
+import { AgendaDuJour, AgendaEnAttente, ColonneAgenda } from "@/daily/Agenda";
 import { Hier, type TacheFinie } from "@/daily/Hier";
 import { SurLeFeu, type TacheDuJour } from "@/daily/SurLeFeu";
 import { db } from "@/db/client";
@@ -82,9 +84,12 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
       </header>
       <Affectations membres={deLui(dujour)} projets={deLui(projetsDuJour)} moiId={session.membreId}
         choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
-      <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden">
+      <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))_320px] overflow-hidden">
         <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} membres={membres} />
         <SurLeFeu taches={tachesFeu} membres={membres} assigneParDefaut={assigneParDefaut} />
+        <ColonneAgenda>
+          <Suspense fallback={<AgendaEnAttente />}><AgendaDuJour session={session} jour={jour} actifs={actifs} /></Suspense>
+        </ColonneAgenda>
       </main>
     </>
   );
