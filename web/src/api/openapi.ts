@@ -19,7 +19,7 @@ const composants = {
   Recurrence: C.Recurrence, PoserRecurrence: C.PoserRecurrence, ModifierMoi: C.ModifierMoi,
   Sujet: C.Sujet, PoserSujet: C.PoserSujet, ModifierSujet: C.ModifierSujet, FiltreSujets: C.FiltreSujets,
   CreerJeton: C.CreerJeton, JetonApi: C.JetonApi, JetonEmis: C.JetonEmis,
-  Agenda: C.Agenda, AjouterLienAgenda: C.AjouterLienAgenda, PeriodeAgendas: C.PeriodeAgendas,
+  Agenda: C.Agenda, AjouterLienAgenda: C.AjouterLienAgenda, ColorerAgenda: C.ColorerAgenda, PeriodeAgendas: C.PeriodeAgendas,
   Evenement: C.Evenement, LectureAgendas: C.LectureAgendas,
 } as const;
 
@@ -168,6 +168,12 @@ export function documentOpenApi() {
       },
       "/api/agendas/{id}": {
         parameters: [idTache],
+        patch: {
+          summary: "Colorer un Agenda",
+          description: "Sa couleur sur le Calendrier. `null` lui rend celle de son Membre.",
+          requestBody: corps("ColorerAgenda"),
+          responses: { 200: { description: "Les Agendas, à jour" }, 404: { description: "Inconnu" }, 422: { description: "Pas une couleur #RRGGBB" } },
+        },
         delete: { summary: "Débrancher un Agenda", description: "Le secret est effacé. Les événements n'étaient pas gardés.", responses: { 200: { description: "Les Agendas, à jour" }, 404: { description: "Inconnu" } } },
       },
       "/api/agendas/evenements": {

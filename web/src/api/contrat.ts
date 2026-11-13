@@ -265,9 +265,17 @@ export const Agenda = z.object({
   nom: z.string(),
   /** Ce que l'écran dit : Google, Outlook — un lien iCal se reconnaît à son adresse. */
   origine: z.enum(["google", "outlook", "autre"]),
+  /** Choisie à la main ; null, il prend la couleur de son Membre sur le Calendrier. */
+  couleur: z.string().nullable(),
   createdAt: z.string(),
 });
 export type Agenda = z.infer<typeof Agenda>;
+
+/** Donner une couleur à un Agenda, ou la lui reprendre (null) pour qu'il retrouve celle de son Membre. */
+export const ColorerAgenda = z.object({
+  couleur: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Une couleur, comme #F27313").nullable(),
+});
+export type ColorerAgenda = z.infer<typeof ColorerAgenda>;
 
 /** Coller l'adresse iCal secrète d'un agenda Outlook ou Google, pour n'importe quel Membre. */
 export const AjouterLienAgenda = z.object({

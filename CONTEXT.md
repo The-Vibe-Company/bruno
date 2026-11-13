@@ -244,7 +244,8 @@ l'adresse secrète qu'Outlook et Google savent publier. Autant qu'on veut par pe
 de la boîte, l'Outlook de chez un Client, le Gmail perso. Bruno **lit** et ne garde rien : les
 événements se relisent chez leur propriétaire à chaque fois. Un compte Google ou Outlook se branche
 par son propriétaire, qui dit oui chez le fournisseur ; un lien iCal se colle pour n'importe qui.
-Ce qui ouvre un Agenda — jeton ou lien — est chiffré en base.
+Ce qui ouvre un Agenda — jeton ou lien — est chiffré en base. Sur le Calendrier, un Agenda prend
+la couleur de son Membre, sauf si on lui en donne une à lui (le perso d'un côté, le client de l'autre).
 _Avoid_: Calendrier (c'est la page), compte, intégration, synchro
 
 **Calendrier**:

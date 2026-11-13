@@ -27,7 +27,7 @@ type Personne = { id: string; nom: string; avatar: string | null };
 /**
  * Le Calendrier : un seul agenda, où se superposent ceux de chacun. Bruno n'y écrit rien — il lit
  * le Google, les Outlook, les liens iCal que chacun a branchés. Les visages, en haut, allument et
- * éteignent les gens ; chacun a sa couleur, et son anneau sert de légende.
+ * éteignent les gens ; chacun a sa couleur, et un Agenda peut avoir la sienne.
  */
 export default async function Calendrier({ searchParams }: {
   searchParams: Promise<{ jour?: string; vue?: string; branche?: string; erreur?: string; membres?: string }>;
@@ -53,9 +53,10 @@ export default async function Calendrier({ searchParams }: {
   const actifs = membresActifs(await filtreMembres(p.membres), personnes);
   const lecture = await lire(session, du, au, actifs);
 
-  // Une couleur par personne, pas par agenda : sur une grille commune, c'est qui qu'on cherche.
+  // Une couleur par personne d'ordinaire : sur une grille commune, c'est qui qu'on cherche. Un
+  // Agenda peut en recevoir une à lui — le perso d'un côté, le client de l'autre.
   const couleurPersonne = Object.fromEntries(personnes.map((m, i) => [m.id, PALETTE[i % PALETTE.length]]));
-  const couleurs = Object.fromEntries(agendas.map((a) => [a.id, couleurPersonne[a.membreId] ?? PALETTE[7]]));
+  const couleurs = Object.fromEntries(agendas.map((a) => [a.id, a.couleur ?? couleurPersonne[a.membreId] ?? PALETTE[7]]));
   const erreurs = Object.fromEntries(lecture.erreurs.map((e) => [e.agendaId, e.message]));
   const noms = Object.fromEntries(personnes.map((m) => [m.id, m.nom]));
   const avatars = Object.fromEntries(personnes.map((m) => [m.id, m.avatar]));
@@ -91,7 +92,7 @@ export default async function Calendrier({ searchParams }: {
             </Link>
           ))}
         </span>
-        <Agendas personnes={personnes} agendas={agendas} moiId={session.membreId} couleurs={couleurs} erreurs={erreurs} outlookPret={microsoftConfigure()} />
+        <Agendas personnes={personnes} agendas={agendas} moiId={session.membreId} couleurs={couleurs} couleursPersonnes={couleurPersonne} erreurs={erreurs} outlookPret={microsoftConfigure()} />
       </header>
 
       {(p.branche || p.erreur) && (
