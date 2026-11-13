@@ -8,28 +8,32 @@ import type { Ctx } from "@/api/membre-courant";
 import { db } from "@/db/client";
 import { membre } from "@/db/schema";
 import { allegerAvatars } from "@/lib/avatar-url";
-import { PALETTE } from "@/reglages/palette";
+import { couleursDuCalendrier } from "./couleurs";
 import type { Source } from "./Fiche";
 
 export type Personne = { id: string; nom: string; avatar: string | null };
 
-/** Les humains actifs de l'Espace, soi en premier : c'est son agenda qu'on branche, et celui qu'on cherche des yeux. */
-export async function personnesDuCalendrier(ctx: Ctx): Promise<Personne[]> {
-  const membres = await db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre)
+/**
+ * Les humains actifs de l'Espace, dans l'ordre d'arrivée — celui des couleurs. `personnes` met soi
+ * en premier : c'est son agenda qu'on branche, et celui qu'on cherche des yeux.
+ */
+export async function personnesDuCalendrier(ctx: Ctx): Promise<{ personnes: Personne[]; parArrivee: Personne[] }> {
+  const parArrivee = await db.select({ id: membre.id, nom: membre.nom, avatar: membre.avatar }).from(membre)
     .where(and(eq(membre.spaceId, ctx.spaceId), eq(membre.actif, true), eq(membre.type, "humain")))
     .orderBy(asc(membre.createdAt)).then((l) => allegerAvatars(l, (m) => m.id));
-  return [...membres.filter((m) => m.id === ctx.membreId), ...membres.filter((m) => m.id !== ctx.membreId)];
+  const personnes = [...parArrivee.filter((m) => m.id === ctx.membreId), ...parArrivee.filter((m) => m.id !== ctx.membreId)];
+  return { personnes, parArrivee };
 }
 
 /**
- * Une couleur par personne d'ordinaire : sur une grille commune, c'est qui qu'on cherche. Un
- * Agenda peut en recevoir une à lui — le perso d'un côté, le client de l'autre.
+ * Mes Agendas, une couleur chacun ; ceux des autres, une par personne (voir `couleurs.ts`). Dans
+ * l'ordre d'arrivée de chacun, pas celui de l'écran : sinon la couleur d'un collègue changerait
+ * selon qui regarde.
  */
-export function habiller(personnes: Personne[], agendas: Agenda[]) {
-  const couleurPersonne: Record<string, string> = Object.fromEntries(personnes.map((m, i) => [m.id, PALETTE[i % PALETTE.length]]));
-  const couleurs: Record<string, string> = Object.fromEntries(agendas.map((a) => [a.id, a.couleur ?? couleurPersonne[a.membreId] ?? PALETTE[7]]));
+export function habiller({ personnes, parArrivee }: { personnes: Personne[]; parArrivee: Personne[] }, agendas: Agenda[], moiId: string) {
+  const { agendas: couleurs, defauts } = couleursDuCalendrier(parArrivee, agendas, moiId);
   const noms: Record<string, string> = Object.fromEntries(personnes.map((m) => [m.id, m.nom]));
   const avatars = Object.fromEntries(personnes.map((m) => [m.id, m.avatar]));
   const sources: Record<string, Source> = Object.fromEntries(agendas.map((a) => [a.id, { qui: noms[a.membreId] ?? "?", avatar: avatars[a.membreId] ?? null, agenda: a.nom, origine: a.origine }]));
-  return { couleurPersonne, couleurs, noms, sources };
+  return { couleurs, defauts, noms, sources };
 }

@@ -24,10 +24,10 @@ const ORIGINE: Record<Agenda["origine"], string> = { google: "Google", outlook: 
  * Brancher et débrancher les agendas de chacun. Google et Outlook se branchent par leur
  * propriétaire — c'est lui qui dit oui chez le fournisseur ; un lien iCal se colle pour n'importe qui.
  */
-export function Agendas({ personnes, agendas, moiId, couleurs, couleursPersonnes, erreurs, outlookPret }: {
+export function Agendas({ personnes, agendas, moiId, couleurs, defauts, erreurs, outlookPret }: {
   personnes: Personne[]; agendas: Agenda[]; moiId: string;
-  /** Celle que chaque Agenda porte sur le Calendrier ; et celle de chaque Membre, qu'un Agenda sans couleur à lui reprend. */
-  couleurs: Record<string, string>; couleursPersonnes: Record<string, string>; erreurs: Record<string, string>; outlookPret: boolean;
+  /** Celle que chaque Agenda porte sur le Calendrier ; et celle qu'il reprend quand on efface son choix. */
+  couleurs: Record<string, string>; defauts: Record<string, string>; erreurs: Record<string, string>; outlookPret: boolean;
 }) {
   const router = useRouter();
   const [ouvert, setOuvert] = useState(false);
@@ -97,9 +97,9 @@ export function Agendas({ personnes, agendas, moiId, couleurs, couleursPersonnes
                 <ul className="flex flex-col">
                   {siens.map((a) => (
                     <li key={a.id} className="flex items-center gap-2.5 py-1.5">
-                      <ChoixCouleur agenda={a}
+                      <ChoixCouleur agenda={a} moi={moi}
                         propre={a.id in choisies ? choisies[a.id] : a.couleur}
-                        sienne={couleursPersonnes[a.membreId] ?? couleurs[a.id]}
+                        defaut={defauts[a.id] ?? couleurs[a.id]}
                         onChoisir={(c) => colorer(a, c)} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[14px]">{a.nom}</span>
@@ -161,18 +161,19 @@ export function Agendas({ personnes, agendas, moiId, couleurs, couleursPersonnes
 const bouton = "inline-flex h-8 items-center rounded-lg border border-bord-fort px-3 text-[13px] text-texte-2 hover:border-accent hover:text-texte";
 
 /**
- * La pastille d'un Agenda, qui s'ouvre sur la palette. La première case est la couleur de son
- * Membre : la reprendre efface le choix, et l'Agenda suivra si celle du Membre change.
+ * La pastille d'un Agenda, qui s'ouvre sur la palette. La première case est sa couleur par
+ * défaut — à soi, une par Agenda ; chez les autres, celle de la personne. La reprendre efface le choix.
  */
-function ChoixCouleur({ agenda, propre, sienne, onChoisir }: {
-  agenda: Agenda; propre: string | null; sienne: string; onChoisir: (c: string | null) => void;
+function ChoixCouleur({ agenda, moi, propre, defaut, onChoisir }: {
+  agenda: Agenda; moi: boolean; propre: string | null; defaut: string; onChoisir: (c: string | null) => void;
 }) {
   const [ouvert, setOuvert] = useState(false);
-  const affichee = propre ?? sienne;
+  const affichee = propre ?? defaut;
   const choisir = (c: string | null) => { setOuvert(false); if (c !== propre) onChoisir(c); };
+  const libelleDefaut = moi ? "Par défaut" : "Celle de la personne";
   const cases: { couleur: string; valeur: string | null; libelle: string }[] = [
-    { couleur: sienne, valeur: null, libelle: "Celle de la personne" },
-    ...PALETTE.filter((c) => c.toUpperCase() !== sienne.toUpperCase()).map((c) => ({ couleur: c, valeur: c, libelle: c })),
+    { couleur: defaut, valeur: null, libelle: libelleDefaut },
+    ...PALETTE.filter((c) => c.toUpperCase() !== defaut.toUpperCase()).map((c) => ({ couleur: c, valeur: c, libelle: c })),
   ];
   return (
     <Popover.Root open={ouvert} onOpenChange={setOuvert}>
@@ -197,7 +198,7 @@ function ChoixCouleur({ agenda, propre, sienne, onChoisir }: {
               );
             })}
           </span>
-          <p className="text-[12px] text-texte-faible">La première est celle de la personne.</p>
+          <p className="text-[12px] text-texte-faible">{moi ? "La première est sa couleur par défaut." : "La première est celle de la personne."}</p>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

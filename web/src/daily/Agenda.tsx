@@ -12,7 +12,7 @@ import { habiller, personnesDuCalendrier } from "@/calendrier/habillage";
  * temps, les Tâches n'ont pas à l'attendre.
  */
 export async function AgendaDuJour({ session, jour, actifs }: { session: Ctx; jour: string; actifs: Set<string> }) {
-  const [personnes, agendas] = await Promise.all([personnesDuCalendrier(session), lister(session)]);
+  const [equipe, agendas] = await Promise.all([personnesDuCalendrier(session), lister(session)]);
   if (agendas.length === 0) {
     return (
       <p className="py-2.5 text-[13.5px] leading-relaxed text-texte-faible">
@@ -21,7 +21,7 @@ export async function AgendaDuJour({ session, jour, actifs }: { session: Ctx; jo
     );
   }
   const lecture = await lire(session, jour, jour, actifs);
-  const { couleurs, noms, sources } = habiller(personnes, agendas);
+  const { couleurs, noms, sources } = habiller(equipe, agendas, session.membreId);
   const muets = agendas.filter((a) => lecture.erreurs.some((e) => e.agendaId === a.id));
   return (
     <>

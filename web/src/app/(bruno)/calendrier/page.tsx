@@ -35,12 +35,13 @@ export default async function Calendrier({ searchParams }: {
   const du = vue === "semaine" ? lundiDe(jour) : jour;
   const au = vue === "semaine" ? ajouterJours(du, 6) : jour;
 
-  const [personnes, agendas] = await Promise.all([personnesDuCalendrier(session), lister(session)]);
+  const [equipe, agendas] = await Promise.all([personnesDuCalendrier(session), lister(session)]);
+  const { personnes } = equipe;
   // Le même filtre que le Daily : l'URL, sinon le dernier choix gardé ; tout le monde par défaut.
   const actifs = membresActifs(await filtreMembres(p.membres), personnes);
   const lecture = await lire(session, du, au, actifs);
 
-  const { couleurPersonne, couleurs, noms, sources } = habiller(personnes, agendas);
+  const { couleurs, defauts, noms, sources } = habiller(equipe, agendas, session.membreId);
   const erreurs = Object.fromEntries(lecture.erreurs.map((e) => [e.agendaId, e.message]));
   const muets = agendas.filter((a) => erreurs[a.id]);
 
@@ -73,7 +74,7 @@ export default async function Calendrier({ searchParams }: {
             </Link>
           ))}
         </span>
-        <Agendas personnes={personnes} agendas={agendas} moiId={session.membreId} couleurs={couleurs} couleursPersonnes={couleurPersonne} erreurs={erreurs} outlookPret={microsoftConfigure()} />
+        <Agendas personnes={personnes} agendas={agendas} moiId={session.membreId} couleurs={couleurs} defauts={defauts} erreurs={erreurs} outlookPret={microsoftConfigure()} />
       </header>
 
       {(p.branche || p.erreur) && <Avis message={p.erreur ?? `Agenda branché : ${p.branche}.`} erreur={Boolean(p.erreur)} />}
