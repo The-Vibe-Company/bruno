@@ -1,0 +1,43 @@
+web/src/api/agendas.test.ts
+  s_fa10390adc8674::t_6b0a4a6d10f2a3 45
+  s_fa10390adc8674::t_31a2a2c39096d3 1-44,46-55
+web/drizzle/0021_agenda_couleur.sql
+  s_fa10390adc8674::t_18e6f3e70ace3a 1
+CONTEXT.md
+  s_fa10390adc8674::t_0ba02cac59c135 247-248
+web/src/app/(bruno)/calendrier/page.tsx
+  s_fa10390adc8674::t_b231ce85dddbae 30,56-57,59,95
+web/src/calendrier/Agendas.tsx
+  s_fa10390adc8674::t_b231ce85dddbae 3,8,27,29-30,53-58,60-63,100-103,162-205
+  s_fa10390adc8674::t_2f93e70b369188 59
+web/drizzle/meta/0021_snapshot.json
+  s_fa10390adc8674::t_51a2a829f39c68 1-2110
+web/drizzle/meta/_journal.json
+  s_fa10390adc8674::t_7cd3fab3655b04 151-157
+web/src/api/agendas.ts
+  s_fa10390adc8674::t_dba9318c3e6065 28,106-114
+web/src/api/contrat.ts
+  s_fa10390adc8674::t_6d3aeda9916792 268-269,274-279
+web/src/api/openapi.ts
+  s_fa10390adc8674::t_03b58293817d20 22,171-176
+web/src/app/api/agendas/[id]/route.ts
+  s_fa10390adc8674::t_645881f3677f64 1-2,5
+web/src/db/schema.ts
+  s_fa10390adc8674::t_24dc816ef168b5 459-460
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0bbbf10b409fc94ef3c812033b230ed2ffdf2092",
+  "prompts": {},
+  "sessions": {
+    "s_fa10390adc8674": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6b52f86d-e303-42ae-b18b-ccb0b6169d95",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
