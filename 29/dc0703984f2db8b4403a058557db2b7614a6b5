@@ -1,0 +1,76 @@
+web/src/agenda/coffre.ts
+  s_a7c8caa659ebbe::t_841c786b23e82c 1-32
+web/src/agenda/ical.ts
+  s_a7c8caa659ebbe::t_3ff598bc2e2225 1-77,79-85,89-138
+  s_a7c8caa659ebbe::t_6b1482d8f912c5 86-88
+  s_a7c8caa659ebbe::t_43ae7ba7fa1cd9 78
+web/src/api/contrat.ts
+  s_a7c8caa659ebbe::t_a0cd879ad5a3b5 253-304
+web/src/agenda/oauth.ts
+  s_a7c8caa659ebbe::t_145f6789e8d2ab 1-54
+web/src/calendrier/Agendas.tsx
+  s_a7c8caa659ebbe::t_cc209ebdce2155 121,124
+  s_a7c8caa659ebbe::t_5c5271bc9b1e86 1-120,122-123,125-144
+web/.env.example
+  s_a7c8caa659ebbe::t_ebdf7df406676b 58-69
+web/package.json
+  s_a7c8caa659ebbe::t_565eed4732f642 31
+web/src/api/openapi.ts
+  s_a7c8caa659ebbe::t_f6c6459f3fa5f9 22-23,156-183
+web/src/db/schema.ts
+  s_a7c8caa659ebbe::t_b9c5864abbe472 433-465
+web/src/app/api/agendas/evenements/route.ts
+  s_a7c8caa659ebbe::t_55737c48cd9f9f 1-5
+web/src/agenda/fournisseurs.ts
+  s_a7c8caa659ebbe::t_03f56d2155c865 71
+  s_a7c8caa659ebbe::t_e1d90418d9b1f3 1-70,72-163
+web/drizzle/0020_agenda.sql
+  s_a7c8caa659ebbe::t_b9c5864abbe472 1-18
+web/src/app/(bruno)/calendrier/page.tsx
+  s_a7c8caa659ebbe::t_4b0a8ebeaece00 1-151,153-201,204-293
+  s_a7c8caa659ebbe::t_d65a5b25b53082 152
+  s_a7c8caa659ebbe::t_5e2e7d888afd7f 202-203
+web/src/app/(bruno)/Rail.tsx
+  s_a7c8caa659ebbe::t_db1700e8ff8ef9 17-18
+web/src/agenda/agenda.test.ts
+  s_a7c8caa659ebbe::t_0ecc0cecf53ff1 1-139
+web/src/api/agendas.ts
+  s_a7c8caa659ebbe::t_8d2f7d2757c3bd 1-97,99-147
+  s_a7c8caa659ebbe::t_145f6789e8d2ab 98
+web/src/calendrier/disposition.ts
+  s_a7c8caa659ebbe::t_20e9871587228e 1-52
+web/src/app/api/agendas/route.ts
+  s_a7c8caa659ebbe::t_55737c48cd9f9f 1-9
+web/src/app/api/auth/agenda/[fournisseur]/route.ts
+  s_a7c8caa659ebbe::t_145f6789e8d2ab 1-6
+web/src/app/api/auth/callback/route.ts
+  s_a7c8caa659ebbe::t_145f6789e8d2ab 5,10-11
+CONTEXT.md
+  s_a7c8caa659ebbe::t_ebdf7df406676b 239-255
+web/src/app/api/agendas/[id]/route.ts
+  s_a7c8caa659ebbe::t_55737c48cd9f9f 1-4
+web/src/agenda/periode.ts
+  s_a7c8caa659ebbe::t_841c786b23e82c 1-44
+web/drizzle/meta/0020_snapshot.json
+  s_a7c8caa659ebbe::t_96256df3bdd785 1-2104
+web/drizzle/meta/_journal.json
+  s_a7c8caa659ebbe::t_8513a5ffc980f6 144-150
+web/pnpm-lock.yaml
+  s_a7c8caa659ebbe::t_caae347a930db4 44-46,2469-2471,5753-5754
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "29dc0703984f2db8b4403a058557db2b7614a6b5",
+  "prompts": {},
+  "sessions": {
+    "s_a7c8caa659ebbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a896a4f-ec45-4a19-9f57-66e5984d32ff",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
