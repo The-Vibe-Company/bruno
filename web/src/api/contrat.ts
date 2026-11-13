@@ -250,3 +250,55 @@ export type CreerJeton = z.infer<typeof CreerJeton>;
 export type JetonApi = z.infer<typeof JetonApi>;
 export type JetonEmis = z.infer<typeof JetonEmis>;
 
+
+/* ------------------------------------------------------------------ les Agendas */
+
+/** D'où vient un Agenda : un compte Google, un compte Microsoft, ou un lien iCal. */
+export const FournisseurAgenda = z.enum(["google", "microsoft", "ical"]);
+
+/** Un Agenda branché sur un Membre — jamais son secret, qui ne quitte pas le serveur. */
+export const Agenda = z.object({
+  id: uuid,
+  membreId: uuid,
+  fournisseur: FournisseurAgenda,
+  /** L'adresse du compte, ou le nom donné au lien. */
+  nom: z.string(),
+  /** Ce que l'écran dit : Google, Outlook — un lien iCal se reconnaît à son adresse. */
+  origine: z.enum(["google", "outlook", "autre"]),
+  createdAt: z.string(),
+});
+export type Agenda = z.infer<typeof Agenda>;
+
+/** Coller l'adresse iCal secrète d'un agenda Outlook ou Google, pour n'importe quel Membre. */
+export const AjouterLienAgenda = z.object({
+  membreId: uuid,
+  nom: z.string().trim().min(1, "Un nom, pour s'y retrouver : « Outlook MONKA ».").max(80),
+  url: z.string().trim().min(1, "L'adresse du calendrier.").max(2000),
+});
+export type AjouterLienAgenda = z.infer<typeof AjouterLienAgenda>;
+
+/** Ce qu'on demande au Calendrier : du premier au dernier jour, inclus. Six semaines au plus. */
+export const PeriodeAgendas = z.object({ du: jour, au: jour });
+
+/** Un événement, tel que l'agenda d'origine le donne. Bruno ne le garde pas. */
+export const Evenement = z.object({
+  id: z.string(),
+  agendaId: uuid,
+  membreId: uuid,
+  titre: z.string(),
+  /** Un instant ISO, ou un jour AAAA-MM-JJ pour une journée entière. */
+  debut: z.string(),
+  /** Exclusif. */
+  fin: z.string(),
+  journee: z.boolean(),
+  lieu: z.string().nullable(),
+  lien: z.string().nullable(),
+});
+export type Evenement = z.infer<typeof Evenement>;
+
+/** Les événements, et les Agendas qui n'ont pas répondu — un compte débranché se dit, il ne se tait pas. */
+export const LectureAgendas = z.object({
+  evenements: z.array(Evenement),
+  erreurs: z.array(z.object({ agendaId: uuid, message: z.string() })),
+});
+export type LectureAgendas = z.infer<typeof LectureAgendas>;

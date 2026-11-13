@@ -14,6 +14,8 @@ const ENTREES: { href: string; libelle: string; icone: ReactNode }[] = [
   { href: "/daily", libelle: "Daily", icone: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 4.5l3 3L10 2" /><path d="M2 11.5l3 3L10 9" /><path d="M12.5 5h4M12.5 12h4" /></svg> },
   // Le Weekly, juste sous le Daily : la même réunion, une semaine plus large.
   { href: "/weekly", libelle: "Weekly", icone: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1.5" y="3" width="15" height="13" rx="2" /><path d="M1.5 7h15M6 1.5v3M12 1.5v3" /><circle cx="6" cy="11" r="1.1" fill="currentColor" stroke="none" /></svg> },
+  // Les agendas de chacun, côte à côte : qui est en réunion, qui est libre.
+  { href: "/calendrier", libelle: "Calendrier", icone: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1.5" y="3" width="15" height="13" rx="2" /><path d="M1.5 7h15M6 1.5v3M12 1.5v3M6 10v3.5M9 10v3.5M12 10v3.5" /></svg> },
   // Nos Clients vus comme des dossiers : où on en est avec chacun, et ce qu'on s'en est dit.
   { href: "/clients", libelle: "Clients", icone: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 5.5a2 2 0 0 1 2-2h2.6l1.4 2h5.6a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" /></svg> },
   { href: "/fait", libelle: "Fait", icone: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="9" r="7" /><path d="M5.5 9.5l2.5 2.5 4.5-5" /></svg> },
