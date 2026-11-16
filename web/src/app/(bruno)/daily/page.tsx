@@ -12,6 +12,7 @@ import { filtreMembres } from "@/lib/filtre-membres-serveur";
 import { AgendaDuJour, AgendaEnAttente, ColonneAgenda } from "@/daily/Agenda";
 import { Hier, type TacheFinie } from "@/daily/Hier";
 import { SurLeFeu, type TacheDuJour } from "@/daily/SurLeFeu";
+import { Volet } from "@/daily/Volet";
 import { db } from "@/db/client";
 import { allegerAvatars } from "@/lib/avatar-url";
 import { membre } from "@/db/schema";
@@ -84,12 +85,16 @@ export default async function Daily({ searchParams }: { searchParams: Promise<{ 
       </header>
       <Affectations membres={deLui(dujour)} projets={deLui(projetsDuJour)} moiId={session.membreId}
         choix={choix.filter((c) => c.actif)} choixProjets={choixProjets.filter((c) => c.actif)} />
-      <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))_320px] overflow-hidden">
-        <Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} membres={membres} />
+      {/* Sous 1280 px, l'Agenda et Hier partagent un volet à gauche : les cartes gardent la place. */}
+      <main className="grid min-h-0 flex-1 grid-cols-[300px_repeat(3,minmax(0,1fr))] overflow-hidden xl:grid-cols-[300px_repeat(3,minmax(0,1fr))_320px]">
+        <Volet
+          agenda={
+            <ColonneAgenda>
+              <Suspense fallback={<AgendaEnAttente />}><AgendaDuJour session={session} jour={jour} actifs={actifs} /></Suspense>
+            </ColonneAgenda>
+          }
+          hier={<Hier jour={hier} estLaVeille={hier === veille(jour)} affectations={deLui(delaVeille)} projets={deLui(projetsDeLaVeille)} taches={tachesHier} membres={membres} />} />
         <SurLeFeu taches={tachesFeu} membres={membres} assigneParDefaut={assigneParDefaut} />
-        <ColonneAgenda>
-          <Suspense fallback={<AgendaEnAttente />}><AgendaDuJour session={session} jour={jour} actifs={actifs} /></Suspense>
-        </ColonneAgenda>
       </main>
     </>
   );
