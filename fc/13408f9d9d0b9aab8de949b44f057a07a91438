@@ -1,0 +1,21 @@
+web/src/daily/Volet.tsx
+  s_429a8b53db2b5b::t_d9f776b1518631 1-32
+web/src/app/(bruno)/daily/page.tsx
+  s_429a8b53db2b5b::t_5a4b8243b4e37c 15,88-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc13408f9d9d0b9aab8de949b44f057a07a91438",
+  "prompts": {},
+  "sessions": {
+    "s_429a8b53db2b5b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03694a27-7ad5-4d46-8117-3c1dd326ab93",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
