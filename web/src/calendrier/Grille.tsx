@@ -7,8 +7,11 @@ import type { Evenement } from "@/api/contrat";
 import { heureDe, minutesDansLeJour } from "@/agenda/periode";
 import { Fiche, type Source } from "./Fiche";
 import { couvre, disposer, type Place } from "./disposition";
+import { Defilement } from "./Defilement";
 
-const HAUTEUR_HEURE = 48;
+/** La hauteur d'une heure : 48 px au premier rendu, puis ce que la place permet (voir `Defilement`). */
+const H = "var(--h-heure, 48px)";
+const enHeures = (n: number) => `calc(${n} * ${H})`;
 
 /**
  * Une colonne par jour, heure par heure ; les réunions de tout le monde s'y partagent la place.
@@ -22,17 +25,20 @@ export function Grille({ jours, aujourdhui, evenements, couleurs, sources, lienJ
 }) {
   const places = new Map(jours.map((j) => [j, disposer(evenements, j)]));
   const toutes = [...places.values()].flat();
-  // 8 h – 20 h d'ordinaire ; la grille s'élargit d'elle-même pour un vol à 6 h ou un dîner à 22 h.
-  const premiere = Math.min(8, ...toutes.map((p) => Math.floor(p.debut / 60)));
-  const derniere = Math.max(20, ...toutes.map((p) => Math.ceil(p.fin / 60)));
+  // Toute la journée, de 00 h à 00 h, qui défile. Elle s'ouvre sur la journée de travail, 8 h – 20 h,
+  // élargie pour un vol à 6 h ou un dîner à 22 h : c'est elle qui remplit la place à l'écran.
+  const premiere = 0;
+  const derniere = 24;
+  const ouverture = Math.min(8, ...toutes.map((p) => Math.floor(p.debut / 60)));
+  const fermeture = Math.max(20, ...toutes.map((p) => Math.ceil(p.fin / 60)));
   const heures = Array.from({ length: derniere - premiere }, (_, i) => premiere + i);
   const maintenant = minutesDansLeJour(new Date());
   const gabarit = { gridTemplateColumns: `${etroite ? 44 : 56}px repeat(${jours.length}, minmax(${jours.length === 7 ? 110 : 0}px, 1fr))` };
   const journees = jours.map((j) => evenements.filter((e) => couvre(e, j)));
 
   return (
-    <div className={jours.length === 7 ? "min-w-[900px]" : ""}>
-      {!(etroite && journees.every((l) => l.length === 0)) && <div className="sticky top-0 z-20 grid border-b border-bord-2 bg-fond" style={gabarit}>
+    <div data-grille className={jours.length === 7 ? "min-w-[900px]" : ""}>
+      {!(etroite && journees.every((l) => l.length === 0)) && <div data-entete className="sticky top-0 z-20 grid border-b border-bord-2 bg-fond" style={gabarit}>
         <div />
         {jours.map((j, i) => {
           const entete = (
@@ -50,18 +56,24 @@ export function Grille({ jours, aujourdhui, evenements, couleurs, sources, lienJ
       <div className="relative grid" style={gabarit}>
         <div>
           {heures.map((h) => (
-            <div key={h} className="relative pr-2 text-right text-[11.5px] tabular-nums text-texte-faible" style={{ height: HAUTEUR_HEURE }}>
+            <div key={h} className="relative pr-2 text-right text-[11.5px] tabular-nums text-texte-faible" style={{ height: H }}>
               {/* Le libellé se cale sur sa ligne ; la première, collée à l'en-tête, reste dessous pour se lire. */}
               <span className={`relative ${h === premiere ? "top-0.5" : "-top-2"}`}>{String(h).padStart(2, "0")}:00</span>
             </div>
           ))}
+          {/* Minuit, la fin de la journée : le dernier libellé s'accroche sous la dernière ligne. */}
+          <div className="relative h-3 pr-2 text-right text-[11.5px] tabular-nums text-texte-faible">
+            <span className="relative -top-2">00:00</span>
+          </div>
+          <Defilement ouverture={ouverture - premiere} fermeture={fermeture - premiere} />
         </div>
         {jours.map((j) => (
           <div key={j} className={`relative min-w-0 border-l border-bord-2 ${j === aujourdhui && !etroite ? "bg-accent-voile/20" : ""}`}>
-            {heures.map((h) => <div key={h} className="border-t border-bord-2/70" style={{ height: HAUTEUR_HEURE }} />)}
+            {heures.map((h) => <div key={h} className="border-t border-bord-2/70" style={{ height: H }} />)}
+            <div className="border-t border-bord-2/70" />
             {(places.get(j) ?? []).map((p) => <Bloc key={p.evenement.id} p={p} premiere={premiere} couleur={couleurs[p.evenement.agendaId]} source={sources[p.evenement.agendaId]} />)}
             {j === aujourdhui && maintenant >= premiere * 60 && maintenant <= derniere * 60 && (
-              <div aria-hidden className="pointer-events-none absolute inset-x-0 z-10 h-0.5 bg-accent" style={{ top: ((maintenant - premiere * 60) / 60) * HAUTEUR_HEURE }}>
+              <div aria-hidden className="pointer-events-none absolute inset-x-0 z-10 h-0.5 bg-accent" style={{ top: enHeures((maintenant - premiere * 60) / 60) }}>
                 <span className="absolute -left-1 -top-[3px] h-2 w-2 rounded-full bg-accent" />
               </div>
             )}
@@ -75,20 +87,20 @@ export function Grille({ jours, aujourdhui, evenements, couleurs, sources, lienJ
 function Bloc({ p, premiere, couleur = "var(--accent)", source }: { p: Place; premiere: number; couleur?: string; source?: Source }) {
   const e = p.evenement;
   const qui = source?.qui;
-  const top = ((p.debut - premiere * 60) / 60) * HAUTEUR_HEURE;
-  const hauteur = Math.max(((p.fin - p.debut) / 60) * HAUTEUR_HEURE, 18);
+  const top = enHeures((p.debut - premiere * 60) / 60);
+  const hauteur = `max(calc(${(p.fin - p.debut) / 60} * ${H} - 2px), 16px)`;
   const horaire = `${heureDe(new Date(e.debut))}–${heureDe(new Date(e.fin))}`;
   return (
     <Fiche e={e} couleur={couleur} source={source}>
       <button type="button" title={`${qui ? `${qui} · ` : ""}${horaire} · ${e.titre}${e.lieu ? ` · ${e.lieu}` : ""}`}
         className="absolute overflow-hidden rounded-md px-1.5 py-0.5 text-left text-[12px] leading-tight text-texte outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent"
         style={{
-          top, height: hauteur - 2,
+          top, height: hauteur,
           left: `calc(${(p.colonne / p.colonnes) * 100}% + 2px)`, width: `calc(${100 / p.colonnes}% - 4px)`,
           background: `color-mix(in srgb, ${couleur} 30%, var(--surface))`,
         }}>
         <span className="block truncate font-medium">{e.titre}</span>
-        {hauteur > 32 && <span className="block truncate tabular-nums text-texte-sourd">{horaire}{qui ? ` · ${qui}` : ""}</span>}
+        {p.fin - p.debut >= 45 && <span className="block truncate tabular-nums text-texte-sourd">{horaire}{qui ? ` · ${qui}` : ""}</span>}
       </button>
     </Fiche>
   );
