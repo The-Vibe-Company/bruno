@@ -30,7 +30,7 @@ export async function AgendaDuJour({ session, jour, actifs }: { session: Ctx; jo
           <span className="text-bloque">Muet</span> : {muets.map((a) => `${a.nom} (${noms[a.membreId] ?? "?"})`).join(", ")}
         </p>
       )}
-      <div className="pt-2">
+      <div className="mt-2 min-h-0 flex-1 overflow-y-auto">
         <Grille jours={[jour]} aujourdhui={jour} evenements={lecture.evenements} couleurs={couleurs} sources={sources} etroite />
       </div>
     </>
