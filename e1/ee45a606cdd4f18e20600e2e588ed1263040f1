@@ -1,0 +1,26 @@
+web/src/calendrier/Grille.tsx
+  s_429a8b53db2b5b::t_142fd40d20e81a 30-32,64,66-67,73
+  s_429a8b53db2b5b::t_3c6f4ae387b97c 65
+  s_429a8b53db2b5b::t_7607ae33238dfb 10,12-14,28-29,33,40-41,59,68,72,76,90-91,98,103
+web/src/calendrier/Defilement.tsx
+  s_429a8b53db2b5b::t_7607ae33238dfb 1-6,9-27,29,31-43
+  s_429a8b53db2b5b::t_6936640cd9b96e 7-8,28,30
+web/src/daily/Agenda.tsx
+  s_429a8b53db2b5b::t_fb3c7ba6b31dd1 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e1ee45a606cdd4f18e20600e2e588ed1263040f1",
+  "prompts": {},
+  "sessions": {
+    "s_429a8b53db2b5b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03694a27-7ad5-4d46-8117-3c1dd326ab93",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
