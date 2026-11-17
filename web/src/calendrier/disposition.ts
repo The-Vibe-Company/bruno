@@ -5,7 +5,30 @@
 import type { Evenement } from "@/api/contrat";
 import { jourDe, minuit, minutesDansLeJour } from "@/agenda/periode";
 
-export type Place = { evenement: Evenement; debut: number; fin: number; colonne: number; colonnes: number };
+/**
+ * Une Place tient une réunion, et toutes ses copies : quand plusieurs d'entre nous y vont, elle est
+ * dans l'agenda de chacun. `evenement` est la première, celle qu'on montre ; `copies` les contient toutes.
+ */
+export type Place = { evenement: Evenement; copies: Evenement[]; debut: number; fin: number; colonne: number; colonnes: number };
+
+const cle = (e: Evenement) => {
+  const titre = e.titre.trim().toLowerCase().replace(/\s+/g, " ");
+  return e.journee ? `j|${titre}|${e.debut}|${e.fin}` : `h|${titre}|${Date.parse(e.debut)}|${Date.parse(e.fin)}`;
+};
+
+/**
+ * La même réunion, vue dans plusieurs agendas — le Daily de l'équipe est dans celui de chacun.
+ * Même titre, même début, même fin : c'est la même, on la pose une fois. Dans l'ordre d'arrivée.
+ */
+export function regrouper(evenements: Evenement[]): Evenement[][] {
+  const groupes = new Map<string, Evenement[]>();
+  for (const e of evenements) {
+    const k = cle(e);
+    const g = groupes.get(k);
+    if (g) g.push(e); else groupes.set(k, [e]);
+  }
+  return [...groupes.values()];
+}
 
 /** Les minutes de la journée qu'un événement occupe ce jour-là — coupé à minuit s'il déborde. */
 export function bornesDuJour(e: Evenement, jour: string): { debut: number; fin: number } | null {
@@ -28,8 +51,8 @@ export const couvre = (e: Evenement, jour: string) => e.journee && e.debut <= jo
 export const touche = (e: Evenement, jour: string) => !e.journee && bornesDuJour(e, jour) !== null;
 
 export function disposer(evenements: Evenement[], jour: string): Place[] {
-  const places = evenements
-    .flatMap((evenement) => { const b = bornesDuJour(evenement, jour); return b ? [{ evenement, ...b, colonne: 0, colonnes: 1 }] : []; })
+  const places = regrouper(evenements)
+    .flatMap((copies) => { const evenement = copies[0]; const b = bornesDuJour(evenement, jour); return b ? [{ evenement, copies, ...b, colonne: 0, colonnes: 1 }] : []; })
     .sort((x, y) => x.debut - y.debut || y.fin - x.fin);
 
   // Des grappes d'événements qui se touchent ; dans chaque grappe, la première colonne libre.
