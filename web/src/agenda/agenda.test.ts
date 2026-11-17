@@ -148,4 +148,18 @@ describe("la grille d'une journée", () => {
     expect(par.b).toMatchObject({ colonne: 1, colonnes: 2 });
     expect(par.c).toMatchObject({ colonne: 0, colonnes: 1 });
   });
+
+  it("pose une fois la réunion qui est dans l'agenda de plusieurs", () => {
+    const de = (id: string, membreId: string, titre: string, debut = "2026-11-16T08:00:00Z") =>
+      ({ ...ev(id, debut, "2026-11-16T08:15:00.000Z"), membreId, titre });
+    const places = disposer([
+      de("a", "antoine", "Daily Team"),
+      de("b", "stan", " daily  team "),
+      de("c", "juliette", "Daily Team", "2026-11-16T08:00:00.000Z"),
+      de("d", "stan", "Autre chose"),
+      de("e", "marek", "Daily Team", "2026-11-16T08:05:00Z"),
+    ], "2026-11-16");
+    expect(places.map((p) => p.copies.map((c) => c.id))).toEqual([["a", "b", "c"], ["d"], ["e"]]);
+    expect(places[0]).toMatchObject({ evenement: { id: "a" }, colonnes: 3 });
+  });
 });

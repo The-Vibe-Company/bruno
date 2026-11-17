@@ -7,13 +7,18 @@ import { Initiale } from "@/board/visuel";
 /** D'où vient une réunion : la personne, et lequel de ses agendas. */
 export type Source = { qui: string; avatar: string | null; agenda: string; origine: "google" | "outlook" | "autre" };
 
+/** Quelqu'un qui a la réunion dans son agenda, et la couleur qu'il y porte. */
+export type Presence = { couleur: string; source?: Source };
+
 const OUVRIR: Record<Source["origine"], string> = { google: "Ouvrir dans Google Agenda", outlook: "Ouvrir dans Outlook", autre: "Ouvrir l’original" };
 
 /**
  * Une réunion en grand. Le bloc de la grille n'a la place que pour un titre ; au clic, tout ce que
  * l'agenda en dit : quand, où, avec qui, le lien de visio, et la description.
  */
-export function Fiche({ e, couleur, source, children }: { e: Evenement; couleur: string; source?: Source; children: React.ReactNode }) {
+export function Fiche({ e, qui, children }: { e: Evenement; qui: Presence[]; children: React.ReactNode }) {
+  const source = qui[0]?.source;
+  const avec = qui.filter((p): p is Required<Presence> => Boolean(p.source));
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>{children}</Dialog.Trigger>
@@ -22,7 +27,9 @@ export function Fiche({ e, couleur, source, children }: { e: Evenement; couleur:
         <Dialog.Content aria-describedby={undefined}
           className="anime-boite fixed left-1/2 top-1/2 z-50 flex max-h-[calc(100dvh-3rem)] w-[560px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-5 overflow-y-auto rounded-2xl border border-bord-fort bg-surface p-6 shadow-2xl outline-none">
           <div className="flex items-start gap-3">
-            <span className="mt-2 h-3 w-3 flex-none rounded-full" style={{ background: couleur }} />
+            <span className="mt-2 flex flex-none">
+              {qui.map((p, i) => <span key={i} className="-ml-1 h-3 w-3 rounded-full first:ml-0" style={{ background: p.couleur, boxShadow: "0 0 0 1.5px var(--surface)" }} />)}
+            </span>
             <div className="min-w-0 flex-1">
               <Dialog.Title className="break-words text-[22px] font-semibold leading-snug tracking-tight">{e.titre}</Dialog.Title>
               <p className="mt-1 text-[14.5px] text-texte-2">{quand(e)}</p>
@@ -41,13 +48,18 @@ export function Fiche({ e, couleur, source, children }: { e: Evenement; couleur:
           )}
 
           <dl className="grid grid-cols-[110px_1fr] gap-x-4 gap-y-3 text-[14px]">
-            {source && (
-              <Ligne titre="Agenda de">
-                <span className="flex items-center gap-2">
-                  <Initiale nom={source.qui} avatar={source.avatar} grande />
-                  <span>{source.qui}</span>
-                  <span className="truncate text-texte-faible">· {source.agenda}</span>
-                </span>
+            {avec.length > 0 && (
+              <Ligne titre={avec.length > 1 ? `Agendas de · ${avec.length}` : "Agenda de"}>
+                <ul className="flex flex-col gap-1.5">
+                  {avec.map(({ source: s, couleur }) => (
+                    <li key={`${s.qui}-${s.agenda}`} className="flex items-center gap-2">
+                      <Initiale nom={s.qui} avatar={s.avatar} grande />
+                      <span>{s.qui}</span>
+                      <span className="truncate text-texte-faible">· {s.agenda}</span>
+                      {avec.length > 1 && <span className="ml-auto h-2.5 w-2.5 flex-none rounded-full" style={{ background: couleur }} />}
+                    </li>
+                  ))}
+                </ul>
               </Ligne>
             )}
             {e.lieu && <Ligne titre="Lieu"><span className="break-words">{e.lieu}</span></Ligne>}
