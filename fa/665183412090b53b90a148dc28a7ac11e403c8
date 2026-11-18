@@ -1,0 +1,34 @@
+web/src/auth/connexion-echangee.test.ts
+  s_ef81a052fcfdf2::t_9a1a43de673d37 1-87
+web/drizzle/0022_connexion_echangee.sql
+  s_ef81a052fcfdf2::t_6d48402ab23ed3 1-10
+web/src/app/api/auth/callback/route.ts
+  s_ef81a052fcfdf2::t_411f35b0e45d08 3-5,43-53,57-58,62-70
+web/src/auth/connexion-echangee.ts
+  s_ef81a052fcfdf2::t_8eec5a54c1a84b 1-51
+web/src/auth/oauth.ts
+  s_ef81a052fcfdf2::t_440d0812855ef7 83-87
+  s_ef81a052fcfdf2::t_1d1f9a2029b5ec 106-107
+web/drizzle/meta/0022_snapshot.json
+  s_ef81a052fcfdf2::t_7888c038336a46 1-2180
+web/drizzle/meta/_journal.json
+  s_ef81a052fcfdf2::t_6dd0dfac5bd4d4 158-164
+web/src/db/schema.ts
+  s_ef81a052fcfdf2::t_dc7f942d9c3f5f 468-490
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fa665183412090b53b90a148dc28a7ac11e403c8",
+  "prompts": {},
+  "sessions": {
+    "s_ef81a052fcfdf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9207cd7b-3ad1-459a-b2b8-c6718cacdb48",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zewed <dewez.antoine2@gmail.com>"
+    }
+  }
+}
