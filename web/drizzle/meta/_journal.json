@@ -155,6 +155,13 @@
       "when": 1794580011097,
       "tag": "0021_agenda_couleur",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1794993910516,
+      "tag": "0022_connexion_echangee",
+      "breakpoints": true
     }
   ]
 }
