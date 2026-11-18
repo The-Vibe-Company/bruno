@@ -465,3 +465,26 @@ export const agenda = pgTable("agenda", {
   check("agenda_nom", sql`length(btrim(${t.nom})) > 0`),
   index("agenda_par_space").on(t.spaceId, t.membreId),
 ]);
+
+/* ------------------------------------------------------------------ les connexions échangées */
+
+/**
+ * Le souvenir, quelques minutes, qu'un aller-retour chez Google a déjà abouti.
+ *
+ * Google n'échange un code qu'une fois. Or le retour de Google arrive parfois **deux fois** avec
+ * le même code et le même cookie d'état : la première requête l'échange, la réponse se perd
+ * (navigation annulée, extension ou proxy qui rejoue la page), et la seconde — celle que le
+ * navigateur affiche — se fait répondre `invalid_grant`. Victor est tombé dessus à chaque
+ * tentative, le 18 novembre 2026. La seconde retrouve ici le Membre de la première.
+ *
+ * `etat` est l'empreinte SHA-256 de l'état OAuth, jamais l'état lui-même ; on n'y arrive
+ * qu'avec le cookie d'état du navigateur qui a commencé la connexion.
+ */
+export const connexionEchangee = pgTable("connexion_echangee", {
+  etat: text("etat").primaryKey(),
+  membreId: uuid("membre_id").notNull().references(() => membre.id, { onDelete: "cascade" }),
+  spaceId: uuid("space_id").notNull().references(() => space.id, { onDelete: "cascade" }),
+  creeLe: timestamp("cree_le", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  check("connexion_echangee_etat_sha256", sql`${t.etat} ~ '^[0-9a-f]{64}$'`),
+]);

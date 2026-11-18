@@ -80,6 +80,11 @@ export function retourIOS(params: URLSearchParams): URL | null {
   return retour;
 }
 
+/** Google refuse le code : déjà échangé, ou expiré. Le premier cas se rattrape (voir `connexion-echangee`). */
+export class CodeDejaEchange extends Error {
+  constructor(message: string) { super(message); this.name = "CodeDejaEchange"; }
+}
+
 /** Échange le code contre les jetons. Seul le `id_token` nous intéresse. */
 export async function echangerCode(request: Request, code: string, codeVerifier?: string): Promise<string> {
   const reponse = await fetch(GOOGLE.jeton, {
@@ -98,9 +103,8 @@ export async function echangerCode(request: Request, code: string, codeVerifier?
     // Google dit toujours pourquoi (invalid_grant, redirect_uri_mismatch, invalid_client…) :
     // on le garde dans le message, sinon on cherche à l'aveugle.
     const corps = (await reponse.json().catch(() => ({}))) as { error?: string; error_description?: string };
-    throw new Error(
-      `Google a refusé l'échange du code (${reponse.status}) : ${corps.error ?? "?"} — ${corps.error_description ?? "sans détail"}.`,
-    );
+    const message = `Google a refusé l'échange du code (${reponse.status}) : ${corps.error ?? "?"} — ${corps.error_description ?? "sans détail"}.`;
+    throw corps.error === "invalid_grant" ? new CodeDejaEchange(message) : new Error(message);
   }
   const { id_token } = (await reponse.json()) as { id_token?: string };
   if (!id_token) throw new Error("Google n'a pas renvoyé de jeton d'identité.");

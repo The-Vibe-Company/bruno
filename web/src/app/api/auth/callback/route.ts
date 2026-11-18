@@ -1,7 +1,8 @@
 import { DomaineRefuse, verifierIdToken } from "@/auth/google";
 import { MembreDesactive, membrePourIdentite } from "@/auth/membre";
-import { diagnostiquerEtat, echangerCode, etatEfface, retourIOS } from "@/auth/oauth";
-import { creerSession, enteteCookie } from "@/auth/session";
+import { retenirConnexion, retrouverConnexion } from "@/auth/connexion-echangee";
+import { CodeDejaEchange, diagnostiquerEtat, echangerCode, etatEfface, retourIOS } from "@/auth/oauth";
+import { creerSession, enteteCookie, type Session } from "@/auth/session";
 import { estEtatAgenda, retour as retourAgenda } from "@/agenda/oauth";
 
 /** Le retour de Google. Un refus doit être lisible, pas une page blanche. */
@@ -39,21 +40,34 @@ export async function GET(request: Request) {
   const code = params.get("code");
   if (!code) return echec("code_manquant");
 
+  // L'état est valide ici : c'est bien le navigateur qui est parti chez Google.
+  const etatRecu = params.get("state")!;
+  const connecte = async (session: Session) => new Response(null, {
+    status: 302,
+    headers: [
+      ["location", racine.toString()],
+      ["set-cookie", enteteCookie(await creerSession(session))],
+      ["set-cookie", etatEfface],
+    ],
+  });
+
   try {
     const identite = await verifierIdToken(await echangerCode(request, code));
     const session = await membrePourIdentite(identite);
-    const jeton = await creerSession(session);
-    return new Response(null, {
-      status: 302,
-      headers: [
-        ["location", racine.toString()],
-        ["set-cookie", enteteCookie(jeton)],
-        ["set-cookie", etatEfface],
-      ],
-    });
+    await retenirConnexion(etatRecu, session);
+    return await connecte(session);
   } catch (e) {
     if (e instanceof DomaineRefuse) return echec("hors_domaine");
     if (e instanceof MembreDesactive) return echec("desactive");
+    // Le même retour est arrivé deux fois et l'autre requête a déjà échangé le code :
+    // c'est elle qui sait qui se connecte.
+    if (e instanceof CodeDejaEchange) {
+      const deja = await retrouverConnexion(etatRecu).catch(() => null);
+      if (deja) {
+        console.warn("[auth] retour de Google reçu deux fois : connexion reprise");
+        return await connecte(deja);
+      }
+    }
     console.error("[auth] connexion échouée", e);
     return echec("erreur");
   }
